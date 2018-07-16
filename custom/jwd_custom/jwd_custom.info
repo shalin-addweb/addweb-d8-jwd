@@ -1,0 +1,6 @@
+name = "JWD Custom"
+description = "Custom blocks or views"
+core = "7.x"
+package = "JWD"
+dependencies[] = menu_block
+dependencies[] = views

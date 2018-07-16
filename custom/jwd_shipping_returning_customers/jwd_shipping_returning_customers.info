@@ -1,0 +1,6 @@
+name = JWD Shipping returning customers
+description = JWD Shipping returning customers
+package = JWD
+dependencies[] = commerce
+dependencies[] = commerce_shipping
+core = 7.x

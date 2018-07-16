@@ -1,0 +1,22 @@
+<?php
+
+function jwd_%machine_name%_permissions_enable() {
+  $value = variable_get('content_access_settings', array());
+  $value['view']['jwd_%machine_name%_product_display'] = array(
+    0 => 1,
+    1 => 2,
+    2 => 5,
+    3 => 3,
+    4 => 4,
+  );
+  $value['view']['jwd_%machine_name%_product_display'] = array(
+    0 => 1,
+    1 => 2,
+    2 => 5,
+    3 => 3,
+    4 => 4,
+  );
+  $value['per_node']['jwd_%machine_name%_product_display'] = 0;
+  $value['priority']['jwd_%machine_name%_product_display'] = '0';
+  variable_set('content_access_settings', $value);
+}

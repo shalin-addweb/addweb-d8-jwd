@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD BMW Various feature.
+ */
+
+include_once 'jwd_bmw_pathauto.features.inc';

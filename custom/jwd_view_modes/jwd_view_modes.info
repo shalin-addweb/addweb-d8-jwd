@@ -1,0 +1,13 @@
+name = JWD View Modes
+description = Provides display suite view modes
+core = 7.x
+package = JWD
+php = 5.2.4
+version = 7.x-1.0
+project = jwd_view_modes
+dependencies[] = ctools
+dependencies[] = ds
+features[ctools][] = ds:ds:1
+features[ds_view_modes][] = header
+features[ds_view_modes][] = line_item_ordered
+features[features_api][] = api:1

@@ -1,0 +1,145 @@
+<?php
+
+/**
+ * Implements hook_commerce_shipping_method_info().
+ */
+function jwd_shipping_returning_customers_commerce_shipping_method_info() {
+  $shipping_methods = array();
+
+  $shipping_methods['jwd_returning_customers_method'] = array(
+    'title' => t('JWD returning customers'),
+    'description' => t('Define a shipping address service.'),
+  );
+
+  return $shipping_methods;
+}
+
+/**
+ * Implements hook_commerce_shipping_service_info().
+ */
+function jwd_shipping_returning_customers_commerce_shipping_service_info() {
+  $shipping_services = array();
+
+  $shipping_services['jwd_returning_customers_service'] = array(
+    'title' => t('JWD returning customers'),
+    'description' => t('Define a shipping address service.'),
+    'display_title' => t('Delivery address'),
+    'shipping_method' => 'jwd_returning_customers_method',
+    'price_component' => 'shipping',
+    'callbacks' => array(
+      'rate' => 'jwd_shipping_returning_customers_rate',
+      'details_form' => 'jwd_shipping_returning_customers_details_form',
+      'details_form_validate' => 'jwd_shipping_returning_customers_details_form_validate',
+      'details_form_submit' => 'jwd_shipping_returning_customers_details_form_submit',
+    ),
+  );
+
+  return $shipping_services;
+}
+
+function jwd_shipping_returning_customers_rate($shipping_service, $order) {
+  return array(
+    'amount' => 0,
+    'currency_code' => 'EUR',
+    'data' => array(),
+  );
+}
+
+function jwd_shipping_returning_customers_details_form($pane_form, $pane_values, $checkout_pane, $order, $shipping_service) {
+  global $user;
+
+  $form = array();
+  $roles = implode(', ', array_keys($user->roles));
+
+  $options = array();
+  $result = db_query(
+    "SELECT 
+      title, 
+      nid
+    FROM {node} 
+    LEFT JOIN {field_data_field_jwd_kundengruppe} field_data_field_jwd_kundengruppe 
+      ON node.nid = field_data_field_jwd_kundengruppe.entity_id 
+      AND (field_data_field_jwd_kundengruppe.entity_type = 'node' 
+      AND field_data_field_jwd_kundengruppe.deleted = '0') 
+    WHERE 
+      (( (node.status = '1') 
+      AND 
+      (node.type IN  (:type)) 
+      AND (field_data_field_jwd_kundengruppe.field_jwd_kundengruppe_value IN ($roles)) ))",
+    array(
+      ':type' => 'jwd_delivery_returning_customers',
+    )
+  );
+
+  foreach($result as $obj) {
+    $node = node_load($obj->nid);
+    $markup = field_view_field('node', $node, 'field_customer_address', array(
+      'label' => 'hidden'
+    ));
+
+    $options[$obj->nid] = drupal_render($markup);
+  }
+
+  $options['custom'] = 'Andere Adresse (bitte unten eintragen)';
+
+  $form = array();
+
+  $form['name'] = array(
+    '#type' => 'radios',
+    '#title' => t('Address'),
+    '#required' => false,
+    '#options' => $options,
+    '#default_value' => (!empty($order->field_custom_lieferadresse['und'][0]['value']) && empty($order->field_lieferadresse['und'][0]['target_id']))?'custom':$order->field_lieferadresse['und'][0]['target_id']
+  );
+
+  $form['room'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Raum',
+    '#required' => false,
+    '#default_value' => $order->field_lieferadresse_raum['und'][0]['value']
+  );
+
+  $form['custom_address'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Andere Adresse',
+    '#required' => false,
+    '#default_value' => $order->field_custom_lieferadresse['und'][0]['value']
+  );
+
+  $form['notes'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Bemerkungen',
+    '#required' => false,
+    '#default_value' => $order->field_notes['und'][0]['value']
+  );
+
+  return $form;
+}
+
+function jwd_shipping_returning_customers_details_form_validate($details_form, $details_values, $shipping_service, $order, $form_parents) {
+  if($details_values['name'] == 'custom' && !empty($details_values['custom_address'])) {
+    return true;
+  } elseif(!empty($details_values['name']) && $details_values['name']!='custom') {
+    return true;
+  }
+  drupal_set_message('Bitte wählen Sie eine Adresse aus.','error');
+  return false;
+}
+
+function jwd_shipping_returning_customers_details_form_submit($details_form, $details_values, $line_item) {
+  $order = commerce_order_load($line_item->order_id);
+
+  if($details_values['name'] == 'custom' && !empty($details_values['custom_address'])) {
+    $order->field_custom_lieferadresse['und'][0]['value'] = $details_values['custom_address'];
+    $order->field_lieferadresse['und'][0]['target_id'] = '0';
+
+  } else {
+    $order->field_lieferadresse['und'][0]['target_id'] = $details_values['name'];
+  }
+
+  $order->field_lieferadresse_raum['und'][0]['value'] = $details_values['room'];
+
+  $order->field_notes['und'][0]['value'] = $details_values['notes'];
+
+  commerce_order_save($order);
+}

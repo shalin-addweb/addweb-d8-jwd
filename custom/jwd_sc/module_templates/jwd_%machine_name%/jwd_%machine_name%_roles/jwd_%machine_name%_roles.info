@@ -1,0 +1,10 @@
+name = JWD %name% Roles
+description = Provides %name% user roles
+core = 7.x
+package = JWD %name%
+php = 5.2.4
+version = 7.x-1.3
+project = jwd_%machine_name%_roles
+dependencies[] = features
+features[features_api][] = api:1
+features[user_role][] = %name%

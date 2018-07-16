@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD WIki feature.
+ */
+
+include_once 'jwd_wiki.features.inc';

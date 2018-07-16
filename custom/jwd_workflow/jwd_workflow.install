@@ -1,0 +1,6 @@
+<?php
+function jwd_workflow_install()
+{
+  // set terms per page to a huge number to be able to view all product fields in one page
+  variable_set('taxonomy_terms_per_page_admin',1000);
+}

@@ -1,0 +1,5 @@
+name = "JWD Security"
+description = "Security things"
+core = "7.x"
+package = "JWD"
+dependencies[] = honeypot

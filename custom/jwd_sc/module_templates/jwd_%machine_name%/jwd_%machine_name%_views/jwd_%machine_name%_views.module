@@ -1,0 +1,30 @@
+<?php
+/**
+ * @file
+ * Code for the JWD %name% Views feature.
+ */
+
+/**
+ * Implements hook_views_api().
+ */
+function jwd_%machine_name%_views_views_api() {
+  return array("version" => "3.0");
+}
+
+/**
+ * Implementation of hook_views_default_views_alter().
+ */
+function jwd_%machine_name%_views_views_default_views_alter(&$views) {
+  if (isset($views['jwd_prod_img_cat'])) {
+    $views['jwd_prod_img_cat']->display['default']->display_options['filters']['type']['value']['%product_display_name%'] = '%product_display_name%';
+  }
+  if (isset($views['jwd_content'])) {
+    $views['jwd_content']->display['default']->display_options['filters']['type']['value']['%product_display_name%'] = '%product_display_name%';
+    $views['jwd_content']->display['default']->display_options['filters']['type_1']['value']['%product_display_name%'] = '%product_display_name%';
+    $views['jwd_content']->display['default']->display_options['filters']['status']['expose']['remember_roles'][%role_id%] = 0;
+    $views['jwd_content']->display['default']->display_options['filters']['type']['expose']['remember_roles'][%role_id%] = 0;
+  }
+  if (isset($views['jwd_products'])) {
+    $views['jwd_content']->display['default']->display_options['filters']['type']['value']['%product_display_name%'] = '%product_display_name%';
+  }
+}

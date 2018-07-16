@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD FAQ feature.
+ */
+
+include_once 'jwd_faq.features.inc';

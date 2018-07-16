@@ -1,0 +1,1022 @@
+<?php
+function jwd_product_menu() {
+  return array(
+    'admin/jwd-product/orders/%commerce_order/generate-order-number' => array(
+      'title' => t('JWD generate order number'),
+      'type' => MENU_CALLBACK,
+      'page callback' => 'jwd_product_generate_order_number_page_callback',
+      'page arguments' => array(3),
+      'access arguments' => array('administer commerce_order entities')
+    )
+  );
+}
+
+function jwd_product_form_alter(&$form,&$form_state,$form_id)
+{
+  $special_customers = jwd_sc_customers();
+  $product_display_forms = array('jwd_product_bundle_display_node_form','jwd_product_display_node_form','jwd_gesobau_product_display_node_form');
+  foreach($special_customers as $customer) {
+    $product_display_forms[] = $customer->product_display_name . '_node_form';
+  }
+
+  //dsm($form);
+  //dsm($form_state);
+  // alter any add to cart form
+  if(strpos($form_id,'commerce_cart_add_to_cart_form')===0) {
+    $product = commerce_product_load($form['product_id']['#value']);
+    if ($product) {
+      // disable non-available fields and field options
+      jwd_product_set_option_fields($form,$form_state,$product);
+
+      // rename and reorder address fields
+      jwd_product_alter_address_field($form['line_item_fields']['field_customer_address']);
+
+      // remove not-available extra fields
+      $extra_fields_available = array(
+        'field_product_text' => FALSE,
+        'field_product_size' => FALSE,
+        'field_product_font' => FALSE
+      );
+      if ($product->type != 'jwd_product' && $product->type != 'jwd_product_bundle') {
+        // v1.2 Gesobau customer
+        $extra_fields_available['field_customer_address'] = FALSE;
+        $extra_fields_available['field_customer_address_title'] = FALSE;
+        $extra_fields_available['field_customer_email'] = FALSE;
+        $extra_fields_available['field_customer_phone'] = FALSE;
+        $extra_fields_available['field_customer_mobile'] = FALSE;
+        $extra_fields_available['field_customer_fax'] = FALSE;
+
+        // v1.3 BMW customer
+        $extra_fields_available['field_customer_address_name'] = FALSE;
+        $extra_fields_available['field_customer_address_bmw'] = FALSE;
+        $extra_fields_available['field_customer_address_position'] = FALSE;
+        $extra_fields_available['field_customer_address_function'] = FALSE;
+        $extra_fields_available['field_customer_address_postal'] = FALSE;
+        $extra_fields_available['field_customer_address_house_bmw'] = FALSE;
+        $extra_fields_available['field_customer_com_fax'] = FALSE;
+        $extra_fields_available['field_customer_notes'] = FALSE;
+      }
+      jwd_product_set_extra_fields($form,$form_state,$product,$extra_fields_available);
+
+      // set min order quantity
+      if ($product->type != 'jwd_product' && $product->type != 'jwd_product_bundle') {
+        jwd_product_add_to_cart_form_set_min_quantity($form,$form_state,$product);
+      }
+
+      // rename submit button
+      global $user;
+      if (in_array('Bestandskunde',array_values($user->roles))) {
+        $form['submit']['#value'] = t('Add to cart');
+      } else {
+        $form['submit']['#value'] = t('Send');
+      }
+    }
+  } elseif(in_array($form_id,$product_display_forms)) {
+    $product_id = (isset($form['field_product_reference']))?$form['field_product_reference']['und']['#default_value'][0]:$form['field_product_bundle_reference']['und']['#default_value'][0];
+    $weight =  intval((isset($form['field_product_reference']))?$form['field_product_reference']['#weight']:$form['field_product_bundle_reference']['#weight']);
+    $form['link_product_reference'] = array(
+      '#type'=>'markup',
+      '#markup'=>l(t('Edit product'),'admin/commerce/products/'.$product_id.'/edit',array('query'=>drupal_get_destination())),
+      '#weight'=>$weight
+    );
+  } elseif(strpos($form_id,'commerce_checkout_form')===0) {
+    // change labels on submit buttons in checkout forms
+    jwd_product_alter_checkout_form($form,$form_state,$form_id);
+  } elseif($form_id == 'user_admin_settings') {
+    jwd_product_alter_user_admin_settings_form($form,$form_state);
+  }
+}
+
+function jwd_product_form_commerce_order_ui_order_form_alter(&$form,&$form_state)
+{
+  // rename and reorder address fields
+  jwd_product_alter_address_field($form['commerce_customer_billing']['und']['profiles'][0]['commerce_customer_address']);
+
+  // add generate link to order number field
+  if (isset($form['field_order_number']) && empty($form['field_order_number']['und'][0]['value']['#default_value'])) {
+    if (!isset($form['field_order_number']['und'][0]['value']['#description'])) {
+      $form['field_order_number']['und'][0]['value']['#description'] = '';
+    }
+    $form['field_order_number']['und'][0]['value']['#description'].=l(t('generate'),'admin/jwd-product/orders/'.$form['#entity']->order_id.'/generate-order-number',array('query'=>drupal_get_destination()));
+  }
+}
+
+function jwd_product_form_commerce_product_ui_product_form_alter(&$form,&$form_state)
+{
+  jwd_product_alter_options_available_fields($form);
+}
+
+function jwd_product_alter_options_available_fields(&$form)
+{
+  if (isset($form['field_product_options_available'])) {
+    //$form
+    /*$data['#type'] = 'fieldset';
+    $data['#collapsible'] = TRUE;
+    $data['#collapsed'] = TRUE;
+    $data['#title'] = $data['und']['#title'];
+    unset($data['und']['#title']);
+    $data['reset'] = array(
+        '#type' => 'markup',
+        '#markup' => "<a class='button' href='javascript:void(0);' onclick='jQuery(\"." . $data['#attributes']['class'][1] . " input[type=checkbox]\").each(function(i,el){el.checked = false;});'>" . t('Reset') . "</a>",
+        '#weight' => -10
+    );*/
+  }
+}
+
+function jwd_product_alter_address_field(&$address_field)
+{
+  $address_field['und'][0]['organisation_block']['#weight'] = 0;
+  $address_field['und'][0]['name_block']['#weight'] = 10;
+  $address_field['und'][0]['street_block']['#weight'] = 20;
+  $address_field['und'][0]['locality_block']['#weight'] = 30;
+  $address_field['und'][0]['country']['#weight'] = 40;
+  $address_field['und'][0]['street_block']['thoroughfare']['#title'] = t('Street').', '.t('Nr.');
+  $address_field['und'][0]['street_block']['premise']['#title'] = '';
+}
+
+// disables option fields and options in the line item that are not marked as available in the product
+function jwd_product_set_option_fields(&$form,&$form_state,$product)
+{
+  $line_item_fields = $form['line_item_fields'];
+
+  // add our own submit handler as first
+  $form['#submit'] = array_merge(array('jwd_product_add_to_cart_form_submit'),$form['#submit']);
+
+  $field_name = 'field_product_options';
+
+  if(isset($line_item_fields[$field_name])) {
+    $field_name_available = $field_name.'_available';
+    $field_data = &$line_item_fields[$field_name];
+    if (property_exists($product,$field_name_available)) {
+      $available_field = $product->$field_name_available;
+
+      $tids_available = array();
+
+      if(isset($available_field['und'])) {
+        foreach($available_field['und'] as $available_field_option) {
+          $tids_available[] = $available_field_option['tid'];
+        }
+      }
+
+      // hide checkboxes
+      $form['line_item_fields'][$field_name]['und']['#type'] = 'container';
+      $form['line_item_fields'][$field_name]['und']['#value'] = array();
+
+      $vocabulary = taxonomy_vocabulary_machine_name_load('product_fields');
+      if ($vocabulary) {
+        $taxonomy_tree = taxonomy_get_tree($vocabulary->vid);
+
+        // holds parent terms by id
+        $parent_terms = array();
+
+        foreach($taxonomy_tree as $term) {
+          // check if term is available
+          if (in_array($term->tid,$tids_available)) {
+            // create a select input for each parent term
+            if ($term->parents[0]=='0') {
+              $parent_terms[$term->tid] = $term;
+
+              $options_field_name = 'field_product_options_'.$term->tid;
+              $form['line_item_fields'][$options_field_name] = array(
+                '#type' => 'select',
+                '#options' => array(),
+                '#multiple' => FALSE,
+                '#default_value' => NULL,
+                '#title' => t($term->name)
+              );
+            } elseif($term->parents[0]!='0' && isset($parent_terms[$term->parents[0]])) {
+              $parent_term = $parent_terms[$term->parents[0]];
+
+              $options_field_name = 'field_product_options_'.$parent_term->tid;
+              $form['line_item_fields'][$options_field_name]['#options'][$term->tid] = t($term->name);
+
+              // move select into product options group
+              $form['line_item_fields']['#groups']['group_product_options']->children[] = $options_field_name;
+              $form['line_item_fields']['#group_children'][$options_field_name] = 'group_product_options';
+
+              // add textfield for individual value
+              if (stripos($term->name,'individuell')!==FALSE) {
+                $textinput_field_name = $options_field_name.'_individual';
+
+                $form['line_item_fields'][$textinput_field_name] = array(
+                  '#type' => 'textarea',
+                  '#rows' => 2,
+                  '#resizable' => TRUE,
+                  '#title' => $form['line_item_fields'][$options_field_name]['#title'].' ('.t('individual').')',
+                  '#default_value' => ''
+                );
+
+                $form['line_item_fields']['#groups']['group_product_options']->children[] = $textinput_field_name;
+                $form['line_item_fields']['#group_children'][$textinput_field_name] = 'group_product_options';
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  //dsm($form);
+  //dsm($form_state);
+}
+
+// disable extra fields in add to cart form that are not selected in product
+function jwd_product_set_extra_fields(&$form, &$form_state, $product, $extra_fields_available = array())
+{
+  if(isset($product->field_product_extra_fields['und'])) {
+    foreach($product->field_product_extra_fields['und'] as $i => $value) {
+      $extra_fields_available[$value['value']] = TRUE;
+    }
+  }
+
+  foreach($extra_fields_available as $field => $available) {
+    if (isset($form['line_item_fields'][$field]) && !$available) unset($form['line_item_fields'][$field]);
+  }
+}
+
+function jwd_product_add_to_cart_form_submit($form_id, &$form_state)
+{
+
+  global $user;
+
+  if(jwd_sc_user_is_customer($user)) {
+    return;
+  }
+
+  $field_name = 'field_product_options';
+
+  // form contains some input data
+  if (!empty($form_state['input'])) {
+    // populate product options
+    foreach($form_state['input']['line_item_fields'] as $input_name => $input_data) {
+      if (strpos($input_name,$field_name . '_')!==FALSE) {
+        //dsm($input_name);
+        //dsm($input_data);
+        if ($input_name!='field_product_options_individual') {
+          if (strpos($input_name,'_individual')!==FALSE && !empty($input_data)) {
+            $input_name = str_replace('_individual','',$input_name);
+            $title = $form_state['complete form']['line_item_fields'][$input_name]['#title'];
+
+            $form_state['input']['line_item_fields']['field_product_options_individual']['und'][]['value'] = $title.': '."\n".$input_data."\n\n";
+            $form_state['values']['line_item_fields']['field_product_options_individual']['und'][]['value'] = $title.': '.$input_data;
+          } else {
+            $form_state['input']['line_item_fields'][$field_name]['und'][$input_data] = $input_data;
+            $form_state['values']['line_item_fields'][$field_name]['und'][] = array('tid'=>$input_data);
+          }
+        }
+      }
+    }
+
+    // add analytics when form was submitted
+    if(strpos($_SERVER['SERVER_NAME'],'jwdberlin.de')) {
+      $_SESSION['gaq'] = "var _gaq = _gaq || []; _gaq.push(['_trackPageview', '/formular/anfrage.html']);";
+    }
+  }
+}
+
+/*
+ * Implementation of hook_commerce_cart_product_add
+ */
+function jwd_product_commerce_cart_product_add($order, $product, $quantity, $line_item)
+{
+  if ($line_item) {
+    $order->mail = $line_item->field_customer_email['und'][0]['email'];
+  }
+}
+
+/*
+ * Implementation of hook_commerce_checkout_complete
+ */
+function jwd_product_commerce_checkout_complete($order)
+{
+  global $user;
+
+  if(in_array('Bestandskunde', $user->roles)) {
+    return;
+  }
+
+  // call the rule action
+  jwd_product_create_customer_profile($order);
+}
+
+function jwd_product_create_customer_profile($order, $name = NULL)
+{
+  // check if a user already exists
+  if (intval($order->uid)!=0) {
+    // check for existing customer profile for this user
+    $customer_profiles = entity_load('commerce_customer_profile', FALSE, array('uid'=>$order->uid));
+    // no profile yet, so we create a new one
+    if (count($customer_profiles)==0) {
+      $customer_profile = commerce_customer_profile_new('billing',$order->uid);
+    } else {
+      // get first profile in array
+      foreach($customer_profiles as $customer_profile) {
+        continue;
+      }
+    }
+
+    // load the first line item to get customer address
+    $line_item = commerce_line_item_load($order->commerce_line_items['und'][0]['line_item_id']);
+
+    // if customer profile was just created the address field is not populated yet, so we simply copy it over from the line item
+    if (!property_exists($customer_profile,'field_customer_address')) {
+      $customer_profile->field_customer_address = $line_item->field_customer_address;
+    } else { // if we have an existing customer profile we simply fill in the fields that are not set yet
+      foreach($line_item->field_customer_address['und'][0] as $key=>$value)
+      {
+        if (empty($customer_profile->field_customer_address['und'][0][$key])) $customer_profile->field_customer_address['und'][0][$key] = $value;
+      }
+    }
+
+    // we go through each field that exists in the line item and the customer and copy over the values
+    foreach($line_item as $field_name => $field_value) {
+      if (strpos($field_name,'field_customer_')!==FALSE && property_exists($customer_profile,$field_name) && count($customer_profile->$field_name)==0) {
+        $customer_profile->$field_name = $field_value;
+      }
+    }
+    commerce_customer_profile_save($customer_profile);
+  }
+}
+
+
+/*
+ * Implementation of hook_entity_delete().
+ *
+ */
+function jwd_product_entity_delete($entity, $type)
+{
+  //dsm($entity);
+  //dsm($type);
+
+  // Remove reference product displays
+  if ($type=='commerce_product') {
+    $field_query = new EntityFieldQuery();
+    $display_ids = $field_query
+        ->entityCondition('entity_type','node')
+        ->fieldCondition('field_product_reference','product_id',$entity->product_id,'=')
+        ->execute();
+    dsm($display_ids); // TODO: reference fields are cleared before this hook applies, so try to find another way
+  }
+}
+
+
+/*
+ * Implementation of hook_theme().
+ */
+function jwd_product_theme()
+{
+  return array(
+    'jwd_product_commerce_order' => array(
+      'template' => 'jwd-product-commerce-order',
+      'path' => drupal_get_path('module', 'jwd_product') . '/templates',
+      'variables' => array('commerce_order'=>NULL,'commerce_line_items'=>array())
+    ),
+    'jwd_product_commerce_order_plain_text' => array(
+      'template' => 'jwd-product-commerce-order-plain-text',
+      'path' => drupal_get_path('module', 'jwd_product') . '/templates',
+      'variables' => array('commerce_order'=>NULL,'commerce_line_items'=>array())
+    ),
+  );
+}
+
+function jwd_product_product_options_from_terms($terms)
+{
+  function _get_term($tid,&$tree)
+  {
+    foreach($tree as $term) {
+      if ($term->tid == $tid) {
+        return $term;
+      }
+    }
+    return NULL;
+  }
+
+  $tree = taxonomy_get_tree('2');
+
+  $options = array();
+
+  foreach($terms as $term) {
+    $term = _get_term($term['tid'],$tree);
+    $parent_term = _get_term($term->parents[0],$tree);
+
+    $options[$parent_term->name] = $term->name;
+  }
+
+  return $options;
+}
+
+/* Adjusts the add to cart quanity input to contain the min order quantity of the product */
+function jwd_product_add_to_cart_form_set_min_quantity(&$form,&$form_state,$product) {
+  if(isset($product->field_product_min_order_quantity) && !empty($product->field_product_min_order_quantity['und'])) {
+    $form['quantity']['#default_value'] = $product->field_product_min_order_quantity['und'][0]['value'];
+  }
+}
+
+/* changes labels on submit buttons in checkout process */
+function jwd_product_alter_checkout_form(&$form,&$form_state,$form_id) {
+  global $user;
+  $continue_label = null;
+  $is_special_customer = jwd_sc_user_is_customer($user);
+
+  switch($form_id) {
+    case 'commerce_checkout_form_checkout':
+      $continue_label = 'weiter zum Versand';
+      break;
+
+    case 'commerce_checkout_form_shipping':
+      if (!in_array('Gesobau', $user->roles)) {
+        $continue_label = 'weiter zur Überprüfung';
+      }
+      else {
+        $continue_label = ($is_special_customer)?'weiter zur Kostenstelle':'weiter zur Bezahlmethode';
+      }
+      break;
+
+    case 'commerce_checkout_form_review':
+      $continue_label = ($is_special_customer)?'Jetzt verbindlich bestellen':'Jetzt kostenpflichtig bestellen';
+      break;
+  }
+
+
+
+  if ($continue_label !== null && isset($form['buttons']) && isset($form['buttons']['continue'])) {
+    $form['buttons']['continue']['#value'] = $continue_label;
+  }
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function jwd_product_field_formatter_info() {
+  return array(
+    'jwd_product_price_formatted' => array(
+      'label' => 'JWD: '.t('Formatted amount'),
+      'field types' => array('commerce_price'),
+      'settings' => array(
+        'calculation' => FALSE,
+      ),
+    ),
+    'jwd_product_price_formatted_no_round' => array(
+      'label' => 'JWD: '.t('Formatted amount without rounding'),
+      'field types' => array('commerce_price'),
+      'settings' => array(
+        'calculation' => FALSE,
+      ),
+    ),
+    'jwd_product_price_formatted_no_calculation' => array(
+      'label' => 'JWD: '.t('Formatted amount without calculation'),
+      'field types' => array('commerce_price'),
+      'settings' => array(
+        'calculation' => FALSE,
+      ),
+    ),
+    'jwd_product_price_formatted_no_calculation_no_rounding' => array(
+      'label' => 'JWD: '.t('Formatted amount without calculation and rounding'),
+      'field types' => array('commerce_price'),
+      'settings' => array(
+        'calculation' => FALSE,
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function jwd_product_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  return commerce_price_field_formatter_settings_form($field, $instance, $view_mode, $form, $form_state);
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function jwd_product_field_formatter_settings_summary($field, $instance, $view_mode) {
+  return commerce_price_field_formatter_settings_summary($field, $instance, $view_mode);
+}
+
+/**
+ * Implements hook_field_formatter_prepare_view().
+ */
+function jwd_product_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
+  commerce_price_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, $items, $displays);
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function jwd_product_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+
+  $order = commerce_order_load($entity->order_id);
+  $user = user_load($order->uid);
+  $is_special_customer = jwd_sc_user_is_customer($user);
+
+  if($is_special_customer && !isset($GLOBALS['jwd_totals'])) {
+    $GLOBALS['jwd_totals'] = array('base_price'=>0,'tax'=>0,'discount'=>0);
+  }
+
+  // Loop through each price value in this field.
+  foreach ($items as $delta => $item) {
+    //dsm($item);
+    // Do not render a price if the amount is NULL (i.e. non-zero empty value).
+    if (is_null($item['amount'])) {
+      // TODO: Consider if we should render as N/A or something indicating a
+      // price was not available as opposed to just leaving a blank.
+      continue;
+    }
+
+    // Theme the display of the price based on the display type.
+    switch ($display['type']) {
+      case 'jwd_product_price_formatted':
+        $element[$delta] = array(
+          '#markup' => jwd_product_currency_format($item['amount'], $item['currency_code'], $entity),
+        );
+        break;
+
+      case 'jwd_product_price_formatted_no_round':
+        $element[$delta] = array(
+          '#markup' => jwd_product_currency_format_no_round($item['amount'], $item['currency_code'], $entity),
+        );
+        break;
+
+      case 'jwd_product_price_formatted_no_calculation':
+        $amount = 0;
+        $_amount = 0;
+        $discount_amount = 0;
+        foreach($item['data']['components'] as $component) {
+          if($component['name'] == 'base_price') {
+            $_amount = (is_string($component['price']['amount']))?floatval($component['price']['amount']):$component['price']['amount'];
+
+            if ($_amount >= 0 ) {
+              $amount += $_amount;
+            } elseif($_amount < 0) {
+              $discount_amount += $_amount;
+            }
+          }
+        }
+        if ($amount == 0) $amount =  $item['amount'];
+
+        if ($is_special_customer && $discount_amount != 0) {
+          $element[$delta] = array(
+            '#markup' => commerce_currency_format($amount, $item['currency_code'], $entity) /*. '<br/>' .
+                commerce_currency_format($discount_amount, $item['currency_code'], $entity) . ' <small>(3% Rabatt)</small><br/>' .
+                commerce_currency_format($amount + $discount_amount, $item['currency_code'], $entity)*/
+          );
+        } else {
+          $element[$delta] = array(
+            '#markup' => commerce_currency_format($amount, $item['currency_code'], $entity),
+          );
+        }
+        break;
+
+      case 'jwd_product_price_formatted_no_calculation_no_rounding':
+        $amount = 0;
+        $_amount = 0;
+        $discount_amount = 0;
+        foreach($item['data']['components'] as $component) {
+          if($component['name'] == 'base_price') {
+            $_amount = (is_string($component['price']['amount']))?floatval($component['price']['amount']):$component['price']['amount'];
+
+            if ($_amount >= 0 ) {
+              $amount += $_amount;
+            } elseif($_amount < 0) {
+              $discount_amount += $_amount;
+            }
+          }
+        }
+        if ($amount == 0) $amount =  $item['amount'];
+
+        if ($is_special_customer && $discount_amount != 0) {
+          $element[$delta] = array(
+            '#markup' => jwd_product_currency_format_no_round($amount, $item['currency_code'], $entity) /*. '<br/>' .
+                         jwd_product_currency_format_no_round($discount_amount, $item['currency_code'], $entity) . ' <small>(3% Rabatt)</small><br/>' .
+                         jwd_product_currency_format_no_round($amount + $discount_amount, $item['currency_code'], $entity)*/
+          );
+        } else {
+          $element[$delta] = array(
+            '#markup' => jwd_product_currency_format_no_round($amount, $item['currency_code'], $entity),
+          );
+        }
+        break;
+    }
+  }
+
+  return $element;
+}
+
+function jwd_product_currency_format($amount, $currency_code, $object = NULL, $convert = TRUE) {
+  // First load the currency array.
+  $currency = commerce_currency_load($currency_code);
+
+  // Then convert the price amount to the currency's major unit decimal value.
+  if ($convert == TRUE) {
+    $amount = commerce_currency_amount_to_decimal($amount, $currency_code);
+  }
+
+  // Invoke the custom format callback if specified.
+  /*if (!empty($currency['format_callback'])) {
+    return $currency['format_callback']($amount, $currency, $object);
+  }*/
+
+  // Format the price as a number with fixed 2 decimals.
+  $decimals = 2;
+  $price = number_format(commerce_currency_round(abs($amount), $currency), $decimals, $currency['decimal_separator'], $currency['thousands_separator']);
+
+  // remove trailing zeros
+  $price = rtrim($price,'0');
+  // add trailing zeros if no decimal is present
+  if(strpos($price,',') == strlen($price)-1) {
+    $price.='00';
+  } elseif(strpos($price,',') == strlen($price)-2) {
+    $price.='0';
+  }
+
+  // Establish the replacement values to format this price for its currency.
+  $replacements = array(
+    '@code_before' => $currency['code_placement'] == 'before' ? $currency['code'] : '',
+    '@symbol_before' => $currency['symbol_placement'] == 'before' ? $currency['symbol'] : '',
+    '@price' => $price,
+    '@symbol_after' => $currency['symbol_placement'] == 'after' ? $currency['symbol'] : '',
+    '@code_after' => $currency['code_placement'] == 'after' ? $currency['code'] : '',
+    '@negative' => $amount < 0 ? '-' : '',
+    '@symbol_spacer' => $currency['symbol_spacer'],
+    '@code_spacer' => $currency['code_spacer'],
+  );
+
+  return trim(t('@code_before@code_spacer@negative@symbol_before@price@symbol_spacer@symbol_after@code_spacer@code_after', $replacements));
+}
+
+function jwd_product_currency_format_no_round($amount, $currency_code, $object = NULL, $convert = TRUE) {
+  // First load the currency array.
+  $currency = commerce_currency_load($currency_code);
+
+  // Then convert the price amount to the currency's major unit decimal value.
+  if ($convert == TRUE) {
+    $amount = commerce_currency_amount_to_decimal($amount, $currency_code);
+  }
+
+  // Invoke the custom format callback if specified.
+  /*if (!empty($currency['format_callback'])) {
+    return $currency['format_callback']($amount, $currency, $object);
+  }*/
+
+  // Format the price as a number.
+  $decimals = $currency['decimals'];
+  $price = number_format(commerce_currency_round(abs($amount), $currency), $decimals, $currency['decimal_separator'], $currency['thousands_separator']);
+
+  // remove trailing zeros
+  $price = rtrim($price,'0');
+  // add trailing zeros if no decimal is present
+  if(strpos($price,',') == strlen($price)-1) {
+    $price.='00';
+  } elseif(strpos($price,',') == strlen($price)-2) {
+    $price.='0';
+  }
+
+  // Establish the replacement values to format this price for its currency.
+  $replacements = array(
+    '@code_before' => $currency['code_placement'] == 'before' ? $currency['code'] : '',
+    '@symbol_before' => $currency['symbol_placement'] == 'before' ? $currency['symbol'] : '',
+    '@price' => $price,
+    '@symbol_after' => $currency['symbol_placement'] == 'after' ? $currency['symbol'] : '',
+    '@code_after' => $currency['code_placement'] == 'after' ? $currency['code'] : '',
+    '@negative' => $amount < 0 ? '-' : '',
+    '@symbol_spacer' => $currency['symbol_spacer'],
+    '@code_spacer' => $currency['code_spacer'],
+  );
+
+  return trim(t('@code_before@code_spacer@negative@symbol_before@price@symbol_spacer@symbol_after@code_spacer@code_after', $replacements));
+}
+
+function jwd_product_commerce_price_formatted_components_alter(&$components, $price, $entity) {
+  $order = commerce_order_load($entity->order_id);
+  $user = user_load($order->uid);
+  $is_special_customer = jwd_sc_user_is_customer($user);
+  $base_price = 0;
+  $discount = 0;
+
+  if($is_special_customer && isset($entity->commerce_line_items['und'])) {
+    foreach($entity->commerce_line_items['und'] as $line_item) {
+      if(isset($line_item['line_item_id'])) {
+        $line_item = commerce_line_item_load($line_item['line_item_id']);
+
+        if ($line_item->type!='shipping') {
+          if(isset($line_item->commerce_total['und'])) {
+            foreach($line_item->commerce_total['und'] as $item) {
+              foreach($item['data']['components'] as $component) {
+                if($component['name'] == 'base_price') {
+                  if($component['price']['amount'] < 0) {
+                    $discount+=$component['price']['amount'];
+                  } else {
+                    $base_price+=$component['price']['amount'];
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if ($discount < 0) {
+    $components['base_price']['title'] = 'Zwischensumme';
+
+    $components['base_price_no_discount'] = array(
+      'title' => 'Nettosumme',
+      'price' => array(
+        'amount' => $base_price,
+        'currency_code' => $components['base_price']['price']['currency_code'],
+        'data' => array()
+      ),
+      'weight' => $components['base_price']['weight'] - 20,
+    );
+
+    $components['discount'] = array(
+      'title' => '2 % Rabatt',
+      'price' => array(
+        'amount' => $discount,
+        'currency_code' => $components['base_price']['price']['currency_code'],
+        'data' => array()
+      ),
+      'weight' => $components['base_price']['weight'] - 10,
+    );
+  }
+
+  if ($is_special_customer) {
+    unset($components['shipping']);
+  }
+  $components['commerce_price_formatted_amount']['title'] = t($components['commerce_price_formatted_amount']['title']);
+}
+
+// disable extra fields in line item view that are not selected in product
+function jwd_product_set_extra_fields_line_item_view(&$line_item,$product,$extra_fields_available = array())
+{
+  if(isset($product->field_product_extra_fields['und'])) {
+    foreach($product->field_product_extra_fields['und'] as $i => $value) {
+      $extra_fields_available[$value['value']] = TRUE;
+    }
+  }
+
+  foreach($extra_fields_available as $field => $available) {
+    if (isset($line_item->content[$field]) && !$available) unset($line_item->content[$field]);
+  }
+}
+
+// alter view of line items
+function jwd_product_entity_view($entity, $type, $view_mode, $langcode)
+{
+
+  if($type == 'commerce_line_item' && ($view_mode == 'line_item_user' || $view_mode == 'line_item_ordered')) {
+    // remove not-available extra fields
+    $extra_fields_available = array(
+      'field_product_text' => FALSE,
+      'field_product_size' => FALSE,
+      'field_product_font' => FALSE
+    );
+
+    if(isset($entity->data['context']['product_ids'])) {
+      foreach($entity->data['context']['product_ids'] as $product) {
+        $product = commerce_product_load($product);
+
+        if($product) {
+          if ($product->type != 'jwd_product' && $product->type != 'jwd_product_bundle') {
+            $extra_fields_available['field_customer_address'] = FALSE;
+            $extra_fields_available['field_customer_address_title'] = FALSE;
+            $extra_fields_available['field_customer_email'] = FALSE;
+            $extra_fields_available['field_customer_phone'] = FALSE;
+            $extra_fields_available['field_customer_mobile'] = FALSE;
+            $extra_fields_available['field_customer_fax'] = FALSE;
+          }
+
+          // hide non active extra fields in line item
+          jwd_product_set_extra_fields_line_item_view($entity,$product,$extra_fields_available);
+        }
+      }
+    }
+  }
+}
+
+function jwd_product_alter_user_admin_settings_form(&$form,&$form_state) {
+  $form['jwd_product_bestandskunden_roles'] = array(
+    '#type' => 'select',
+    '#title' => 'Bestandskunden',
+    '#multiple' => TRUE,
+    '#options' => user_roles(),
+    '#default_value' => variable_get('jwd_product_bestandskunden_roles',array()),
+    '#weight' => -1
+  );
+  $form['#submit'][] = 'jwd_product_user_admin_settings_form_submit';
+}
+
+function jwd_product_user_admin_settings_form_submit($form,$form_state) {
+  variable_set('jwd_product_bestandskunden_roles',array_keys($form_state['values']['jwd_product_bestandskunden_roles']));
+}
+
+function jwd_product_generate_customer_number($account) {
+  $customer_number = '';
+  $group_number = 1; // default group number (last 4 digits) if no customer with valid customer number in same group could be found
+
+  $roles = user_roles();
+
+  $user_roles = array();
+
+  // guests do not have any role or uid
+  $account_roles = isset($account->roles) ? $account->roles : [];
+  $account_uid = isset($account->uid) ? $account->uid : 0;
+
+  foreach($account_roles as $role_id => $role_name) {
+    if ($role_name === TRUE) {
+      $user_roles[] = $roles[$role_id];
+    } elseif (is_string($role_name)) {
+      $user_roles[] = $role_name;
+    }
+  }
+
+  // get all users within same group
+  $query = db_select('users','users')
+      ->fields('users',array('uid'));
+  $query->condition('users.uid',$account_uid,'!=');
+  $query->distinct();
+  $query->orderBy('users.uid','DESC');
+
+  $bestandskunden_roles = jwd_sc_customers_roles();
+  $bestandskunden_roles = array_keys($bestandskunden_roles);
+
+  if (in_array('Bestandskunde',$user_roles)) {
+    $customer_number.='CU-';
+
+    foreach($account_roles as $role_id => $role) {
+      if (in_array($role_id, $bestandskunden_roles)) {
+        // add first letter of role in uppercase
+        $customer_number.=strtoupper(substr($role,0,1));
+
+        // only get users with same role
+        $query->addJoin('left','users_roles','roles','roles.rid = '.$role_id);
+      } else {
+        // only get users without bestandskunden roles
+        $query->addJoin('left','users_roles','roles','roles.rid NOT IN ('.implode(',',$bestandskunden_roles).')');
+      }
+    }
+  } else {
+    $customer_number.='AU-';
+
+    // only get users without bestandskunden roles
+    $query->addJoin('left','users_roles','roles','roles.rid NOT IN ('.implode(',',$bestandskunden_roles).')');
+  }
+
+  // get the query results
+  $result = $query->execute();
+
+  foreach($result as $record) {
+    if (!empty($record->uid)) {
+      // check if user has a valid customer number
+      $_user = user_load($record->uid);
+
+      if (!empty($_user) && !empty($_user->field_customer_number['und'][0]['value'])) {
+        $_customer_number = $_user->field_customer_number['und'][0]['value'];
+
+        // customer numbers prefixes must match
+        if (substr($_customer_number,0,strlen($customer_number)) == $customer_number) {
+          // last digits after prefix in a customer number are the group number of the customer
+          $_group_number = intval(substr($_customer_number,strlen($customer_number)));
+
+          // if the group number of this customer is greater or equals we will use it +1 for the new group number
+          if ($_group_number >= $group_number) {
+            $group_number = $_group_number+1;
+            continue; // as we sorted results by uid DESC we can now stop looking for other customer numbers
+          }
+        }
+      }
+    }
+  }
+
+  // fill in leading zeros to the group number
+  $group_number = str_pad((string) $group_number,4,'0',STR_PAD_LEFT);
+  $customer_number.=$group_number;
+
+  return $customer_number;
+}
+
+function jwd_product_generate_order_number($order) {
+
+  $owner = user_load($order->uid);
+
+  $order_number = 'O-';
+  $group_number = 1; // default order group number
+
+  if (!empty($owner) && isset($owner->field_customer_number['und'][0]) && !empty($owner->field_customer_number['und'][0]['value'])) {
+    $order_number.=$owner->field_customer_number['und'][0]['value'].'-';
+
+    // get all user orders
+    $result = db_query('SELECT order_id FROM {commerce_order} WHERE uid = :uid ORDER BY order_id DESC',array(':uid'=>$order->uid));
+
+    foreach($result as $record) {
+      $_order = commerce_order_load($record->order_id);
+
+      if (!empty($_order) && !empty($_order->field_order_number['und'][0]['value'])) {
+        $_order_number = $_order->field_order_number['und'][0]['value'];
+
+        // order prefixes must match
+        if (substr($_order_number,0,strlen($order_number)) == $order_number) {
+          // last digits after prefix in a order number are the group number of the order
+          $_group_number = intval(substr($_order_number,strlen($order_number)));
+
+          // if the group number of this order is greater or equals we will use it +1 for the new group number
+          if ($_group_number >= $group_number) {
+            $group_number = $_group_number+1;
+            continue; // as we sorted results by id DESC we can now stop looking for other order numbers
+          }
+        }
+      }
+    }
+  }
+
+  // fill in leading zeros to the group number
+  $group_number = str_pad((string) $group_number,4,'0',STR_PAD_LEFT);
+  $order_number.=$group_number;
+
+  return $order_number;
+}
+
+function jwd_product_generate_order_number_page_callback($order) {
+  $order->field_order_number['und'][0]['value'] = jwd_product_generate_order_number($order);
+  commerce_order_save($order);
+
+  drupal_set_message(t('Order number was generated.'));
+
+  drupal_goto();
+}
+
+/**
+ * Implements hook_form_ID_alter().
+ */
+/*function jwd_product_form_field_ui_field_edit_form_alter(&$form, &$form_state, $form_id) {
+    $field = $form['#field'];
+    $instance = $form['#instance'];
+
+    // Add parent selctor to term reference fields,
+    // except to the autocomplete widget, as it ignores the parent setting.
+    if ($field['type'] == 'taxonomy_term_reference'
+        && !($instance['widget']['type'] == 'taxonomy_autocomplete' || $instance['widget']['type'] == 'autocomplete_deluxe_taxonomy')) {
+
+        // add split by parents form
+        $form['field']['settings']['split_by_parent_terms'] = array(
+          '#type' => 'checkbox',
+          '#default_value' => $form['#field']['settings']['split_by_parent_terms'],
+          '#title' => t('Split by each parent term')
+        );
+    }
+}
+
+function jwd_product_field_info_alter(&$info)
+{
+    $info['taxonomy_term_reference']['settings']['split_by_parent_terms'] = FALSE;
+}
+
+function jwd_product_field_widget_form_alter(&$element,&$form_state,$context)
+{
+    if ($context['field']['type']=='taxonomy_term_reference') {
+        if ($context['field']['settings']['split_by_parent_terms'] && ($context['instance']['widget']['type']=='options_buttons')) {
+
+            // wrap selects in a container
+            $element['#type'] = 'container';
+
+            // load the vocabulary
+            $vocabulary = taxonomy_vocabulary_machine_name_load($context['field']['settings']['allowed_values'][0]['vocabulary']);
+            if ($vocabulary) {
+                $taxonomy_tree = taxonomy_get_tree($vocabulary->vid);
+
+                // holds parent terms by id
+                $parent_terms = array();
+
+                foreach($taxonomy_tree as $term) {
+                    // check if term is in available options
+                    if (isset($element['#options'][$term->tid])) {
+                        // create a select input for each parent term
+                        if ($term->parents[0]=='0') {
+                            $parent_terms[$term->tid] = $term;
+
+                            $options_field_name = $element['#field_name'].'_'.$term->tid;
+                            $element[$options_field_name] = array(
+                              '#type' => 'select',
+                              '#options' => array(),
+                              '#multiple' => FALSE,
+                              '#default_value' => NULL,
+                              '#title' => t($term->name)
+                            );
+                        } elseif($term->parents[0]!='0') {
+                            $parent_term = $parent_terms[$term->parents[0]];
+
+                            $options_field_name = $element['#field_name'].'_'.$parent_term->tid;
+                            $element[$options_field_name]['#options'][$term->tid] = t($term->name);
+                        }
+                    }
+                }
+            }
+        }
+        dsm($element);
+        dsm($form_state);
+        dsm($context);
+
+    }
+}*/

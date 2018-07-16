@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD %name% Various feature.
+ */
+
+include_once 'jwd_%machine_name%_pathauto.features.inc';

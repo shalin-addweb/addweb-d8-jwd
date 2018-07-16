@@ -1,0 +1,30 @@
+<?php
+/**
+ * @file
+ * Code for the JWD BMW Views feature.
+ */
+
+/**
+ * Implements hook_views_api().
+ */
+function jwd_bmw_views_views_api() {
+  return array("version" => "3.0");
+}
+
+/**
+ * Implementation of hook_views_default_views_alter().
+ */
+function jwd_bmw_views_views_default_views_alter(&$views) {
+  if (isset($views['jwd_prod_img_cat'])) {
+    $views['jwd_prod_img_cat']->display['default']->display_options['filters']['type']['value']['jwd_bmw_product_display'] = 'jwd_bmw_product_display';
+  }
+  if (isset($views['jwd_content'])) {
+    $views['jwd_content']->display['default']->display_options['filters']['type']['value']['jwd_bmw_product_display'] = 'jwd_bmw_product_display';
+    $views['jwd_content']->display['default']->display_options['filters']['type_1']['value']['jwd_bmw_product_display'] = 'jwd_bmw_product_display';
+    $views['jwd_content']->display['default']->display_options['filters']['status']['expose']['remember_roles'][52] = 0;
+    $views['jwd_content']->display['default']->display_options['filters']['type']['expose']['remember_roles'][52] = 0;
+  }
+  if (isset($views['jwd_products'])) {
+    $views['jwd_content']->display['default']->display_options['filters']['type']['value']['jwd_bmw_product_display'] = 'jwd_bmw_product_display';
+  }
+}

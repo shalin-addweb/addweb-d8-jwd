@@ -1,0 +1,7 @@
+name           = JWD Commerce Views Overrides
+description    = "Provides customized commerce views"
+package        = JWD
+core           = 7.x
+version        = 7.x-1.4
+dependencies[] = views
+files[]        = jwd_commerce_views_override.module

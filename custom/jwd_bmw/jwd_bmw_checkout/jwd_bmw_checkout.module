@@ -1,0 +1,22 @@
+<?php
+
+function jwd_bmw_checkout_enable()
+{
+  // add customer role to jwd_product_bestandskunden_roles
+  $value = variable_get('jwd_product_bestandskunden_roles', array());
+  if (!in_array(52, $value)) {
+    $value[] = 52;
+
+    variable_set('jwd_product_bestandskunden_roles', $value);
+  }
+}
+
+function jwd_bmw_checkout_field_default_fields_alter(&$fields) {
+  if (isset($fields['node-jwd_kostenstelle-field_jwd_kundengruppe'])) {
+    $fields['node-jwd_kostenstelle-field_jwd_kundengruppe']['field_config']['settings']['roles'][52] = '52';
+  }
+
+  if (isset($fields['node-jwd_delivery_returning_customers-field_jwd_kundengruppe'])) {
+    $fields['node-jwd_delivery_returning_customers-field_jwd_kundengruppe']['field_config']['settings']['roles'][52] = '52';
+  }
+}

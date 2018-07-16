@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Layouts feature.
+ */
+
+include_once 'jwd_layouts.features.inc';

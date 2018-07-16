@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Bootstrap sub-theme.
+ *
+ * Place your custom PHP code in this file.
+ */
+
+/**
+ * Implements hook_theme() for form templates.
+ * To set the user form templet files
+ */
+
+
+/*
+* Implement hook_theme()
+* To set the form theme
+*/
+function jwdberlin_theme(&$existing, $type, $theme, $path) {
+  $hooks = [];
+
+  // Set the user login form templet
+  $hooks['search-block-form'] = [
+    'render element' => 'form',
+    'template' => 'form/search-block-form',
+  ];
+  return $hooks;
+}
+

@@ -1,0 +1,5 @@
+name = JWD Rules
+description = Provides all JWD Rules
+package = JWD
+dependencies[] = rules
+core = 7.x

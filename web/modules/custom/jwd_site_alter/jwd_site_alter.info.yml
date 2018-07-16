@@ -1,0 +1,6 @@
+name: JWD Site Alter
+type: module
+description: 'Changes for the alteration'
+package: custom
+version: 8.x
+core: 8.x

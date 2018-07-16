@@ -1,0 +1,7 @@
+name = JWD cost center payment
+description = Provides a cost center payment method.
+package = JWD
+dependencies[] = commerce
+dependencies[] = commerce_payment
+version = 7.x-1.4
+core = 7.x

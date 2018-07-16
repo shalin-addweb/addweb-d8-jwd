@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD BMW Product feature.
+ */
+
+include_once 'jwd_bmw_product.features.inc';

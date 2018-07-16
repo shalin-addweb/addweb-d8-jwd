@@ -1,0 +1,32 @@
+<?php
+
+function jwd_product_select_get_quantity_options() {
+  return $quantity_options = array(
+    1 => 1,
+    2 => 2,
+    3 => 4,
+    4 => 4,
+    5 => 5,
+    6 => 6,
+    7 => 7,
+    8 => 8,
+    9 => 9,
+    10 => 10
+  );
+}
+
+function jwd_product_select_form_commerce_cart_add_to_cart_form_alter(&$form, &$form_state) {
+  $form['quantity']['#type'] = 'select';
+  $form['quantity']['#multiple'] = FALSE;
+  $form['quantity']['#size'] = 1;
+  $form['quantity']['#options'] = jwd_product_select_get_quantity_options();
+}
+
+function jwd_product_select_form_alter(&$form, &$form_state, $form_id) {
+  if($form_id == 'views_form_commerce_cart_form_default') {
+    $form['edit_quantity'][0]['#type'] = 'select';
+    $form['edit_quantity'][0]['#multiple'] = FALSE;
+    $form['edit_quantity'][0]['#size'] = 1;
+    $form['edit_quantity'][0]['#options'] = jwd_product_select_get_quantity_options();
+  }
+}

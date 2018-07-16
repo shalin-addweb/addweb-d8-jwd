@@ -1,0 +1,266 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: JWD 7.x-1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-02-05 15:28+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Ondrej Brinkel <info@anzui.de>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;t\n"
+"X-Poedit-Basepath: ./..\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: jwd_user_registration.module:8
+msgid "JWD user registration settings"
+msgstr "JWD Einstellung für Nutzerregistrierung"
+
+#: jwd_user_registration.module:23
+msgid "JWD users"
+msgstr "JWD Nutzer"
+
+#: jwd_user_registration.module:30
+msgid "JWD user"
+msgstr "JWD Nutzer"
+
+#: jwd_user_registration.module:37
+msgid "JWD delete user"
+msgstr "JWD Nutzer löschen"
+
+#: jwd_user_registration.module:44
+msgid "JWD resend user validation email"
+msgstr "JWD Validierungs-E-Mail erneut senden"
+
+#: jwd_user_registration.module:51
+msgid "JWD validate user"
+msgstr "JWD Nutzer validieren"
+
+#: jwd_user_registration.module:58
+msgid "JWD generate customer number"
+msgstr "JWD Kundennummer erzeugen"
+
+#: jwd_user_registration.module:70
+msgid "Administer JWD user registration"
+msgstr "JWD Nutzerregistrierung verwalten"
+
+#: jwd_user_registration.module:73
+msgid "Administer JWD users"
+msgstr "JWD Nutzer verwalten"
+
+#: jwd_user_registration.module:76
+msgid "Delete JWD users"
+msgstr "JWD Nutzer löschen"
+
+#: jwd_user_registration.module:91
+msgid "authorized roles"
+msgstr "Autorisierte Rollen"
+
+#: jwd_user_registration.module:98
+msgid "unauthorized role"
+msgstr "Unbefugte Rolle"
+
+#: jwd_user_registration.module:105
+msgid "Time the validation URL is active"
+msgstr "Gültigkeitsdauer des Validierungslinks"
+
+#: jwd_user_registration.module:107
+msgid "The pending users will also be deleted after this time, if they have not validated theire email before."
+msgstr "Die noch nicht validierten Nutzer werden ebenfalls nach dieser Zeit gelöscht, wenn sie sich noch nicht validiert haben."
+
+#: jwd_user_registration.module:111
+msgid "day"
+msgstr "Tag"
+
+#: jwd_user_registration.module:112
+#: jwd_user_registration.module:113
+#: jwd_user_registration.module:114
+#: jwd_user_registration.module:115
+#: jwd_user_registration.module:116
+msgid "days"
+msgstr "Tage"
+
+#: jwd_user_registration.module:117
+msgid "week"
+msgstr "Woche"
+
+#: jwd_user_registration.module:121
+msgid "Redirect after email validation"
+msgstr "Weiterleitung nach der E-Mail-Validierung"
+
+#: jwd_user_registration.module:126
+msgid "View mode for user admin page"
+msgstr "Ansicht für die Nutzerverwaltungsseite"
+
+#: jwd_user_registration.module:134
+#: jwd_user_registration.module:279
+msgid "Save"
+msgstr "Speichern"
+
+#: jwd_user_registration.module:187
+#: jwd_user_registration.module:232
+msgid "Customer number"
+msgstr "Kundennummer"
+
+#: jwd_user_registration.module:187
+#: jwd_user_registration.module:238
+msgid "Name"
+msgstr "Name"
+
+#: jwd_user_registration.module:187
+#: jwd_user_registration.module:243
+msgid "Email"
+msgstr "E-Mail"
+
+#: jwd_user_registration.module:187
+#: jwd_user_registration.module:250
+msgid "Status"
+msgstr "Status"
+
+#: jwd_user_registration.module:187
+msgid "Validated"
+msgstr "Validiert"
+
+#: jwd_user_registration.module:187
+msgid "Roles"
+msgstr "Rollen"
+
+#: jwd_user_registration.module:193
+#: jwd_user_registration.module:234
+msgid "generate"
+msgstr "erzeugen"
+
+#: jwd_user_registration.module:196
+#: jwd_user_registration.module:255
+msgid "active"
+msgstr "aktiv"
+
+#: jwd_user_registration.module:196
+#: jwd_user_registration.module:254
+msgid "blocked"
+msgstr "gesperrt"
+
+#: jwd_user_registration.module:197
+msgid "pending"
+msgstr "austehend"
+
+#: jwd_user_registration.module:197
+msgid "yes"
+msgstr "ja"
+
+#: jwd_user_registration.module:199
+msgid "user orders"
+msgstr "Bestellungen des Benutzers"
+
+#: jwd_user_registration.module:210
+msgid "No users found."
+msgstr "Keine Nutzer gefunden."
+
+#: jwd_user_registration.module:262
+msgid "actions"
+msgstr "Aktionen"
+
+#: jwd_user_registration.module:266
+msgid "resend validation email"
+msgstr "Validierungs-E-Mail erneut senden"
+
+#: jwd_user_registration.module:270
+msgid "validate"
+msgstr "Validieren"
+
+#: jwd_user_registration.module:286
+#: jwd_user_registration.module:336
+msgid "Delete"
+msgstr "Löschen"
+
+#: jwd_user_registration.module:293
+#: jwd_user_registration.module:346
+msgid "User does not exist."
+msgstr "Der Benutzer existiert nicht."
+
+#: jwd_user_registration.module:312
+msgid "User saved."
+msgstr "Benutzer gespeichert."
+
+#: jwd_user_registration.module:330
+msgid "Do you really want to delete the user \"@name\"?"
+msgstr "Wollen Sie wirklich den Nutzer \"@name\" löschen?"
+
+#: jwd_user_registration.module:340
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: jwd_user_registration.module:358
+msgid "User deleted."
+msgstr "Benutzer gelöscht."
+
+#: jwd_user_registration.module:399
+msgid "Your validation link has expired. Please repeat the registration."
+msgstr "Ihr Bestätigungslink ist abgelaufen. Bitte wiederholen Sie die Registrierung."
+
+#: jwd_user_registration.module:409
+msgid "You have successfully validated your e-mail address.<br/>Your account will now be approved. Upon approval you will receive an e-mail containing steps to login to your new account."
+msgstr "Sie haben Ihre E-Mail Adresse bestätigt. Nach erfolgreicher Prüfung Ihrer Angaben erhalten Sie eine E-Mail mit den Informationen zu Ihrem persönlichen Login."
+
+#: jwd_user_registration.module:411
+msgid "You have already validated your e-mail address."
+msgstr "Sie haben Ihre E-Mail Adresse bereits bestätigt."
+
+#: jwd_user_registration.module:414
+msgid "The user does not exist. Please repeat the registration."
+msgstr "Der Benutzer ist nicht vorhanden. Bitte wiederholen Sie die Registrierung."
+
+#: jwd_user_registration.module:443
+msgid "User was successfully validated."
+msgstr "Der Nutzer wurde erfolgreich validiert."
+
+#: jwd_user_registration.module:445
+msgid "User could not be validated."
+msgstr "Der Benutzer konnte nicht validiert werden."
+
+#: jwd_user_registration.module:464
+msgid "A validation email was send to the user."
+msgstr "Eine Validierungs-E-Mail wurde an den Nutzer gesendet."
+
+#: jwd_user_registration.module:466
+msgid "The validation email could not be send to the user."
+msgstr "Die Validierungs-E-Mail konnte nicht an den Nutzer gesendet werden."
+
+#: jwd_user_registration.module:503
+msgid "Customer number was generated."
+msgstr "Kundennumme wurde erzeugt."
+
+#: jwd_user_registration.rules.inc:5
+msgid "When a user account was validated."
+msgstr ""
+
+#: jwd_user_registration.rules.inc:10
+msgid "The validated user's account"
+msgstr ""
+
+#: jwd_user_registration.rules.inc:13
+msgid "JWD"
+msgstr ""
+
+#: jwd_user_registration.tokens.inc:7
+msgid "Validate URL"
+msgstr "Validierungs-URL"
+
+#: jwd_user_registration.tokens.inc:8
+msgid "The URL of the account validation page, provided by JWD user registration."
+msgstr ""
+
+#: jwd_user_registration.tokens.inc:12
+msgid "Administrative URL"
+msgstr "Administrierungs-URL"
+
+#: jwd_user_registration.tokens.inc:13
+msgid "The URL of the account administration, provided by JWD user registration"
+msgstr ""
+
+#~ msgid "You have successfully validated your e-mail address."
+#~ msgstr "Sie haben erfolgreich Ihre E-Mail Adresse bestätigt."

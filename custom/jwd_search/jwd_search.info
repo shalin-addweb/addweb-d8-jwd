@@ -1,0 +1,16 @@
+name = JWD Search
+description = Provides search configuration
+core = 7.x
+package = JWD
+php = 5.2.4
+version = 7.x-1.0
+project = jwd_search
+dependencies[] = ctools
+dependencies[] = strongarm
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:1
+features[variable][] = search_active_modules
+features[variable][] = search_config
+features[variable][] = search_config_string_overrides
+features[variable][] = search_cron_limit
+features[variable][] = search_default_module

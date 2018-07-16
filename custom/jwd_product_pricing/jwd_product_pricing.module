@@ -1,0 +1,210 @@
+<?php
+
+function jwd_product_pricing_rules_action_info() {
+  $actions = array();
+
+  $actions['jwd_product_pricing_calculate_price'] = array(
+    'parameter' => array(
+      'commerce_line_item' => array(
+        'type' => 'commerce_line_item',
+        'label' => t('Line item'),
+      ),
+    ),
+    'provides' => array(
+      'price_fetched' => array(
+        'type' => 'commerce_price',
+        'label' => t('New price'),
+      ),
+      'price_factor' => array(
+        'label' => t('Price factor')
+      )
+    ),
+    'group' => t('JWD product pricing'),
+    'label' => t('JWD product pricing'),
+  );
+
+  return $actions;
+}
+
+function jwd_product_pricing_calculate_price($line_item) {
+  $product = commerce_product_load($line_item->commerce_product['und'][0]['product_id']);
+
+  // do not execute for products without scale prices
+  if (!property_exists($product, 'field_scale_prices')) {
+    return NULL;
+  }
+
+  $quantity = intval($line_item->quantity);
+
+  $default_price = commerce_currency_amount_to_decimal(
+    $product->commerce_price['und'][0]['amount'],
+    $product->commerce_price['und'][0]['currency_code']
+  );
+
+  $price_factor = null;
+
+  // logo prices?
+  $logo_pricefactor = 1;
+
+  if (property_exists($line_item, 'field_product_logo') &&
+      isset($line_item->field_product_logo['und']) &&
+      isset($line_item->field_product_logo['und'][0]) &&
+      isset($line_item->field_product_logo['und'][0]['value'])) {
+      $logo_node = field_collection_item_load($line_item->field_product_logo['und'][0]['value']);
+      $logo_pricefactor = floatval($logo_node->field_product_logos_pricefactor['und'][0]['value']);
+  }
+
+  foreach($product->field_scale_prices['und'] as $price_rule) {
+    $nid = $price_rule['value'];
+    $node = field_collection_item_load($nid);
+    $circulation = intval($node->field_scale_price_quantity['und'][0]['value']);
+
+    if($quantity >= $circulation) {
+      $price_factor = floatval($node->field_scale_price_factor['und'][0]['value']) * $logo_pricefactor;
+    }
+  }
+
+  if($price_factor === null) {
+    return array(
+      'price_fetched' => array(
+        'amount' => $default_price,
+        'amount-decimal' => $product->commerce_price['und'][0]['amount']
+      ),
+      'price_factor' => $price_factor,
+    );
+  }
+
+  $price_decimal = $default_price * $price_factor;
+  $price = commerce_currency_decimal_to_amount(
+    $price_decimal,
+    $product->commerce_price['und'][0]['currency_code']
+  );
+
+  return array(
+    'price_fetched' => array(
+      'amount' => $price,
+      'amount-decimal' => $price_decimal
+    ),
+    'price_factor' => $price_factor,
+  );
+}
+
+/**
+ * Implements hook_commerce_product_calculate_sell_price_line_item_alter().
+ */
+function jwd_product_pricing_commerce_product_calculate_sell_price_line_item_alter($line_item) {
+  return _jwd_product_pricing_calculate_scale_price($line_item);
+}
+
+function jwd_product_pricing_commerce_cart_line_item_refresh($line_item, $order_wrapper) {
+  return _jwd_product_pricing_calculate_scale_price($line_item);
+}
+
+function _jwd_product_pricing_calculate_scale_price($line_item)
+{
+  $product = commerce_product_load($line_item->commerce_product['und'][0]['product_id']);
+
+  if (property_exists($product, 'field_scale_prices') &&
+    isset($product->field_scale_prices['und']) &&
+    count($product->field_scale_prices['und']) > 0) {
+    $price = jwd_product_pricing_calculate_price($line_item);
+
+    if ($price) {
+      $line_item->commerce_unit_price['und'][0]['amount'] = $price['price_fetched']['amount'];
+
+      foreach($line_item->commerce_unit_price['und'][0]['data']['components'] as $i => $component) {
+        if ($component['name'] == 'base_price') {
+          // (percental) discounts must be multiplied by price factor to
+          if (intval($component['price']['amount']) < 0) {
+            $line_item->commerce_unit_price['und'][0]['data']['components'][$i]['price']['amount'] = $line_item->commerce_unit_price['und'][0]['data']['components'][$i]['price']['amount'] * $price['price_factor'];
+          }
+          else {
+            $line_item->commerce_unit_price['und'][0]['data']['components'][$i]['price']['amount'] = $price['price_fetched']['amount'];
+          }
+        }
+        elseif ($component['name'] == 'tax|mwst') {
+          $line_item->commerce_unit_price['und'][0]['data']['components'][$i]['price']['amount'] = $line_item->commerce_unit_price['und'][0]['data']['components'][$i]['price']['amount'] * $price['price_factor'];
+        }
+      }
+    }
+  }
+
+  return $line_item;
+}
+
+function jwd_product_pricing_form_alter(&$form, &$form_state, $form_id)
+{
+  // customize line item fields
+  if (strpos($form_id, 'commerce_cart_add_to_cart_form') === 0) {
+    jwd_product_pricing_add_to_cart_form_alter($form, $form_state);
+  }
+  elseif($form_id == 'views_form_commerce_cart_form_default') {
+    jwd_product_pricing_cart_form_alter($form, $form_state);
+  }
+}
+
+function jwd_product_pricing_add_to_cart_form_alter(&$form, &$form_state)
+{
+  // if we have fixed scale prices convert the amount input to a select dropdown
+  $product = commerce_product_load($form['product_id']['#value']);
+
+  if (property_exists($product, 'field_fixed_scale_prices') && $product->field_fixed_scale_prices['und'][0]['value'] === '1') {
+    $amounts = _jwd_product_pricing_get_quantity_options($product);
+
+    unset($form['quantity']['#size']);
+    $form['quantity']['#type'] = 'select';
+    $form['quantity']['#options'] = $amounts;
+    $form['quantity']['#multiple'] = FALSE;
+  }
+}
+
+function jwd_product_pricing_cart_form_alter(&$form, &$form_state)
+{
+  foreach($form['edit_quantity'] as $i => &$field) {
+    $line_item = commerce_line_item_load($field['#line_item_id']);
+    $product = commerce_product_load($line_item->commerce_product['und'][0]['product_id']);
+
+    if (property_exists($product, 'field_fixed_scale_prices') && $product->field_fixed_scale_prices['und'][0]['value'] === '1') {
+      $amounts = _jwd_product_pricing_get_quantity_options($product, $line_item);
+
+      unset($field['#size']);
+      $field['#type'] = 'select';
+      $field['#options'] = $amounts;
+      $field['#multiple'] = FALSE;
+    }
+  }
+}
+
+function _jwd_product_pricing_get_quantity_options($product, $line_item = NULL)
+{
+  $default_price = commerce_currency_amount_to_decimal(
+    $product->commerce_price['und'][0]['amount'],
+    $product->commerce_price['und'][0]['currency_code']
+  );
+
+  $amounts =  array();
+
+  // logo prices?
+  $logo_pricefactor = 1;
+
+  if ($line_item && property_exists($line_item, 'field_product_logo') &&
+    isset($line_item->field_product_logo['und']) &&
+    isset($line_item->field_product_logo['und'][0]) &&
+    isset($line_item->field_product_logo['und'][0]['value'])) {
+    $logo_node = field_collection_item_load($line_item->field_product_logo['und'][0]['value']);
+    $logo_pricefactor = floatval($logo_node->field_product_logos_pricefactor['und'][0]['value']);
+  }
+
+  foreach($product->field_scale_prices['und'] as $price_rule) {
+    $nid = $price_rule['value'];
+    $node = field_collection_item_load($nid);
+    $circulation = intval($node->field_scale_price_quantity['und'][0]['value']);
+    $price_factor = floatval($node->field_scale_price_factor['und'][0]['value']) * $logo_pricefactor;
+
+    $price = $default_price * $circulation * $price_factor;
+    $currency = commerce_currency_load($product->commerce_price['und'][0]['currency_code']);
+    $amounts[$circulation] = $circulation . ' (' . jwd_custom_currency_format($price, $currency, null, 0) . ')';
+  }
+
+  return $amounts;
+}

@@ -1,0 +1,22 @@
+<?php
+
+function jwd_%machine_name%_checkout_enable()
+{
+  // add customer role to jwd_product_bestandskunden_roles
+  $value = variable_get('jwd_product_bestandskunden_roles', array());
+  if (!in_array(%role_id%, $value)) {
+    $value[] = %role_id%;
+
+    variable_set('jwd_product_bestandskunden_roles', $value);
+  }
+}
+
+function jwd_%machine_name%_checkout_field_default_fields_alter(&$fields) {
+  if (isset($fields['node-jwd_kostenstelle-field_jwd_kundengruppe'])) {
+    $fields['node-jwd_kostenstelle-field_jwd_kundengruppe']['field_config']['settings']['roles'][%role_id%] = '%role_id%';
+  }
+
+  if (isset($fields['node-jwd_delivery_returning_customers-field_jwd_kundengruppe'])) {
+    $fields['node-jwd_delivery_returning_customers-field_jwd_kundengruppe']['field_config']['settings']['roles'][%role_id%] = '%role_id%';
+  }
+}

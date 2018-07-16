@@ -1,0 +1,3 @@
+name = jwd_product_select
+core = 7.x
+dependencies[] = commerce

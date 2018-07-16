@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Various feature.
+ */
+
+include_once 'jwd_various.features.inc';

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD User feature.
+ */
+
+include_once 'jwd_user.features.inc';

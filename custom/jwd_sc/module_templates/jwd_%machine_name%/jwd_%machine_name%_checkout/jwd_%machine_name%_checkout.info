@@ -1,0 +1,5 @@
+name = JWD %name% Checkout
+description = Adds checkout related settingsfor %name%
+core = 7.x
+package = JWD %name%
+version = 7.x-1.3

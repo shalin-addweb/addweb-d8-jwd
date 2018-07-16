@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD User registration panels feature.
+ */
+
+include_once 'jwd_user_registration_panels.features.inc';

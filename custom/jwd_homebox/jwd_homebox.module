@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Homebox feature.
+ */
+
+include_once 'jwd_homebox.features.inc';

@@ -1,0 +1,7 @@
+name = JWD %name% Rules
+description = Provides all JWD %name% Rules
+package = JWD %name%
+dependencies[] = rules
+core = 7.x
+version = 7.x-1.3
+project = jwd_%machine_name%_rules

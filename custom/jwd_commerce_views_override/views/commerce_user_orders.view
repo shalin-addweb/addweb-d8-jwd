@@ -1,0 +1,199 @@
+<?php
+$view = new view();
+$view->name = 'commerce_user_orders';
+$view->description = 'Display a list of completed orders for a user.';
+$view->tag = 'commerce';
+$view->base_table = 'commerce_order';
+$view->human_name = 'User orders';
+$view->core = 7;
+$view->api_version = '3.0';
+$view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+/* Display: Defaults */
+$handler = $view->new_display('default', 'Defaults', 'default');
+$handler->display->display_options['title'] = 'Orders';
+$handler->display->display_options['css_class'] = 'user-orders';
+$handler->display->display_options['use_more_always'] = FALSE;
+$handler->display->display_options['use_more_text'] = 'mehr';
+$handler->display->display_options['access']['type'] = 'perm';
+$handler->display->display_options['access']['perm'] = 'view own commerce_order entities';
+$handler->display->display_options['cache']['type'] = 'none';
+$handler->display->display_options['query']['type'] = 'views_query';
+$handler->display->display_options['query']['options']['query_comment'] = FALSE;
+$handler->display->display_options['exposed_form']['type'] = 'basic';
+$handler->display->display_options['exposed_form']['options']['submit_button'] = 'Anwenden';
+$handler->display->display_options['exposed_form']['options']['reset_button_label'] = 'Zurücksetzen';
+$handler->display->display_options['exposed_form']['options']['exposed_sorts_label'] = 'Sortieren nach';
+$handler->display->display_options['exposed_form']['options']['sort_asc_label'] = 'Aufsteigend';
+$handler->display->display_options['exposed_form']['options']['sort_desc_label'] = 'Absteigend';
+$handler->display->display_options['pager']['type'] = 'full';
+$handler->display->display_options['pager']['options']['items_per_page'] = 25;
+$handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = 'Elemente pro Seite';
+$handler->display->display_options['pager']['options']['expose']['items_per_page_options_all_label'] = '- Alle -';
+$handler->display->display_options['pager']['options']['tags']['first'] = '« erste Seite';
+$handler->display->display_options['pager']['options']['tags']['previous'] = '‹ vorherige Seite';
+$handler->display->display_options['pager']['options']['tags']['next'] = 'nächste Seite ›';
+$handler->display->display_options['pager']['options']['tags']['last'] = 'letzte Seite »';
+$handler->display->display_options['style_plugin'] = 'table';
+$handler->display->display_options['style_options']['default_row_class'] = FALSE;
+$handler->display->display_options['style_options']['columns'] = array(
+  'order_number' => 'order_number',
+  'created' => 'created',
+  'changed' => 'changed',
+  'commerce_order_total' => 'commerce_order_total',
+  'status' => 'status',
+);
+$handler->display->display_options['style_options']['default'] = 'order_number';
+$handler->display->display_options['style_options']['info'] = array(
+  'order_number' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'desc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'created' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'desc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'changed' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'desc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'commerce_order_total' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'status' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+);
+$handler->display->display_options['style_options']['override'] = FALSE;
+/* Verhalten, wenn keine Ergebnisse vorliegen: Global: Textbereich */
+$handler->display->display_options['empty']['text']['id'] = 'text';
+$handler->display->display_options['empty']['text']['table'] = 'views';
+$handler->display->display_options['empty']['text']['field'] = 'area';
+$handler->display->display_options['empty']['text']['content'] = 'You have not placed any orders with us yet.';
+$handler->display->display_options['empty']['text']['format'] = 'plain_text';
+/* Feld: Commerce Order: Bestellnummer */
+$handler->display->display_options['fields']['order_number']['id'] = 'order_number';
+$handler->display->display_options['fields']['order_number']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['order_number']['field'] = 'order_number';
+$handler->display->display_options['fields']['order_number']['label'] = 'ID';
+$handler->display->display_options['fields']['order_number']['exclude'] = TRUE;
+$handler->display->display_options['fields']['order_number']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['order_number']['link_to_order'] = 'customer';
+/* Feld: Commerce Order: Bestellnummer */
+$handler->display->display_options['fields']['field_order_number']['id'] = 'field_order_number';
+$handler->display->display_options['fields']['field_order_number']['table'] = 'field_data_field_order_number';
+$handler->display->display_options['fields']['field_order_number']['field'] = 'field_order_number';
+$handler->display->display_options['fields']['field_order_number']['alter']['make_link'] = TRUE;
+$handler->display->display_options['fields']['field_order_number']['alter']['path'] = 'user/!1/orders/[order_number]';
+$handler->display->display_options['fields']['field_order_number']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['field_order_number']['element_default_classes'] = FALSE;
+/* Feld: Commerce Order: Erstellungsdatum */
+$handler->display->display_options['fields']['created']['id'] = 'created';
+$handler->display->display_options['fields']['created']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['created']['field'] = 'created';
+$handler->display->display_options['fields']['created']['label'] = 'Bestelldatum';
+$handler->display->display_options['fields']['created']['date_format'] = 'custom';
+$handler->display->display_options['fields']['created']['custom_date_format'] = 'l, d F Y - H:i';
+/* Feld: Commerce Order: Aktualisierungszeitpunkt */
+$handler->display->display_options['fields']['changed']['id'] = 'changed';
+$handler->display->display_options['fields']['changed']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['changed']['field'] = 'changed';
+$handler->display->display_options['fields']['changed']['exclude'] = TRUE;
+$handler->display->display_options['fields']['changed']['date_format'] = 'long';
+/* Feld: Commerce Order: Order total */
+$handler->display->display_options['fields']['commerce_order_total']['id'] = 'commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total']['table'] = 'field_data_commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total']['field'] = 'commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total']['label'] = 'Gesamtbetrag (inkl. MwSt)';
+$handler->display->display_options['fields']['commerce_order_total']['click_sort_column'] = 'amount';
+$handler->display->display_options['fields']['commerce_order_total']['settings'] = array(
+  'calculation' => FALSE,
+);
+/* Sortierkriterien: Commerce Order: Erstellungsdatum */
+$handler->display->display_options['sorts']['created']['id'] = 'created';
+$handler->display->display_options['sorts']['created']['table'] = 'commerce_order';
+$handler->display->display_options['sorts']['created']['field'] = 'created';
+$handler->display->display_options['sorts']['created']['order'] = 'DESC';
+/* Kontextfilter: Commerce Order: Uid */
+$handler->display->display_options['arguments']['uid_1']['id'] = 'uid_1';
+$handler->display->display_options['arguments']['uid_1']['table'] = 'commerce_order';
+$handler->display->display_options['arguments']['uid_1']['field'] = 'uid';
+$handler->display->display_options['arguments']['uid_1']['default_action'] = 'default';
+$handler->display->display_options['arguments']['uid_1']['exception']['title'] = 'Alles';
+$handler->display->display_options['arguments']['uid_1']['default_argument_type'] = 'current_user';
+$handler->display->display_options['arguments']['uid_1']['summary']['number_of_records'] = '0';
+$handler->display->display_options['arguments']['uid_1']['summary']['format'] = 'default_summary';
+$handler->display->display_options['arguments']['uid_1']['summary_options']['items_per_page'] = '25';
+$handler->display->display_options['arguments']['uid_1']['specify_validation'] = TRUE;
+$handler->display->display_options['arguments']['uid_1']['validate']['type'] = 'current_user_or_role';
+$handler->display->display_options['arguments']['uid_1']['validate_options']['restrict_roles'] = TRUE;
+$handler->display->display_options['arguments']['uid_1']['validate_options']['roles'] = array(
+  3 => '3',
+);
+/* Filterkriterium: Commerce Order: Bestellstatus */
+$handler->display->display_options['filters']['state']['id'] = 'state';
+$handler->display->display_options['filters']['state']['table'] = 'commerce_order';
+$handler->display->display_options['filters']['state']['field'] = 'state';
+$handler->display->display_options['filters']['state']['operator'] = 'not in';
+$handler->display->display_options['filters']['state']['value'] = array(
+  'cart' => 'cart',
+  'checkout' => 'checkout',
+);
+
+/* Display: User Orders */
+$handler = $view->new_display('page', 'User Orders', 'order_page');
+$handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+$handler->display->display_options['path'] = 'user/orders';
+$handler->display->display_options['menu']['type'] = 'normal';
+$handler->display->display_options['menu']['title'] = 'Meine Bestellungen';
+$handler->display->display_options['menu']['weight'] = '15';
+// This view will be used in all special customers, so the menu item must be set manually in the menu itself
+//$handler->display->display_options['menu']['name'] = 'menu-gesobau';
+$handler->display->display_options['menu']['context'] = 0;
+$handler->display->display_options['tab_options']['type'] = 'normal';
+$handler->display->display_options['tab_options']['title'] = 'Orders';
+$handler->display->display_options['tab_options']['description'] = 'User orders in the store.';
+$handler->display->display_options['tab_options']['weight'] = '';
+$handler->display->display_options['tab_options']['name'] = 'user-menu';
+$translatables['commerce_user_orders'] = array(
+  t('Defaults'),
+  t('Orders'),
+  t('mehr'),
+  t('Anwenden'),
+  t('Zurücksetzen'),
+  t('Sortieren nach'),
+  t('Aufsteigend'),
+  t('Absteigend'),
+  t('Elemente pro Seite'),
+  t('- Alle -'),
+  t('Offset'),
+  t('« erste Seite'),
+  t('‹ vorherige Seite'),
+  t('nächste Seite ›'),
+  t('letzte Seite »'),
+  t('You have not placed any orders with us yet.'),
+  t('ID'),
+  t('Bestellnummer'),
+  t('Bestelldatum'),
+  t('Aktualisierungszeitpunkt'),
+  t('Gesamtbetrag (inkl. MwSt)'),
+  t('Alles'),
+  t('User Orders'),
+);

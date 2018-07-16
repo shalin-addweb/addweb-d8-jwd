@@ -1,0 +1,371 @@
+<?php
+
+require_once('JwdSpecialCustomer.class.php');
+
+function jwd_sc_enable()
+{
+  $customers = array(
+    "Gesobau" => array(
+      "name" => "Gesobau",
+      "machine_name" => "gb",
+      "role_id" => "31",
+      "product_menu_id" => "11631"
+    )
+  );
+
+  $old_customers = variable_get('jwd_sc_customers', $customers);
+  $new_customers = array_merge($customers, $old_customers);
+  variable_set('jwd_sc_customers', $new_customers);
+}
+
+/*
+ * Implementation of hook_menu()
+ */
+function jwd_sc_menu()
+{
+  return array(
+    'admin/config/jwd-sc' => array(
+      'title' => t('JWD special customers'),
+      'type' => MENU_CALLBACK,
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('jwd_sc_admin_form'),
+      'access arguments' => array('administer jwd special customers'),
+      'file' => 'jwd_sc.admin.inc',
+    )
+  );
+}
+
+/*
+ * Implementation of hook_permission()
+ */
+function jwd_sc_permission() {
+  return array(
+    'administer jwd special customers' => array(
+      'title' => t('Administer JWD special customers'),
+    )
+  );
+}
+
+// Main method
+function jwd_sc_add_customer($name, $machine_name = null)
+{
+  $existing_customers = jwd_sc_customers();
+  if (isset($existing_customers[$name])) {
+    drupal_set_message(t('Customer "@name" already exists.', array('@name' => $name)), 'warning');
+    return $existing_customers[$name];
+  }
+
+  $customer = new JwdSpecialCustomer($name, $machine_name);
+  _jwd_sc_add_customer_role($customer);
+  _jwd_sc_add_customer_menu($customer);
+
+  // add to our variable
+  $existing_customers[$customer->name] = $customer;
+
+  // convert to arrays
+  foreach($existing_customers as $_name => $customer) {
+    $existing_customers[$_name] = array(
+      'name' => $customer->name,
+      'machine_name' => $customer->machine_name,
+      'role_id' => $customer->role_id,
+      'product_menu_id' => $customer->product_menu_id
+    );
+  }
+
+  variable_set('jwd_sc_customers', $existing_customers);
+
+  return $customer;
+}
+
+function _jwd_sc_create_dir(JwdSpecialCustomer $customer, $src, $dest)
+{
+  $dest = $dest . '/' . _jwd_sc_replace($customer, basename($src));
+  if (!file_exists($dest)) {
+    mkdir($dest);
+  }
+
+  return $dest;
+}
+
+function _jwd_sc_create_file(JwdSpecialCustomer $customer, $src, $dest)
+{
+  $dest = $dest . '/' . _jwd_sc_replace($customer, basename($src));
+  $content = file_get_contents($src);
+  file_put_contents($dest, _jwd_sc_replace($customer, $content));
+
+  return $dest;
+}
+
+function _jwd_sc_replace(JwdSpecialCustomer $customer, $src)
+{
+  $props = (array) $customer;
+  $dest = $src;
+
+  foreach($props as $key => $value) {
+    // skip complex variable types
+    if (!in_array(gettype($value), array('object', 'array', 'resource'))) {
+      $dest = str_replace('%' . $key . '%', $value, $dest);
+    }
+  }
+
+  return $dest;
+}
+
+function _jwd_copy_dir(JwdSpecialCustomer $customer, $src, $dest)
+{
+  $files = scandir($src);
+
+  foreach($files as $file) {
+    if (!in_array($file, array('.', '..'))) {
+      $full_path = $src . '/' . $file;
+
+      if (is_dir($full_path)) {
+        $_dest = _jwd_sc_create_dir($customer, $file, $dest);
+        // recursion
+        _jwd_copy_dir($customer, $full_path, $_dest);
+      }
+      else {
+        _jwd_sc_create_file($customer, $full_path, $dest);
+      }
+    }
+  }
+}
+
+function jwd_sc_create_customer_modules(JwdSpecialCustomer $customer)
+{
+  $templates_path = drupal_get_path('module', 'jwd_sc') . '/module_templates';
+  $dest_path = DRUPAL_ROOT . '/sites/all/modules/custom';
+
+  _jwd_copy_dir($customer, $templates_path, $dest_path);
+
+  drupal_set_message(t('Customer modules created under @path', array('@path' => 'sites/all/modules/custom/jwd_' . $customer->machine_name)), 'status');
+}
+
+function jwd_sc_enable_customer_modules(JwdSpecialCustomer $customer) {
+  $excludes = array('jwd_' . $customer->machine_name . '_permissions');
+  $modules_path = DRUPAL_ROOT . '/sites/all/modules/custom/jwd_' . $customer->machine_name;
+
+  $modules = array();
+
+  $files = scandir($modules_path);
+
+  foreach($files as $file) {
+    if (!in_array($file, array('.', '..'))) {
+      $full_path = $modules_path . '/' . $file;
+      if (is_dir($full_path)) {
+        if (!in_array($file, $excludes) && file_exists($full_path . '/' . $file . '.module') && file_exists($full_path . '/' . $file . '.info')) {
+          $modules[] = $file;
+        }
+      }
+    }
+  }
+
+  module_enable($modules);
+  drupal_set_message(t('Customer modules enabled for "@name".', array('@name' => $customer->name)), 'status');
+}
+
+// creates a role if it does not exist yet
+function _jwd_sc_add_customer_role(JwdSpecialCustomer $customer)
+{
+  $roles = user_roles();
+
+  if (!in_array($customer->role->name, $roles)) {
+    user_role_save($customer->role);
+    $customer->role_id = $customer->role->rid;
+  }
+}
+
+function  _jwd_sc_add_customer_menu(JwdSpecialCustomer $customer) {
+  $customer_menu = menu_load($customer->menu_name);
+
+  if ($customer_menu === false) {
+    $customer_menu = array(
+      'menu_name' => $customer->menu_name,
+      'title' => $customer->name,
+      'description' => ''
+    );
+  }
+
+  menu_save($customer_menu);
+
+  // get the last mlid
+  $last_mlid = db_query('SELECT mlid FROM {menu_links} ORDER BY mlid DESC LIMIT 0,1')->fetchAssoc();
+  $last_mlid = intval($last_mlid['mlid']);
+  // TODO: eventually this is not the last auto_incremeant id if menu items had been deleted
+
+  $customer->product_menu_id = $last_mlid + 1;
+
+  // now create the basic menu structure
+  $links = array(
+    0 => array(
+      'link_path' => 'produkte',
+      //'router_path' => 'produkte',
+      'link_title' => 'Produkte',
+      'menu_name' => $customer->menu_name,
+      'weight' => 0
+    ),
+    1 => array(
+      'link_path' => 'cart',
+      //'router_path' => 'cart',
+      'link_title' => 'Warenkorb',
+      'menu_name' => $customer->menu_name,
+      'weight' => 100
+    ),
+    2 => array(
+      'link_path' => 'user/orders',
+      //'router_path' => 'user/orders',
+      'link_title' => 'Meine Bestellungen',
+      'menu_name' => $customer->menu_name,
+      'weight' => 101
+    ),
+    3 => array(
+      'link_path' => 'menutoken/5112f279caa81',
+      //'router_path' => 'menutoken/%',
+      'link_title' => 'Mein Konto',
+      'menu_name' => $customer->menu_name,
+      'weight' => 102,
+      'options' => array(
+        'menu_token_link_path' => 'user/[current-user:uid]/edit',
+        'menu_token_data' => array(
+          'user' => array(
+            'type' => 'user',
+            'plugin' => 'user_context'
+          )
+        )
+      )
+    ),
+    4 => array(
+      'link_path' => 'user/logout',
+      //'router_path' => 'user/logout',
+      'link_title' => 'Abmelden',
+      'menu_name' => $customer->menu_name,
+      'weight' => 103,
+      'plid' => $last_mlid + 4
+    ),
+    5 => array(
+      'link_path' => 'kontakt',
+      //'router_path' => 'kontakt',
+      'link_title' => 'Kontakt',
+      'menu_name' => $customer->menu_name,
+      'weight' => 110
+    ),
+    6 => array(
+      'link_path' => 'kontakt',
+      //'router_path' => 'kontakt',
+      'link_title' => 'Kontakt und Anfahrt',
+      'menu_name' => $customer->menu_name,
+      'weight' => 111,
+      'plid' => $last_mlid + 6
+    ),
+    7 => array(
+      'link_path' => 'impressum',
+      //'router_path' => 'impressum',
+      'link_title' => 'Impressum',
+      'menu_name' => $customer->menu_name,
+      'weight' => 112,
+      'plid' => $last_mlid + 6
+    ),
+    8 => array(
+      'link_path' => 'agb',
+      //'router_path' => 'agb',
+      'link_title' => 'AGB',
+      'menu_name' => $customer->menu_name,
+      'weight' => 113,
+      'plid' => $last_mlid + 6
+    ),
+  );
+
+  foreach($links as $link) {
+    $link['module'] = 'menu';
+    $mlid = menu_link_save($link);
+
+    if ($mlid === false) {
+      drupal_set_message('Could not create ' . $customer->name . ' menu item "' . $link['link_title'] . '".', 'error');
+    }
+  }
+}
+
+function jwd_sc_create_customer_test_user(JwdSpecialCustomer $customer, $name)
+{
+  // check if user already exists
+  $exists = db_query("SELECT COUNT(uid) FROM {users} WHERE name='" . $name . "'")->fetchAssoc();
+  $exists = intval($exists['COUNT(uid)']);
+
+  if ($exists) {
+    drupal_set_message(t('User "@name" already exists.', array('@name' => $name)), 'warning');
+  }
+  else {
+    require_once DRUPAL_ROOT . '/includes/password.inc';
+
+    $test_user = new StdClass();
+    $test_user->name = $name;
+    $test_user->pass_plain = 'testtest';
+    $test_user->pass = user_hash_password($test_user->pass_plain);
+    $test_user->mail = $customer->machine_name .'_test@test.de';
+    $test_user->status = 1;
+    $test_user->timezone = 'Europe/Berlin';
+    $test_user->init = $test_user->mail;
+    $test_user = user_save($test_user);
+
+    // attach roles
+    $test_user->roles = array(
+      21 => 'Bestandskunde'
+    );
+    $test_user->roles[$customer->role_id] = $customer->name;
+
+    user_save($test_user);
+
+    drupal_set_message(t('Created test user "@name" with password "@password".', array('@name' => $test_user->name, '@password' => $test_user->pass_plain)), 'status');
+  }
+}
+
+/**
+ * Returns all special customers
+ *
+ * @return array - List of special customers
+ */
+function jwd_sc_customers()
+{
+  $customers = array();
+  $_customers = variable_get('jwd_sc_customers', array());
+
+  foreach($_customers as $customer) {
+    $_customer = new JwdSpecialCustomer($customer['name'], $customer['machine_name'], $customer['role_id']);
+    $_customer->product_menu_id = $customer['product_menu_id'];
+    $customers[$customer['name']] = $_customer;
+  }
+
+  return $customers;
+}
+
+/**
+ * Returns a list of customer roles
+ *
+ * @return array - key is the id and value the role name
+ */
+function jwd_sc_customers_roles()
+{
+  $customers = jwd_sc_customers();
+  $roles = array();
+  foreach($customers as $customer) {
+    $roles[$customer->role_id] = $customer->name;
+  }
+
+  return $roles;
+}
+
+/**
+ * Checks if a given user is a special customer
+ *
+ * @param Object $user
+ * @return bool
+ */
+function jwd_sc_user_is_customer($user)
+{
+  if ($user) {
+    return in_array('Bestandskunde', $user->roles);
+  }
+  else {
+    return false;
+  }
+}

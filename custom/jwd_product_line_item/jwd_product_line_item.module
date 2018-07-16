@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Product Line Item feature.
+ */
+
+include_once 'jwd_product_line_item.features.inc';

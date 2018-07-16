@@ -1,0 +1,130 @@
+<?php
+
+function jwd_bmw_custom_block_info_alter(&$blocks, $theme, $code_blocks)
+{
+  if (isset($blocks['jwd_custom']) && isset($blocks['jwd_custom']['team'])) {
+    $machine_name = 'bmw';
+    if (strpos($blocks['jwd_custom']['team']['pages'],$machine_name) === false) {
+      $blocks['jwd_custom']['team']['pages'] .= "\n$machine_name\n$machine_name/*\n$machine_name/produkte\n$machine_name/produkte/*";
+    }
+  }
+}
+
+function jwd_bmw_custom_form_alter(&$form, &$form_state, $form_id)
+{
+  // customize line item fields
+  if (strpos($form_id, 'commerce_cart_add_to_cart_form') === 0 &&
+    isset($form['line_item_fields']['#bundle']) &&
+    $form['line_item_fields']['#bundle'] == 'jwd_bmw_product') {
+
+    jwd_bmw_custom_add_to_cart_form_alter($form, $form_state);
+
+    // add our submit handler
+    array_unshift($form['#submit'], 'jwd_bmw_custom_add_to_cart_form_submit');
+  }
+}
+
+function jwd_bmw_custom_add_to_cart_form_submit(&$form, &$form_state)
+{
+  if (isset($form_state['values']['line_item_fields']['field_product_logo_selected'])) {
+    $product = commerce_product_load($form['product_id']['#value']);
+    $i = intval($form_state['values']['line_item_fields']['field_product_logo_selected']['value']);
+    $form_state['values']['line_item_fields']['field_product_logo']['und'][0] = $product->field_product_logos['und'][$i];
+  }
+}
+
+function jwd_bmw_custom_add_to_cart_form_alter(&$form, &$form_state)
+{
+  if (isset($form['line_item_fields']['field_customer_address_bmw']) &&
+    isset($form['line_item_fields']['field_customer_address_bmw']['und'])) {
+
+    // remove extra address fields
+    if (isset($form['line_item_fields']['field_customer_address_bmw']['und'][0]['street_block'])) {
+      unset($form['line_item_fields']['field_customer_address_bmw']['und'][0]['street_block']['thoroughfare']);
+      unset($form['line_item_fields']['field_customer_address_bmw']['und'][0]['street_block']['premise']);
+      unset($form['line_item_fields']['field_customer_address_bmw']['und'][0]['street_block']['sub_premise']);
+    }
+
+    // set pre-filled post code and city to read only
+    if (isset($form['line_item_fields']['field_customer_address_bmw']['und'][0]['locality_block'])) {
+      if (isset($form['line_item_fields']['field_customer_address_bmw']['und'][0]['locality_block']['postal_code'])) {
+        /*$form['line_item_fields']['field_customer_address_bmw']['und'][0]['locality_block']['postal_code']['#attributes']['readonly'] = 'readonly';
+        $form_state['values']['line_item_fields']['field_customer_address_bmw']['und'][0]['locality_block']['postal_code']['value'] = $form['line_item_fields']['field_customer_address_bmw']['und'][0]['locality_block']['postal_code']['#default_value'];*/
+        unset($form['line_item_fields']['field_customer_address_bmw']['und'][0]['locality_block']['postal_code']);
+      }
+      if (isset($form['line_item_fields']['field_customer_address_bmw']['und'][0]['locality_block']['locality'])) {
+        /*$form['line_item_fields']['field_customer_address_bmw']['und'][0]['locality_block']['locality']['#attributes']['readonly'] = 'readonly';
+        $form_state['values']['line_item_fields']['field_customer_address_bmw']['und'][0]['locality_block']['locality']['value'] = $form['line_item_fields']['field_customer_address_bmw']['und'][0]['locality_block']['locality']['#default_value'];*/
+        unset($form['line_item_fields']['field_customer_address_bmw']['und'][0]['locality_block']['locality']);
+      }
+    }
+  }
+
+  // set pre-filled postal address to read only
+  if (isset($form['line_item_fields']['field_customer_address_postal'])) {
+    $form['line_item_fields']['field_customer_address_postal']['und'][0]['value']['#attributes']['readonly'] = 'readonly';
+    $form_state['values']['line_item_fields']['field_customer_address_postal']['und'][0]['value']['value'] = $form['line_item_fields']['field_customer_address_postal']['und'][0]['value']['#default_value'];
+  }
+
+  // add selection of logo
+  if (isset($form['line_item_fields']['field_product_logo'])) {
+    $product = commerce_product_load($form['product_id']['#value']);
+
+    if (property_exists($product, 'field_fixed_scale_prices') && $product->field_fixed_scale_prices['und'][0]['value'] === '1') {
+      $amounts = array();
+
+      $default_price = commerce_currency_amount_to_decimal(
+        $product->commerce_price['und'][0]['amount'],
+        $product->commerce_price['und'][0]['currency_code']
+      );
+
+      foreach($product->field_scale_prices['und'] as $price_rule) {
+        $nid = $price_rule['value'];
+        $node = field_collection_item_load($nid);
+        $circulation = intval($node->field_scale_price_quantity['und'][0]['value']);
+        $price_factor = floatval($node->field_scale_price_factor['und'][0]['value']);
+
+        $price = $default_price * $circulation * $price_factor;
+        $currency = commerce_currency_load($product->commerce_price['und'][0]['currency_code']);
+        $amounts[$circulation] = $price_factor;
+      }
+
+      $form['line_item_fields']['scale_prices'] = array(
+        '#type' => 'markup',
+        '#markup' => '<script type="text/javascript">var basePrice = ' . $default_price . '; var scalePrices = ' . json_encode($amounts) . ';</script>'
+      );
+    }
+
+    if (property_exists($product, 'field_product_logos') &&
+      isset($product->field_product_logos['und']) &&
+      count($product->field_product_logos['und']) > 0) {
+
+      // hide original file field
+      $form['line_item_fields']['field_product_logo']['#attributes']['style'][] = 'display:none;';
+
+      $logo_options = array();
+
+      foreach($product->field_product_logos['und'] as $i => $logo)
+      {
+        $logo_node = field_collection_item_load($logo['value']);
+        //debug($logo_node);
+        $image = $logo_node->field_product_logos_image['und'][0];
+        $pricefactor = floatval($logo_node->field_product_logos_pricefactor['und'][0]['value']);
+        $logo_options[$i] = '<img src="' . image_style_url('original', $image['uri']) . '" title="' . $image['title'] . '" alt="' . $image['alt'] . '" data-pricefactor="' . $pricefactor . '" data-value="' . $logo['value'] . '" />';
+      }
+
+      $form['line_item_fields']['field_product_logo_selected'] = array(
+        '#type' => 'radios',
+        '#options' => $logo_options,
+        '#required' => TRUE,
+        '#default_value' => 0,
+        '#attributes' => array(
+          'onchange' => "JWD.Product.toggleLogoSelected(this);",
+        )
+      );
+    }
+    else {
+      unset($form['line_item_fields']['field_product_logo']);
+    }
+  }
+}

@@ -1,0 +1,69 @@
+<?php
+
+function jwd_%machine_name%_menus_enable() {
+  $exists = db_query("SELECT COUNT(*) FROM {block_role} WHERE module='menu_block' AND delta='jwd_%machine_name%_menus-main' AND rid='%role_id%'")->fetchAssoc();
+  $exists = intval($exists['COUNT(*)']);
+
+  if (!$exists) {
+    db_insert('block_role')
+      ->fields(array(
+        'module' => 'menu_block',
+        'delta' => 'jwd_%machine_name%_menus-main',
+        'rid' => '%role_id%',
+      ))
+      ->execute();
+  }
+
+  $exists = db_query("SELECT COUNT(*) FROM {block} WHERE module='menu_block' AND delta='jwd_%machine_name%_menus-main' AND theme='jwd_frontend'")->fetchAssoc();
+  $exists = intval($exists['COUNT(*)']);
+
+  if (!$exists) {
+    db_insert('block')
+      ->fields(array(
+        'module' => 'menu_block',
+        'delta' => 'jwd_%machine_name%_menus-main',
+        'theme' => 'jwd_frontend',
+        'status' => '1',
+        'weight'=> '0',
+        'region' => 'navigation',
+        'custom' => '0',
+        'visibility' => '0',
+        'pages' => '',
+        'cache' => '-1',
+        'title' => ''
+      ))
+      ->execute();
+  }
+}
+
+/**
+ * Implements hook_menu_block_blocks().
+ */
+function jwd_%machine_name%_menus_menu_block_blocks() {
+    // The array key is the block delta used by menu block.
+    return array(
+        'jwd_%machine_name%_menus-main' => array(
+            'menu_name'   => '%menu_name%',
+            'parent_mlid' => 0,
+            'title_link'  => 0,
+            'admin_title' => '%name% (Dropdown)',
+            'level'       => 1,
+            'follow'      => 0,
+            'depth'       => 3,
+            'expanded'    => 1,
+            'sort'        => 0,
+            'status'      => 1
+        ),
+        'jwd_%machine_name%_menus-cat_tabs' => array(
+            'menu_name'   => '%menu_name%',
+            'parent_mlid' => %product_menu_id%,
+            'title_link'  => 0,
+            'admin_title' => t('Category tabs %name%'),
+            'level'       => 1,
+            'follow'      => 0,
+            'depth'       => 2,
+            'expanded'    => 1,
+            'sort'        => 0,
+        ),
+    );
+}

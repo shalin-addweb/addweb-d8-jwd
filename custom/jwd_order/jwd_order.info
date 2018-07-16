@@ -1,0 +1,16 @@
+name = JWD order
+description = Provides custom order fields and settings for orders.
+core = 7.x
+package = JWD
+php = 5.2.4
+version = 7.x-1.4
+project = jwd_order
+dependencies[] = entityreference
+dependencies[] = features
+features[features_api][] = api:1
+features[field][] = commerce_order-commerce_order-field_custom_cost_center
+features[field][] = commerce_order-commerce_order-field_custom_lieferadresse
+features[field][] = commerce_order-commerce_order-field_lieferadresse
+features[field][] = commerce_order-commerce_order-field_lieferadresse_raum
+features[field][] = commerce_order-commerce_order-field_notes
+features[field][] = commerce_order-commerce_order-field_order_number

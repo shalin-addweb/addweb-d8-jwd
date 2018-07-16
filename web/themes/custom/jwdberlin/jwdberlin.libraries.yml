@@ -1,0 +1,13 @@
+global-styling:
+  css:
+    theme:
+      css/style.css: {}
+      css/style1.min.css: {}
+      css/style2.min.css: {}
+      css/style3.min.css: {}
+      css/style4.min.css: {}
+
+global-js:
+  js:
+    js/custom.js: {}
+

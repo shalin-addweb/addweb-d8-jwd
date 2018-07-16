@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD References feature.
+ */
+
+include_once 'jwd_references.features.inc';

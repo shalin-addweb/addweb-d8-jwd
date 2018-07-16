@@ -1,0 +1,67 @@
+<?php
+
+/**
+ * @file
+ * Provides views overrided commerce views
+ */
+
+/**
+ * Implements hook_views_api().
+ */
+
+function jwd_commerce_views_override_views_api() {
+  return array(
+    'api' => 3.0
+  );
+}
+
+
+/**
+ * Implements hook_views_default_views().
+ */
+function jwd_commerce_views_override_views_default_views() {
+  $views = array();
+  $files = file_scan_directory(drupal_get_path('module', 'jwd_commerce_views_override'). '/views', '/.view/');
+  foreach ($files as $filepath => $file) {
+    require $filepath;
+    if (isset($view)) {
+      $views[$view->name] = $view;
+    }
+  }
+  return $views;
+}
+
+/**
+ * Implements hook_form_views_exposed_form_alter().
+ *
+ * Changes labeling for created date filter in orders form.
+ */
+function jwd_commerce_views_override_form_views_exposed_form_alter(&$form, $form_state)
+{
+  if ($form['#id'] === 'views-exposed-form-commerce-orders-admin-page') {
+    if (isset($form['created'])) {
+      $form['created']['min']['#title'] = 'von';
+      $form['created']['max']['#title'] = 'bis';
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_render
+ *
+ * Hides certain rows in line items / cart
+ */
+function jwd_commerce_views_override_views_pre_render(&$view)
+{
+  if (in_array($view->name, array('commerce_cart_summary', 'commerce_cart_form', 'commerce_line_item_table'))) {
+    global $user;
+
+    // hide "auflagen" field based on users role
+    if (in_array('Gesobau', $user->roles)) {
+      unset($view->field['field_bmw_auflagen_produkt']);
+    }
+    elseif (in_array('BMW', $user->roles)) {
+      unset($view->field['field_gb_auflagen_produkt']);
+    }
+  }
+}

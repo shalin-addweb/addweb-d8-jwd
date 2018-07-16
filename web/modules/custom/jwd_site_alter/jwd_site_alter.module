@@ -1,0 +1,25 @@
+<?php
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+
+/*
+* Implemeant the hook_form_alter()
+* to alter the form element
+*/
+function jwd_site_alter_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if (strpos($form_id, 'commerce_order_item_add_to_cart_form_commerce_product') !== false) {
+    $array_productarray_product = explode("commerce_order_item_add_to_cart_form_commerce_product_", $form_id);
+    list($formFirstPart, $productId) = $array_productarray_product;
+    $product = \Drupal\commerce_product\Entity\Product::load($productId);
+    $productType = $product->get('type')->getString();
+    if($productType == 'business_product_type') {
+      $current_user = \Drupal::currentUser();
+      $roles = $current_user->getRoles();
+      $businessRole = 'business_role';
+      if(!in_array($businessRole, $roles) || empty($current_user)) {
+        $form['actions']['submit']['#access'] = false;
+      }
+    }
+  }
+}

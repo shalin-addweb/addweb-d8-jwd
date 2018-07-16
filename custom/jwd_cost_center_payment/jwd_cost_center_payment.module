@@ -1,0 +1,136 @@
+<?php
+/**
+ * Implements hook_commerce_payment_method_info().
+ */
+function jwd_cost_center_payment_commerce_payment_method_info() {
+  $payment_methods = array();
+
+  $payment_methods['jwd_cost_center_payment'] = array(
+    'title' => t('Cost center'),
+    'description' => t('Provide cost center payment'),
+    'active' => true,
+  );
+
+  return $payment_methods;
+}
+
+/**
+ * Payment method callback: submit form.
+ */
+function jwd_cost_center_payment_submit_form($payment_method, $pane_values, $checkout_pane, $order) {
+  global $user;
+
+  $form = array();
+  $roles = implode(', ', array_keys($user->roles));
+
+  $options = array();
+  $result = db_query(
+    "SELECT title, nid 
+    FROM {node} 
+    LEFT JOIN {field_data_field_jwd_kundengruppe} field_data_field_jwd_kundengruppe 
+      ON node.nid = field_data_field_jwd_kundengruppe.entity_id 
+      AND (field_data_field_jwd_kundengruppe.entity_type = 'node' 
+      AND field_data_field_jwd_kundengruppe.deleted = '0') 
+    WHERE 
+      (( (node.status = '1') 
+      AND 
+      (node.type IN  (:type)) 
+      AND (field_data_field_jwd_kundengruppe.field_jwd_kundengruppe_value IN ($roles)) ))",
+    array(
+      ':type' => 'jwd_kostenstelle',
+    )
+  );
+
+  foreach($result as $obj) {
+    $options[$obj->nid] = $obj->title;
+  }
+
+  $options['custom'] = 'Andere Kostenstelle (bitte unten eintragen)';
+
+  $form['cost_center'] = array(
+    '#type' => 'radios',
+    '#title' => t('Cost center'),
+    '#required' => false,
+    '#options' => $options,
+    '#default_value' => $order->field_cost_center['und'][0]['value']
+  );
+
+
+  $form['custom_cost_center'] = array(
+    '#type' => 'textarea',
+    '#title' => 'Andere Kostenstelle',
+    '#required' => false,
+    '#default_value' => $order->field_custom_cost_center['und'][0]['value']
+  );
+
+  return $form;
+}
+
+function jwd_cost_center_payment_submit_form_validate($dunno, $form, $values, $order, $form_parents) {
+  if($values['cost_center'] == 'custom' && !empty($values['custom_cost_center'])) {
+    return true;
+  } elseif(!empty($values['cost_center']) && $values['cost_center']!='custom') {
+    return true;
+  }
+  drupal_set_message('Bitte wählen Sie eine Kostenstelle aus.','error');
+  return false;
+}
+
+/**
+ * Payment method callback: submit form submission.
+ */
+function jwd_cost_center_payment_submit_form_submit($payment_method, $pane_form, $pane_values, $order, $charge) {
+  if($pane_values['cost_center'] == 'custom' && !empty($pane_values['custom_cost_center'])) {
+    $order->field_custom_cost_center['und'][0]['value'] = $pane_values['custom_cost_center'];
+    commerce_order_save($order);
+  } else {
+    $order->data['jwd_cost_center_payment'] = $pane_values;
+    $cost_center_node = node_load($pane_values['cost_center']);
+    $order->field_custom_cost_center['und'][0]['value'] = $cost_center_node->title;
+    commerce_order_save($order);
+    jwd_cost_center_payment_transaction($payment_method, $order, $charge, $pane_values['cost_center']);
+  }
+}
+
+/**
+ * Creates the payment transaction.
+ */
+function jwd_cost_center_payment_transaction($payment_method, $order, $charge, $cost_center) {
+  $node = node_load($cost_center);
+
+  $transaction = commerce_payment_transaction_new('jwd_cost_center_payment', $order->order_id);
+  $transaction->instance_id = $payment_method['instance_id'];
+  $transaction->amount = $charge['amount'];
+  $transaction->currency_code = $charge['currency_code'];
+  $transaction->status = COMMERCE_PAYMENT_STATUS_SUCCESS;
+  $transaction->message = 'Cost center: @name';
+  $transaction->message_variables = array('@name' => $node->title);
+
+  commerce_payment_transaction_save($transaction);
+}
+
+function jwd_cost_center_payment_entity_view($entity, $type, $view_mode, $langcode) {
+  if($type == 'commerce_order') {
+    if($view_mode == 'administrator') {
+      // add user to order view
+      $user = user_load($entity->uid);
+      $entity->content['user'] = array(
+        '#type' => 'markup',
+        '#markup' => '<p><strong>'.t('User').':</strong> '.l($user->name,'user/'.$user->uid).' | '.l('E-Mail senden','mailto:'.$user->mail).' | in Gruppen: '.str_replace('authenticated user,','',implode(',',$user->roles)).'</p>',
+        '#weight' => -10
+      );
+
+      // add paymend method to order view
+      if(isset($entity->data['jwd_cost_center_payment']) && isset($entity->data['jwd_cost_center_payment']['cost_center'])) {
+        $cost_center = node_load($entity->data['jwd_cost_center_payment']['cost_center']);
+        if($cost_center) {
+          $entity->content['cost_center'] = array(
+            '#type' => 'markup',
+            '#markup' => '<p><strong>'.t('Cost center').':</strong> '.$cost_center->title.'</p>',
+            '#weight' => -9
+          );
+        }
+      }
+    }
+  }
+}

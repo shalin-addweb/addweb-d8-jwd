@@ -1,0 +1,11 @@
+<?php
+
+function jwd_%machine_name%_custom_block_info_alter(&$blocks, $theme, $code_blocks)
+{
+  if (isset($blocks['jwd_custom']) && isset($blocks['jwd_custom']['team'])) {
+    $machine_name = '%machine_name%';
+    if (strpos($blocks['jwd_custom']['team']['pages'],$machine_name) === false) {
+      $blocks['jwd_custom']['team']['pages'] .= "\n$machine_name\n$machine_name/*\n$machine_name/produkte\n$machine_name/produkte/*";
+    }
+  }
+}

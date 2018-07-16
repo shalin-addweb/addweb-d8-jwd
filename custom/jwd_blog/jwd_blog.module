@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Blog feature.
+ */
+
+include_once 'jwd_blog.features.inc';

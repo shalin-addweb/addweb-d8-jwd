@@ -1,0 +1,10 @@
+name = "markItUp! Extras"
+description = "Adds additional buttons and plugins to the markItUp! WYSIWYG Editor."
+core = "7.x"
+package = User interface
+dependencies[] = wysiwyg
+
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "markitup_extras"
+

@@ -1,0 +1,5 @@
+name = JWD Product select
+description = Provides a quantity select dropdown for add to cart forms
+core = 7.x
+dependencies[] = commerce
+package = JWD

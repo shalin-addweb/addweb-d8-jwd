@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Cost Center feature.
+ */
+
+include_once 'jwd_cost_center.features.inc';

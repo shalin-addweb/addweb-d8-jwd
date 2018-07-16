@@ -1,0 +1,988 @@
+<?php
+/**
+ * Implements hook_menu_block_blocks().
+ */
+function jwd_custom_menu_block_blocks() {
+    // The array key is the block delta used by menu block.
+    return array(
+        'jwd_custom-main_menu' => array(
+            'menu_name'   => 'main-menu',
+            'parent_mlid' => 0,
+            'title_link'  => 0,
+            'admin_title' => 'Hauptmenü (Dropdown)',
+            'level'       => 1,
+            'follow'      => 0,
+            'depth'       => 3,
+            'expanded'    => 1,
+            'sort'        => 0,
+        ),
+        'jwd_custom-product_tabs' => array(
+            'menu_name'   => 'main-menu',
+            'parent_mlid' => 5138,
+            'title_link'  => 0,
+            'admin_title' => t('Product tabs'),
+            'level'       => 1,
+            'follow'      => 0,
+            'depth'       => 2,
+            'expanded'    => 1,
+            'sort'        => 0,
+        ),
+        'jwd_custom-cat_tabs_gesobau' => array(
+            'menu_name'   => 'menu-gesobau',
+            'parent_mlid' => 11631,
+            'title_link'  => 0,
+            'admin_title' => t('Category tabs Gesobau'),
+            'level'       => 1,
+            'follow'      => 0,
+            'depth'       => 2,
+            'expanded'    => 1,
+            'sort'        => 0,
+        ),
+    );
+}
+
+function jwd_custom_block_view_alter(&$data,$block)
+{
+    if ($block->delta=='jwd_custom-product_tabs') {
+        // remove 'Pakete' link from content
+        foreach($data['content']['#content'] as $key=>$value) {
+            if (isset($value['#title']) && $value['#title']=='Pakete') {
+                unset($data['content']['#content'][$key]);
+                continue;
+            }
+        }
+        // set the 'first' class again
+        $first_key = null;
+        foreach($data['content']['#content'] as $key=>$value) {
+            if(isset($value['#href']) && $first_key==null) {
+                $first_key = $key;
+                continue;
+            }
+        }
+        $data['content']['#content'][$first_key]['#attributes']['class'][] = 'first';
+    }
+}
+
+
+/**
+ * Implements hook_views_api().
+ */
+function jwd_custom_views_api($module, $api) {
+    if ($module == 'views' && $api == 'views_default') {
+        return array('version' => 2);
+    }
+}
+
+/* http://drupal.org/project/fieldable_panels_panes
+ * panalizer
+ * // Plugin definition
+$plugin = array(
+  'title' => t('Site default template'),
+  'category' => t('Mein Aktenzeichen'),
+  'icon' => 'site.png',
+  'theme' => 'meinaktenzeichen_site',
+  'css' => 'site.css',
+  'admin theme' => 'meinaktenzeichen_site_admin',
+  'admin css' => 'site_admin.css',
+  'regions' => array(
+    'user' => t('User'),
+    'branding' => t('Branding'),
+    'menu' => t('Menu + Search'),
+    'messages' => t('Messages'),
+    'main-content' => t('Content'),
+    'sidebar' => t('Sidebar'),
+    'filter' => t('Filter'),
+    'partner' => t('Partner'),
+    'footer' => t('Footer'),
+  ),
+);
+ */
+
+/*
+ * Implementaiton of hook_block_info().
+ */
+function jwd_custom_block_info()
+{
+  return array(
+    'direct_comparison' => array(
+      'info' => t('Direct-Comparison'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+    ),
+    'current_offer' => array(
+      'info' => t('Current offer'),
+      'cache' => DRUPAL_CACHE_GLOBAL
+    ),
+    'opening_hours' => array(
+      'info' => t('Opening hours'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+      //'status' => 1,
+      //'region' => 'footer',
+      //'weight' => 0,
+      'visibility' => BLOCK_VISIBILITY_NOTLISTED,
+      'pages' => ''
+    ),
+    'contact' => array(
+      'info' => t('Contact with photo'),
+      'cache' => DRUPAL_CACHE_GLOBAL
+    ),
+    'team' => array(
+      'info' => t('Image').': '.t('Team'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+      //'status' => 1,
+      //'region' => 'header',
+      //'weight' => 0,
+      'visibility' => BLOCK_VISIBILITY_NOTLISTED,
+      'pages' => "<front>produkte\nprodukte/*\nkontakt\nkontakt/*\nimpressum\nimpressum/*\nnutzungsbedingungen\nnutzungsbedingungen/*\nsearch\nsearch/*\nunternehmen/partner\nservice/fragen-und-antworten"
+    ),
+    'contact_map' => array(
+      'info' => t('Contact map'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+      //'status' => 1,
+      //'region' => 'header',
+      //'weight' => 0,
+      'visibility' => BLOCK_VISIBILITY_LISTED,
+      'pages' => 'kontakt'
+    ),
+    'contact_form' => array(
+      'info' => t('Image').': '.t('Contact form'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+      //'status' => 1,
+      //'region' => 'header',
+      //'weight' => 0,
+      'visibility' => BLOCK_VISIBILITY_LISTED,
+      'pages' => 'kontakt/anfrageformular'
+    ),
+    'imprint' => array(
+      'info' => t('Imprint'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+      //'status' => 1,
+      //'region' => 'header',
+      //'weight' => 0,
+      'visibility' => BLOCK_VISIBILITY_LISTED,
+      'pages' => 'impressum'
+    ),
+    'legacy' => array(
+      'info' => t('Legacy'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+      //'status' => 1,
+      //'region' => 'header',
+      //'weight' => 0,
+      'visibility' => BLOCK_VISIBILITY_LISTED,
+      'pages' => 'nutzungsbedingungen'
+    ),
+    'search' => array(
+      'info' => t('Search'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+      //'status' => 1,
+      //'region' => 'header',
+      //'weight' => 0,
+      'visibility' => BLOCK_VISIBILITY_LISTED,
+      'pages' => "search\nsearch/*"
+    ),
+    'affiliates' => array(
+      'info' => t('Affiliates'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+      //'status' => 1,
+      //'region' => 'header',
+      //'weight' => 0,
+      'visibility' => BLOCK_VISIBILITY_LISTED,
+      'pages' => "unternehmen/partner"
+    ),
+    'faq' => array(
+      'info' => t('FAQ'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+      //'status' => 1,
+      //'region' => 'header',
+      //'weight' => 0,
+      'visibility' => BLOCK_VISIBILITY_LISTED,
+      'pages' => "service/fragen-und-antworten"
+    ),
+    'gallery' => array(
+      'info' => t('Gallery'),
+      'cache' => DRUPAL_CACHE_PER_PAGE
+    )
+  );
+}
+
+/*
+ * Implementation of hook_block_configure().
+ */
+function jwd_custom_block_configure($delta = '')
+{
+  $form = array();
+  switch($delta) {
+    case 'current_offer':
+      $description = variable_get('jwd_current_offer_description',NULL);
+      if (!empty($description)) $description = $description['value'];
+
+      $footnotes = variable_get('jwd_current_offer_footnotes',NULL);
+      if (!empty($footnotes)) $footnotes = $footnotes['value'];
+
+      $form['description'] = array(
+        '#type' => 'text_format',
+        '#format' => filter_default_format(),
+        '#title' => t('Description'),
+        '#default_value' => $description
+      );
+      $form['footnotes'] = array(
+        '#type' => 'text_format',
+        '#format' => filter_default_format(),
+        '#title' => t('Foot notes'),
+        '#default_value' => $footnotes
+      );
+
+      $form['image_group'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Image'),
+        '#collapsed' => FALSE,
+        '#collapsible' => FALSE
+      );
+
+      $form['image_group']['image_title'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Title'),
+        '#default_value' => variable_get('jwd_current_offer_image_title',NULL)
+      );
+
+      $form['image_group']['image_width'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Width'),
+        '#default_value' => variable_get('jwd_current_offer_image_width', 100)
+      );
+
+      $image_fid = variable_get('jwd_current_offer_image_fid',NULL);
+
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+
+        if (!empty($image)) {
+          $form['image_group']['image'] = array(
+            '#markup' => theme('image_style',array('path' => $image->uri, 'style_name' => 'thumbnail' ))
+          );
+        }
+      }
+
+      $form['image_group']['image_fid'] = array(
+        '#type' => 'managed_file',
+        '#title' => t('Image'),
+        '#upload_location' =>  'public://current_offer/',
+        '#default_value' => $image_fid,
+        '#process_indicator' => 'bar'
+      );
+      break;
+
+    case 'opening_hours':
+      $description = variable_get('jwd_opening_hours_body',NULL);
+      if (!empty($description)) $description = $description['value'];
+
+      $form['body'] = array(
+        '#type' => 'text_format',
+        '#format' => filter_default_format(),
+        '#title' => t('Body'),
+        '#default_value' => $description
+      );
+      break;
+
+    case 'contact':
+      $description = variable_get('jwd_contact_body',NULL);
+      if (!empty($description)) $description = $description['value'];
+
+      $image_fid = variable_get('jwd_contact_image_fid',NULL);
+
+      $form['body'] = array(
+        '#type' => 'text_format',
+        '#format' => filter_default_format(),
+        '#title' => t('Body'),
+        '#default_value' => $description
+      );
+
+      $form['image_group'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Image'),
+        '#collapsed' => FALSE,
+        '#collapsible' => FALSE
+      );
+
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+
+        if (!empty($image)) {
+          $form['image_group']['image'] = array(
+            '#markup' => theme('image_style',array('path' => $image->uri, 'style_name' => 'thumbnail' ))
+          );
+        }
+      }
+
+      $form['image_group']['image_fid'] = array(
+        '#type' => 'managed_file',
+        '#title' => t('Image'),
+        '#upload_location' =>  'public://contact/',
+        '#default_value' => $image_fid,
+        '#process_indicator' => 'bar'
+      );
+      break;
+
+    case 'team':
+      $image_fid = variable_get('jwd_team_image_fid',NULL);
+
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+
+        if (!empty($image)) {
+          $form['image'] = array(
+            '#markup' => theme('image_style',array('path' => $image->uri, 'style_name' => 'large' ))
+          );
+        }
+      }
+
+      $form['image_fid'] = array(
+        '#type' => 'managed_file',
+        '#title' => t('Image'),
+        '#upload_location' =>  'public://team/',
+        '#default_value' => $image_fid,
+        '#process_indicator' => 'bar'
+      );
+      break;
+
+    case 'contact_map':
+      $api_key = variable_get('jwd_contact_map_gmaps_api_key','');
+      $lat = floatval(variable_get('jwd_contact_map_lat',52.5516333));
+      $lon = floatval(variable_get('jwd_contact_map_lon',13.4433408));
+      $zoom = intval(variable_get('jwd_contact_map_zoom',13));
+      //$body = variable_get('jwd_contact_map_body','');
+      if (!empty($body)) $body = $body['value'];
+
+      /*$form['body'] = array(
+        '#type' => 'text_format',
+        '#format' => filter_default_format(),
+        '#title' => t('Body'),
+        '#default_value' => $body
+      );*/
+      $form['gmaps_api_key'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Google Maps API-Key'),
+        '#default_value' => $api_key
+      );
+      $form['lat'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Latitude'),
+        '#default_value' => $lat
+      );
+      $form['lon'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Longitude'),
+        '#default_value' => $lon
+      );
+      $form['zoom'] = array(
+        '#type' => 'select',
+        '#title' => t('Zoom'),
+        '#default_value' => $zoom,
+        '#options' => array()
+      );
+      for($z = 0; $z < 21; $z++) {
+        $form['zoom']['#options'][$z] = $z;
+      }
+
+      $form['address'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Address'),
+        '#default_value' => ''
+      );
+      $form['address_submit'] = array(
+        '#markup' => '<a class="button" id="submit-address" href="javascript:void(0);">'.t('Search address').'</a>'
+      );
+
+      $form['map'] = array(
+        '#markup' => '<div id="jwd-custom-contact-map" style="margin-top:2em; width:100%;height:400px;"></div>'
+      );
+
+      drupal_add_js(drupal_get_path('module','jwd_custom').'/js/jwd_custom.js','file');
+      drupal_add_js('http://maps.googleapis.com/maps/api/js?key='.$api_key.'&sensor=false','external');
+      drupal_add_js('jQuery(document).ready(function() { new GoogleMapsField("#jwd-custom-contact-map","#edit-lat","#edit-lon","#edit-zoom","#edit-address","#submit-address"); });','inline');
+      break;
+
+    case 'contact_form':
+      $image_fid = variable_get('jwd_contact_form_image_fid',NULL);
+
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+
+        if (!empty($image)) {
+          $form['image'] = array(
+            '#markup' => theme('image_style',array('path' => $image->uri, 'style_name' => 'large' ))
+          );
+        }
+      }
+
+      $form['image_fid'] = array(
+        '#type' => 'managed_file',
+        '#title' => t('Image'),
+        '#upload_location' =>  'public://contact/',
+        '#default_value' => $image_fid,
+        '#process_indicator' => 'bar'
+      );
+      break;
+
+    case 'imprint':
+      $description = variable_get('jwd_imprint_body',NULL);
+      if (!empty($description)) $description = $description['value'];
+
+      $image_fid = variable_get('jwd_imprint_image_fid',NULL);
+
+      $form['body'] = array(
+        '#type' => 'text_format',
+        '#format' => filter_default_format(),
+        '#title' => t('Body'),
+        '#default_value' => $description
+      );
+
+      $form['image_group'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Image'),
+        '#collapsed' => FALSE,
+        '#collapsible' => FALSE
+      );
+
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+
+        if (!empty($image)) {
+          $form['image_group']['image'] = array(
+            '#markup' => theme('image_style',array('path' => $image->uri, 'style_name' => 'large' ))
+          );
+        }
+      }
+
+      $form['image_group']['image_fid'] = array(
+        '#type' => 'managed_file',
+        '#title' => t('Image'),
+        '#upload_location' =>  'public://imprint/',
+        '#default_value' => $image_fid,
+        '#process_indicator' => 'bar'
+      );
+      break;
+
+    case 'legacy':
+      $description = variable_get('jwd_legacy_body',NULL);
+      if (!empty($description)) $description = $description['value'];
+
+      $image_fid = variable_get('jwd_legacy_image_fid',NULL);
+
+      $form['body'] = array(
+        '#type' => 'text_format',
+        '#format' => filter_default_format(),
+        '#title' => t('Body'),
+        '#default_value' => $description
+      );
+
+      $form['image_group'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Image'),
+        '#collapsed' => FALSE,
+        '#collapsible' => FALSE
+      );
+
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+
+        if (!empty($image)) {
+          $form['image_group']['image'] = array(
+            '#markup' => theme('image_style',array('path' => $image->uri, 'style_name' => 'large' ))
+          );
+        }
+      }
+
+      $form['image_group']['image_fid'] = array(
+        '#type' => 'managed_file',
+        '#title' => t('Image'),
+        '#upload_location' =>  'public://legacy/',
+        '#default_value' => $image_fid,
+        '#process_indicator' => 'bar'
+      );
+      break;
+
+    case 'search':
+      $image_fid = variable_get('jwd_search_image_fid',NULL);
+
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+
+        if (!empty($image)) {
+          $form['image'] = array(
+            '#markup' => theme('image_style',array('path' => $image->uri, 'style_name' => 'large' ))
+          );
+        }
+      }
+
+      $form['image_fid'] = array(
+        '#type' => 'managed_file',
+        '#title' => t('Image'),
+        '#upload_location' =>  'public://search/',
+        '#default_value' => $image_fid,
+        '#process_indicator' => 'bar'
+      );
+      break;
+
+    case 'affiliates':
+      $description = variable_get('jwd_affiliates_body',NULL);
+      if (!empty($description)) $description = $description['value'];
+
+      $image_fid = variable_get('jwd_affiliates_image_fid',NULL);
+
+      $form['body'] = array(
+        '#type' => 'text_format',
+        '#format' => filter_default_format(),
+        '#title' => t('Body'),
+        '#default_value' => $description
+      );
+
+      $form['image_group'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Image'),
+        '#collapsed' => FALSE,
+        '#collapsible' => FALSE
+      );
+
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+
+        if (!empty($image)) {
+          $form['image_group']['image'] = array(
+            '#markup' => theme('image_style',array('path' => $image->uri, 'style_name' => 'large' ))
+          );
+        }
+      }
+
+      $form['image_group']['image_fid'] = array(
+        '#type' => 'managed_file',
+        '#title' => t('Image'),
+        '#upload_location' =>  'public://affiliates/',
+        '#default_value' => $image_fid,
+        '#process_indicator' => 'bar'
+      );
+      break;
+
+    case 'faq':
+      $description = variable_get('jwd_faq_body',NULL);
+      if (!empty($description)) $description = $description['value'];
+
+      $image_fid = variable_get('jwd_faq_image_fid',NULL);
+
+      $form['body'] = array(
+        '#type' => 'text_format',
+        '#format' => filter_default_format(),
+        '#title' => t('Body'),
+        '#default_value' => $description
+      );
+
+      $form['image_group'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Image'),
+        '#collapsed' => FALSE,
+        '#collapsible' => FALSE
+      );
+
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+
+        if (!empty($image)) {
+          $form['image_group']['image'] = array(
+            '#markup' => theme('image_style',array('path' => $image->uri, 'style_name' => 'large' ))
+          );
+        }
+      }
+
+      $form['image_group']['image_fid'] = array(
+        '#type' => 'managed_file',
+        '#title' => t('Image'),
+        '#upload_location' =>  'public://faq/',
+        '#default_value' => $image_fid,
+        '#process_indicator' => 'bar'
+      );
+      break;
+  }
+
+  return $form;
+}
+
+/*
+ * Implementatino of hook_block_save().
+ */
+function jwd_custom_block_save($delta = '', $edit = array())
+{
+  switch($delta) {
+    case 'current_offer':
+      variable_set('jwd_current_offer_title',$edit['title']);
+      variable_set('jwd_current_offer_description',$edit['description']);
+      variable_set('jwd_current_offer_footnotes',$edit['footnotes']);
+      variable_set('jwd_current_offer_image_title',$edit['image_title']);
+      variable_set('jwd_current_offer_image_width',$edit['image_width']);
+      variable_set('jwd_current_offer_image_fid',$edit['image_fid']);
+      jwd_custom_make_file_permanent($edit['image_fid']);
+      break;
+
+    case 'opening_hours':
+      variable_set('jwd_opening_hours_title',$edit['title']);
+      variable_set('jwd_opening_hours_body',$edit['body']);
+      break;
+
+    case 'contact':
+      variable_set('jwd_contact_title',$edit['title']);
+      variable_set('jwd_contact_body',$edit['body']);
+      variable_set('jwd_contact_image_fid',$edit['image_fid']);
+      jwd_custom_make_file_permanent($edit['image_fid']);
+      break;
+
+    case 'team':
+      variable_set('jwd_team_title',$edit['title']);
+      variable_set('jwd_team_image_fid',$edit['image_fid']);
+      jwd_custom_make_file_permanent($edit['image_fid']);
+      break;
+
+    case 'contact_map':
+      variable_set('jwd_contact_map_lat',$edit['lat']);
+      variable_set('jwd_contact_map_lon',$edit['lon']);
+      variable_set('jwd_contact_map_zoom',$edit['zoom']);
+      break;
+
+    case 'contact_form':
+      variable_set('jwd_contact_form_title',$edit['title']);
+      variable_set('jwd_contact_form_image_fid',$edit['image_fid']);
+      jwd_custom_make_file_permanent($edit['image_fid']);
+      break;
+
+    case 'imprint':
+      variable_set('jwd_imprint_title',$edit['title']);
+      variable_set('jwd_imprint_body',$edit['body']);
+      variable_set('jwd_imprint_image_fid',$edit['image_fid']);
+      jwd_custom_make_file_permanent($edit['image_fid']);
+      break;
+
+    case 'legacy':
+      variable_set('jwd_legacy_title',$edit['title']);
+      variable_set('jwd_legacy_body',$edit['body']);
+      variable_set('jwd_legacy_image_fid',$edit['image_fid']);
+      jwd_custom_make_file_permanent($edit['image_fid']);
+      break;
+
+    case 'search':
+      variable_set('jwd_search_title',$edit['title']);
+      variable_set('jwd_search_image_fid',$edit['image_fid']);
+      jwd_custom_make_file_permanent($edit['image_fid']);
+      break;
+
+    case 'affiliates':
+      variable_set('jwd_affiliates_title',$edit['title']);
+      variable_set('jwd_affiliates_body',$edit['body']);
+      variable_set('jwd_affiliates_image_fid',$edit['image_fid']);
+      jwd_custom_make_file_permanent($edit['image_fid']);
+      break;
+
+    case 'faq':
+      variable_set('jwd_faq_title',$edit['title']);
+      variable_set('jwd_faq_body',$edit['body']);
+      variable_set('jwd_faq_image_fid',$edit['image_fid']);
+      jwd_custom_make_file_permanent($edit['image_fid']);
+      break;
+  }
+}
+
+/*
+ * Implementation of hook_block_view().
+ */
+function jwd_custom_block_view($delta = '')
+{
+  $block = array();
+  $block['subject'] = NULL;
+
+  switch($delta) {
+    case 'direct_comparison':
+      // for some reason this block must be an object
+      $block = new StdClass();
+      $block->subject = NULL;
+      $block->region = NULL;
+      $block->content = array(
+        '#theme' => 'block__jwd_custom__direct_comparison',
+        '#title' => $block->subject,
+        '#block' => $block,
+      );
+      break;
+
+    case 'current_offer':
+      $block['subject'] = variable_get('jwd_current_offer_title','');
+      $block['content'] = array(
+        '#theme' => 'block__jwd_custom__current_offer',
+        '#title' => $block['subject']
+      );
+      break;
+
+    case 'opening_hours':
+      $content = variable_get('jwd_opening_hours_body','');
+      if (!empty($content)) $content = check_markup($content['value'],$content['format']);
+
+      $block['subject'] = variable_get('jwd_opening_hours_title','');
+      $block['content'] = $content;
+      break;
+
+    case 'contact':
+      $content = variable_get('jwd_contact_body','');
+      if (!empty($content)) $content = check_markup($content['value'],$content['format']);
+
+      $image_fid = variable_get('jwd_contact_image_fid',NULL);
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+        if (!empty($image)) $content.= '<div class="image">'.theme('image_style',array('path' => $image->uri, 'style_name' => 'jwd_bigger_thumbnail'))."</div>";
+      }
+
+      $block['subject'] = variable_get('jwd_contact_title','');
+      $block['content'] = $content;
+      break;
+
+    case 'team':
+      $title = variable_get('jwd_team_title','');
+
+      $image_fid = variable_get('jwd_team_image_fid',NULL);
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+        if (!empty($image)) $content = theme('image',array('path' => $image->uri, 'attributes'=>array('alt' => $title, 'title' => $title)));
+      } else $content = NULL;
+
+      $block['subject'] = $title;
+      $block['content'] = $content;
+      break;
+
+    case 'contact_map':
+      $api_key = variable_get('jwd_contact_map_gmaps_api_key','');
+      $lat = floatval(variable_get('jwd_contact_map_lat',0.0));
+      $lon = floatval(variable_get('jwd_contact_map_lon',0.0));
+      $zoom = intval(variable_get('jwd_contact_map_zoom'),12);
+      //$title = variable_get('jwd_contact_map_title','');
+      //$content = variable_get('jwd_contact_map_body','');
+      //if (!empty($content)) $content = check_markup($content['value'],$content['format']);
+
+      //$content = '<h3>'+$title+'</h3>'.$content;
+
+      $block['subject'] = NULL;
+      $block['content'] = '<div id="jwd-custom-contact-map"></div>';
+      drupal_add_js('http://maps.googleapis.com/maps/api/js?key='.$api_key.'&sensor=false','external');
+      drupal_add_js(drupal_get_path('module','jwd_custom').'/js/jwd_custom.js','file');
+      drupal_add_js('jQuery(document).ready(function() { JWDCustom.initMap('.$lat.','.$lon.','.$zoom.'); });','inline');
+      break;
+
+    case 'contact_form':
+      $title = variable_get('jwd_contact_form_title','');
+
+      $image_fid = variable_get('jwd_contact_form_image_fid',NULL);
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+        if (!empty($image)) $content = theme('image',array('path' => $image->uri, 'attributes'=>array('alt' => $title, 'title' => $title)));
+      } else $content = NULL;
+
+      $block['subject'] = $title;
+      $block['content'] = $content;
+      break;
+
+    case 'imprint':
+      $content = variable_get('jwd_imprint_body','');
+      if (!empty($content)) $content = check_markup($content['value'],$content['format']);
+
+      $image_fid = variable_get('jwd_imprint_image_fid',NULL);
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+        if (!empty($image)) $content = '<div class="inner">' . $content . '</div><div class="image">'.theme('image',array('path' => $image->uri))."</div>";
+      }
+
+      $block['subject'] = variable_get('jwd_imprint_title','');
+      $block['content'] = $content;
+      break;
+
+    case 'legacy':
+      $content = variable_get('jwd_legacy_body','');
+      if (!empty($content)) $content = check_markup($content['value'],$content['format']);
+
+      $image_fid = variable_get('jwd_legacy_image_fid',NULL);
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+        if (!empty($image)) $content = '<div class="inner">' . $content . '</div><div class="image">'.theme('image',array('path' => $image->uri))."</div>";
+      }
+
+      $block['subject'] = variable_get('jwd_legacy_title','');
+      $block['content'] = $content;
+      break;
+
+    case 'search':
+      $title = variable_get('jwd_search_title','');
+
+      $image_fid = variable_get('jwd_search_image_fid',NULL);
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+        if (!empty($image)) $content = theme('image_style',array('path' => $image->uri, 'style_name' => 'header_image', 'attributes'=>array('alt' => $title, 'title' => $title)));
+      } else $content = NULL;
+
+      $block['subject'] = $title;
+      $block['content'] = $content;
+      break;
+
+    case 'affiliates':
+      $content = variable_get('jwd_affiliates_body','');
+      if (!empty($content)) $content = check_markup($content['value'],$content['format']);
+
+      $image_fid = variable_get('jwd_affiliates_image_fid',NULL);
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+        if (!empty($image)) $content = '<div class="inner">' . $content . '</div><div class="image">'.theme('image',array('path' => $image->uri))."</div>";
+      }
+
+      $block['subject'] = variable_get('jwd_affiliates_title','');
+      $block['content'] = $content;
+      break;
+
+    case 'faq':
+      $content = variable_get('jwd_faq_body','');
+      if (!empty($content)) $content = check_markup($content['value'],$content['format']);
+
+      $image_fid = variable_get('jwd_faq_image_fid',NULL);
+      if (!empty($image_fid)) {
+        $image = file_load($image_fid);
+        if (!empty($image)) $content = '<div class="inner">' . $content . '</div><div class="image">'.theme('image',array('path' => $image->uri))."</div>";
+      }
+
+      $block['subject'] = variable_get('jwd_faq_title','');
+      $block['content'] = $content;
+      break;
+
+    case 'gallery':
+      # find a jwd_gallery node type that has a path mathing the current page path
+      $path = request_path();
+
+      // remove trailing slash if any
+      if(strpos('/',$path)===strlen($path)-1) {
+        $path = substr($path,0,strlen($path)-1);
+      }
+
+      $path_parts = explode('/',$path);
+
+      $i = count($path_parts);
+
+      $gallery = NULL;
+
+      $gallery = jwd_custom_load_gallery_by_path($path);
+
+      // load wildcard paths now, going from deep to flat paths
+      if ($gallery === NULL) {
+        while($gallery == NULL && $i>0) {
+          $_path = implode('/',array_slice($path_parts,0,$i));
+          $gallery = jwd_custom_load_gallery_by_path($_path.'/*');
+          $i--;
+        }
+      }
+
+      if ($gallery !== NULL) {
+        $block['content'] = node_view($gallery);
+      }
+      break;
+  }
+
+  return $block;
+}
+
+function jwd_custom_load_gallery_by_path($path)
+{
+  $field_query = new EntityFieldQuery();
+  $gallery = $field_query
+    ->entityCondition('entity_type','node')
+    ->fieldCondition('field_gallery_path','value',$path,'=')
+    ->execute();
+
+  if (isset($gallery['node']) && count($gallery['node'])>0) {
+    foreach($gallery['node'] as $nid => &$node)
+    {
+      $node = node_load($node->nid,$node->vid);
+      return $node;
+    }
+  }
+  return NULL;
+}
+
+function jwd_custom_make_file_permanent($fid)
+{
+  global $user;
+  $file = file_load($fid);
+  if (!emptY($file)) {
+    $file->status = FILE_STATUS_PERMANENT;
+    file_save($file);
+    file_usage_add($file,'jwd_custom','user',$user->uid);
+  }
+}
+
+/*
+ * Implementation of hook_contextual_links_view_alter().
+ *
+ * Fixes the ajaxified destination of contextual links in panel panes.
+ */
+function jwd_custom_contextual_links_view_alter(&$element,$items)
+{
+  if (isset($element['#links']) && isset($element['#links']['node-edit'])) {
+    if (isset($element['#links']['node-edit']['query']) && isset($element['#links']['node-edit']['query']['destination'])) {
+      if (strpos($element['#links']['node-edit']['query']['destination'],'panels/ajax/ipe')!==FALSE) {
+        $destination = drupal_get_destination(); // TODO: destination seems to be the same, how to get the page path?
+        //dsm($destination);
+        $element['#links']['node-edit']['query']['destination'] = $destination['destination'];
+      }
+    }
+  }
+}
+
+/*
+ * Implementation of hook_form_FORM_ID_alter().
+ * Alters the contact webform
+ */
+function jwd_custom_form_webform_client_form_93_alter(&$form,&$form_state,$form_id)
+{
+  $params = drupal_get_query_parameters();
+  if (isset($params['current_offer']) && $params['current_offer'] == '1') {
+    $description = variable_get('jwd_current_offer_description',NULL);
+    if (!empty($description)) {
+      $description = strip_tags(check_markup($description['value'],$description['format']));
+    }
+
+    $message = t("I am interested in your current offer of the month:\n\n").$description."\n\n";
+
+    $form['submitted']['contact']['message']['#default_value'] = $message;
+  }
+
+  // add google analytics when form was submitted
+  if(isset($form_state['input']['submitted']) && strpos($_SERVER['SERVER_NAME'],'jwdberlin.de')) {
+    $_SESSION['gaq'] = "var _gaq = _gaq || []; _gaq.push(['_trackPageview', '/formular/kontakt.html']);";
+  }
+}
+
+function jwd_custom_currency_format($amount, $currency, $object = NULL, $decimals = 2)
+{
+  // no fixed decimals, but a minimum of 2
+  if ($decimals == 0) {
+    $decimals = strlen($amount - floor($amount) . '') - 2;
+    if ($decimals < 2) {
+      $decimals = 2;
+    }
+    $price = number_format($amount, $decimals, $currency['decimal_separator'], $currency['thousands_separator']);
+  }
+  // fixed decimals for output
+  else {
+    $price = number_format(commerce_currency_round(abs($amount), $currency), $decimals, $currency['decimal_separator'], $currency['thousands_separator']);
+  }
+
+  // Establish the replacement values to format this price for its currency.
+  $replacements = array(
+    '@code_before' => $currency['code_placement'] == 'before' ? $currency['code'] : '',
+    '@symbol_before' => $currency['symbol_placement'] == 'before' ? $currency['symbol'] : '',
+    '@price' => $price,
+    '@symbol_after' => $currency['symbol_placement'] == 'after' ? $currency['symbol'] : '',
+    '@code_after' => $currency['code_placement'] == 'after' ? $currency['code'] : '',
+    '@negative' => $amount < 0 ? '-' : '',
+    '@symbol_spacer' => $currency['symbol_spacer'],
+    '@code_spacer' => $currency['code_spacer'],
+  );
+
+  return trim(t('@code_before@code_spacer@negative@symbol_before@price@symbol_spacer@symbol_after@code_spacer@code_after', $replacements));
+}

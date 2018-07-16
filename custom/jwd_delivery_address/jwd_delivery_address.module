@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Delivery Address feature.
+ */
+
+include_once 'jwd_delivery_address.features.inc';

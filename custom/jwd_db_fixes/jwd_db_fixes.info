@@ -1,0 +1,5 @@
+name = "JWD Database Fixes"
+description = "fixes some things in the Database"
+core = "7.x"
+package = "JWD"
+version = 7.x-1.5

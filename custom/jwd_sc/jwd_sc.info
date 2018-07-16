@@ -1,0 +1,11 @@
+name = "Special Customers"
+description = "API for adding special customers"
+core = "7.x"
+package = JWD Special Customers
+
+version = "7.x-1.3"
+core = "7.x"
+project = "jwd_sc"
+
+files[] = tests/jwd_sc_base.test
+dependencies[] = backup_migrate

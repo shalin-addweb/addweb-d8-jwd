@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Gesobau Product feature.
+ */
+
+include_once 'jwd_gesobau_product.features.inc';

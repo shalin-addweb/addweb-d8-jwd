@@ -1,0 +1,7 @@
+name           = JWD Product Reports
+description    = "Provides product report view"
+package        = JWD
+core           = 7.x
+version        = 7.x-1.3
+dependencies[] = views
+files[]        = jwd_product_reports.module

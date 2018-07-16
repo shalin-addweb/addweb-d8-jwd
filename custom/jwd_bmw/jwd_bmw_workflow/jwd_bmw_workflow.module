@@ -1,0 +1,24 @@
+<?php
+/*
+ * Implementation of hook_block_view().
+ */
+function jwd_bmw_workflow_block_view_alter(&$data, $block)
+{
+  switch($block->delta) {
+    case 'jwd_workflow_products':
+      $data['content'] = str_replace('<h4>Bestandskunden</h4>',
+        "<h4>BMW</h4>
+        <ul>
+          <li>" . l("neues BMW-Produkt","admin/commerce/products/add/jwd-bmw-product",array("query"=>drupal_get_destination())) . "</li>
+          <li>" . l("neue BMW-Produktansicht","node/add/jwd-bmw-product-display",array("query"=>drupal_get_destination())) . "</li>
+          <li>" . l("BMW Produktkategorien bearbeiten","admin/structure/taxonomy/produktkategorien_bmw") . "</li>
+        </ul>
+        <h4>Bestandskunden</h4>",
+        $data['content']
+      );
+      break;
+    case 'jwd_workflow_various':
+      $data['content'] = str_replace('</ul>', "<li>" . l("BMW Menü bearbeiten","admin/structure/menu/manage/menu-bmw") . "</li></ul>", $data['content']);
+      break;
+  }
+}

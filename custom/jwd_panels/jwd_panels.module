@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Panels feature.
+ */
+
+include_once 'jwd_panels.features.inc';

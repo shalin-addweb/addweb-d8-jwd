@@ -1,0 +1,21 @@
+<?php
+
+function jwd_db_fixes_install() {
+    jwd_db_fixes_update_7150();
+}
+
+function jwd_db_fixes_update_7150() {
+    // allows bigger total amounts by setting datatype to BIGINT
+    db_query("ALTER TABLE {field_data_commerce_total} CHANGE `commerce_total_amount` `commerce_total_amount` BIGINT(20) NOT NULL DEFAULT '0' COMMENT 'The price amount.'");
+    db_query("ALTER TABLE {field_revision_commerce_total} CHANGE `commerce_total_amount` `commerce_total_amount` BIGINT(20) NOT NULL DEFAULT '0' COMMENT 'The price amount.'");
+    db_query("ALTER TABLE {field_data_commerce_order_total} CHANGE `commerce_order_total_amount` `commerce_order_total_amount` BIGINT(20) NOT NULL DEFAULT '0' COMMENT 'The price amount.'");
+    db_query("ALTER TABLE {field_revision_commerce_order_total} CHANGE `commerce_order_total_amount` `commerce_order_total_amount` BIGINT(20) NOT NULL DEFAULT '0' COMMENT 'The price amount.'");
+}
+
+function jwd_db_fixes_commerce_currency_info() {
+  $currencies = commerce_commerce_currency_info();
+  $currency = $currencies['EUR'];
+  $currency['EUR']['decimals'] = 5;
+  $currency['EUR']['format_callback'] = 'jwd_custom_currency_format';
+  return $currency;
+}

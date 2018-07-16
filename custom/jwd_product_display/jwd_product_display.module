@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Product Display feature.
+ */
+
+include_once 'jwd_product_display.features.inc';

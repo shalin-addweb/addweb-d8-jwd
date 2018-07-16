@@ -1,0 +1,563 @@
+<?php
+/*
+ * Implementation of hook_menu()
+ */
+function jwd_user_registration_menu() {
+  return array(
+    'admin/config/jwd-user-registration' => array(
+      'title' => t('JWD user registration settings'),
+      'type' => MENU_NORMAL_ITEM,
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('jwd_user_registration_settings_form'),
+      'access arguments' => array('administer jwd user registration'),
+    ),
+    'jwd-user-registration/validate/%user/%/%' => array(
+      'title' => 'Validate e-mail address',
+      'page callback' => 'jwd_user_registration_validate_email',
+      'page arguments' => array(2, 3, 4),
+      'access callback' => 'jwd_user_registration_validate_email_access',
+      'access arguments' => array(2, 3),
+      'type' => MENU_CALLBACK
+    ),
+    /*'admin/jwd-user-registration/users' => array(
+      'title' => t('JWD users'),
+      'type' => MENU_NORMAL_ITEM,
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('jwd_user_registration_users_form'),
+      'access arguments' => array('administer jwd users')
+    ),*/
+    'admin/jwd-user-registration/users/%user' => array(
+      'title' => t('JWD user'),
+      'type' => MENU_CALLBACK,
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('jwd_user_registration_user_form'),
+      'access arguments' => array('administer jwd users')
+    ),
+    'admin/jwd-user-registration/users/%user/delete' => array(
+      'title' => t('JWD delete user'),
+      'type' => MENU_CALLBACK,
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('jwd_user_registration_user_delete_form'),
+      'access arguments' => array('delete jwd users')
+    ),
+    'admin/jwd-user-registration/users/%user/resend-validation' => array(
+      'title' => t('JWD resend user validation email'),
+      'type' => MENU_CALLBACK,
+      'page callback' => 'jwd_user_registration_admin_resend_validation',
+      'page arguments' => array(3),
+      'access arguments' => array('administer jwd users')
+    ),
+    'admin/jwd-user-registration/users/%user/validate' => array(
+      'title' => t('JWD validate user'),
+      'type' => MENU_CALLBACK,
+      'page callback' => 'jwd_user_registration_admin_validate',
+      'page arguments' => array(3),
+      'access arguments' => array('administer jwd users')
+    ),
+    'admin/jwd-user-registration/users/%user/generate-customer-number' => array(
+      'title' => t('JWD generate customer number'),
+      'type' => MENU_CALLBACK,
+      'page callback' => 'jwd_user_registration_generate_customer_number',
+      'page arguments' => array(3),
+      'access arguments' => array('administer jwd users')
+    )
+  );
+}
+
+function jwd_user_registration_permission() {
+  return array(
+    'administer jwd user registration' => array(
+      'title' => t('Administer JWD user registration'),
+    ),
+    'administer jwd users' => array(
+      'title' => t('Administer JWD users')
+    ),
+    'delete jwd users' => array(
+      'title' => t('Delete JWD users')
+    )
+  );
+}
+
+function jwd_user_registration_settings_form($form, &$form_state) {
+  $entity_info = entity_get_info('user');
+
+  $view_modes = array();
+  foreach($entity_info['view modes'] as $key => $_view_mode) {
+    $view_modes[$key] = $_view_mode['label'];
+  };
+
+  $form = array(
+    'authorized_roles' => array(
+      '#title' => t('authorized roles'),
+      '#type' => 'select',
+      '#multiple' => TRUE,
+      '#default_value' => variable_get('jwd_user_registration_authorized_roles',array('2')),
+      '#options' => user_roles()
+    ),
+    'unauthorized_role' => array(
+      '#title' => t('unauthorized role'),
+      '#type' => 'select',
+      '#multiple' => FALSE,
+      '#default_value' => variable_get('jwd_user_registration_unauthorized_role','0'),
+      '#options' => user_roles()
+    ),
+    'validate_timeout' => array(
+      '#title' => t('Time the validation URL is active'),
+      '#type' => 'select',
+      '#description' => t('The pending users will also be deleted after this time, if they have not validated theire email before.'),
+      '#multiple' => FALSE,
+      '#default_value' => variable_get('jwd_user_registration_validate_timeout',86400),
+      '#options' => array(
+        86400 => '1 '.t('day'),
+        86400*2 => '2 '.t('days'),
+        86400*3 => '3 '.t('days'),
+        86400*4 => '4 '.t('days'),
+        86400*5 => '5 '.t('days'),
+        86400*6 => '6 '.t('days'),
+        86400*7 => '1 '.t('week')
+      )
+    ),
+    'validate_redirect' => array(
+      '#title' => t('Redirect after email validation'),
+      '#type' => 'textfield',
+      '#default_value' => variable_get('jwd_user_registration_validate_redirect','user'),
+    ),
+    'user_view_mode' => array(
+      '#title' => t('View mode for user admin page'),
+      '#type' => 'select',
+      '#multiple' => FALSE,
+      '#default_value' => variable_get('jwd_user_registration_user_view_mode','full'),
+      '#options' => $view_modes
+    ),
+    'submit' => array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+    )
+  );
+
+  return $form;
+}
+
+function jwd_user_registration_settings_form_submit($form, &$form_state) {
+  variable_set('jwd_user_registration_authorized_roles',array_keys($form_state['values']['authorized_roles']));
+  variable_set('jwd_user_registration_unauthorized_role',$form_state['values']['unauthorized_role']);
+  variable_set('jwd_user_registration_validate_timeout',$form_state['values']['validate_timeout']);
+  variable_set('jwd_user_registration_validate_redirect',$form_state['values']['validate_redirect']);
+  variable_set('jwd_user_registration_user_view_mode',$form_state['values']['user_view_mode']);
+}
+
+
+function jwd_user_registration_users_form($form, &$form_state) {
+  $form = array();
+
+  $unauthorized_role = variable_get('jwd_user_registration_unauthorized_role','0');
+  $roles = variable_get('jwd_user_registration_authorized_roles',array('2'));
+  $roles[] = $unauthorized_role;
+
+  $uids = array();
+  $result = db_query('SELECT uid FROM {users_roles} WHERE rid IN ('.implode(',',$roles).')');
+
+  foreach($result as $record) {
+    if(!in_array($record->uid,$uids)) {
+      $uids[] = $record->uid;
+    }
+  }
+
+  $num_items = count($uids);
+
+  // initialize pager
+  $items_per_page = 20;
+  $page = pager_default_initialize($num_items, $items_per_page);
+  $offset = $items_per_page * $page;
+
+  $uids_filtered = array();
+
+  $result = db_query('SELECT uid FROM {users} WHERE uid IN ('.implode(',',$uids).') ORDER BY status,name ASC LIMIT '.$offset.','.$items_per_page);
+
+  foreach($result as $record) {
+    $uids_filtered[] = $record->uid;
+  }
+
+  if (count($uids_filtered) > 0) {
+    $users = user_load_multiple($uids_filtered);
+
+    $form['people'] = array(
+      '#tree' => FALSE,
+      '#theme' => 'table',
+      '#header' => array(t('Customer number'),t('Name'),t('Email'),t('Status'),t('Validated'),t('Roles'),''),
+      '#rows' => array()
+    );
+
+    foreach($users as $_user) {
+      $form['people']['#rows'][$_user->uid] = array(
+        'customer_number' => (isset($_user->field_customer_number['und'][0]['value']))?$_user->field_customer_number['und'][0]['value']:l(t('generate'),'admin/jwd-user-registration/users/'.$_user->uid.'/generate-customer-number',array('query'=>drupal_get_destination())),
+        'name' => l($_user->name,'admin/jwd-user-registration/users/'.$_user->uid),
+        'email' => l($_user->mail,'mailto:'.$_user->mail),
+        'status' => ($_user->status == 1)?t('active'):t('blocked'),
+        'validated' => (in_array($unauthorized_role,array_keys($_user->roles)))?t('pending'):t('yes'),
+        'roles' => str_replace('authenticated user, ','',implode(', ',array_values($_user->roles))),
+        'orders' => l(t('user orders'),'admin/commerce/user/'.$_user->uid.'/orders')
+      );
+    }
+
+    $form['pager'] = array(
+      '#type' => 'markup',
+      '#markup' => theme('pager'),
+    );
+  } else {
+    $form['no_results'] = array(
+      '#type' => 'markup',
+      '#markup' => t('No users found.')
+    );
+  }
+
+  return $form;
+}
+
+function jwd_user_registration_user_form($form, &$form_state) {
+  $unauthorized_role = variable_get('jwd_user_registration_unauthorized_role','0');
+
+  $uid = arg(3);
+  $_user = null;
+
+  $form = array();
+
+  if (!empty($uid)) {
+    $_user = user_load($uid);
+  }
+
+  if (!empty($_user)) {
+    $form['customer_number'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Customer number'),
+      '#default_value' => (isset($_user->field_customer_number['und'][0]['value']))?$_user->field_customer_number['und'][0]['value']:'',
+      '#description' => (empty($_user->field_customer_number['und'][0]['value']))?l(t('generate'),'admin/jwd-user-registration/users/'.$_user->uid.'/generate-customer-number',array('query'=>drupal_get_destination())):'',
+    );
+    $form['user_name'] = array(
+      '#type' => 'item',
+      '#title' => t('Name'),
+      '#markup' => $_user->name
+    );
+    $form['user_mail'] = array(
+      '#type' => 'item',
+      '#title' => t('Email'),
+      '#markup' => l($_user->mail,'mailto:'.$_user->mail)
+    );
+    $view_mode = variable_get('jwd_user_registration_user_view_mode','full');
+    $form['user_view'] = entity_view('user',array($_user),$view_mode);
+
+    $form['status'] = array(
+      '#title' => t('Status'),
+      '#type' => 'radios',
+      '#default_value' => $_user->status,
+      '#options' => array(
+        '0' => t('blocked'),
+        '1' => t('active')
+      )
+    );
+
+    if (in_array($unauthorized_role,array_keys($_user->roles))) {
+      $form['register_actions'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('actions'),
+
+        'resend_validation' => array(
+          '#type' => 'markup',
+          '#markup' => l(t('resend validation email'),'admin/jwd-user-registration/users/'.$_user->uid.'/resend-validation',array('attributes'=>array('class'=>'button'),'query'=>drupal_get_destination()))
+        ),
+        'validate' => array(
+          '#type' => 'markup',
+          '#markup' => l(t('validate'),'admin/jwd-user-registration/users/'.$_user->uid.'/validate',array('attributes'=>array('class'=>'button'),'query'=>drupal_get_destination()))
+        )
+      );
+    }
+
+    $form['actions'] = array(
+      '#type' => 'actions',
+      'submit' => array(
+        '#type' => 'submit',
+        '#value' => t('Save')
+      )
+    );
+
+    if(user_access('delete jwd users')) {
+      $form['actions']['delete'] = array(
+        '#type' => 'markup',
+        '#markup' => l(t('Delete'),'admin/jwd-user-registration/users/'.$_user->uid.'/delete',array('attributes'=>array('class'=>'button')))
+      );
+    }
+
+  } else {
+    $form['no_user'] = array(
+      '#type' => 'markup',
+      '#markup' => t('User does not exist.')
+    );
+  }
+
+  return $form;
+}
+
+function jwd_user_registration_user_form_submit($form, &$form_state) {
+  $uid = arg(3);
+
+  if (!empty($uid)) {
+    $_user = user_load($uid);
+
+    if(!empty($_user)) {
+      $_user->status = $form_state['values']['status'];
+      $_user->field_customer_number['und'][0]['value'] = $form_state['values']['customer_number'];
+
+      user_save($_user);
+
+      drupal_set_message(t('User saved.'));
+    }
+  }
+}
+
+function jwd_user_registration_user_delete_form($form, &$form_state) {
+  $uid = arg(3);
+  $_user = null;
+
+  $form = array();
+
+  if (!empty($uid)) {
+    $_user = user_load($uid);
+  }
+
+  if (!empty($_user)) {
+    $form['question'] = array(
+      '#type' => 'markup',
+      '#markup' => t('Do you really want to delete the user "@name"?',array('@name'=>$_user->name))
+    );
+    $form['actions'] = array(
+      '#type' => 'actions',
+      'submit' => array(
+        '#type' => 'submit',
+        '#value' => t('Delete')
+      ),
+      'cancel' => array(
+        '#type' => 'markup',
+        '#markup' => l(t('Cancel'),'admin/jwd-user-registration/users/'.$_user->uid,array('attributes'=>array('class'=>'button')))
+      )
+    );
+  } else {
+    $form['no_user'] = array(
+      '#type' => 'markup',
+      '#markup' => t('User does not exist.')
+    );
+  }
+  return $form;
+}
+
+function jwd_user_registration_user_delete_form_submit($form, &$form_state) {
+  $uid = arg(3);
+
+  if (!empty($uid)) {
+    user_delete($uid);
+
+    drupal_set_message(t('User deleted.'));
+
+    drupal_goto('admin/jwd-user-registration/users');
+  }
+}
+
+function jwd_user_registration_eml_admin_url($account, $url_options) {
+  return url("admin/jwd-user-registration/users/$account->uid", $url_options);
+}
+
+function jwd_user_registration_eml_validate_url($account, $url_options) {
+  $timestamp = REQUEST_TIME;
+  return url("jwd-user-registration/validate/$account->uid/$timestamp/". jwd_user_registration_eml_rehash($account->pass, $timestamp, $account->mail), $url_options);
+}
+
+function jwd_user_registration_eml_rehash($password, $timestamp, $mail) {
+  return user_pass_rehash($password, $timestamp, $mail);
+}
+
+/**
+ * Access check for user e-mail validation.
+ */
+function jwd_user_registration_validate_email_access($account, $timestamp) {
+  return $account->uid && $timestamp < REQUEST_TIME;
+}
+
+/**
+ * Menu callback; validate the e-mail address as a one time URL, and redirects
+ * to the user page on success.
+ */
+function jwd_user_registration_validate_email($account, $timestamp, $hashed_pass, $action = 'login') {
+  global $user;
+
+  $time = REQUEST_TIME;
+  $timeout = variable_get('jwd_user_registration_validate_timeout',86400);
+
+  $timestamp = intval($timestamp);
+
+  $goto = variable_get('jwd_user_registration_validate_redirect','user');
+
+  if ($time - $timestamp > $timeout) {
+    drupal_set_message(t('Your validation link has expired. Please repeat the registration.'),'error');
+
+    // delete the user
+    user_delete($account->uid);
+  } else {
+
+    $unauthorized_role = variable_get('jwd_user_registration_unauthorized_role','0');
+
+    if($account) {
+      if (jwd_user_registration_validate($account)) {
+        drupal_set_message(t('You have successfully validated your e-mail address.<br/>Your account will now be approved. Upon approval you will receive an e-mail containing steps to login to your new account.'));
+      } else {
+        drupal_set_message(t('You have already validated your e-mail address.'));
+      }
+    } else {
+      drupal_set_message(t('The user does not exist. Please repeat the registration.'),'error');
+    }
+  }
+
+  drupal_goto($goto);
+}
+
+function jwd_user_registration_validate($account = null) {
+  $unauthorized_role = variable_get('jwd_user_registration_unauthorized_role','0');
+
+  if($account) {
+    if (array_key_exists($unauthorized_role,$account->roles)) {
+      unset($account->roles[$unauthorized_role]);
+
+      user_save($account);
+
+      rules_invoke_event('jwd_user_registration_validated', $account);
+
+      return TRUE;
+    } else {
+      return FALSE;
+    }
+  } else {
+    return FALSE;
+  }
+}
+
+function jwd_user_registration_admin_validate($account) {
+  if(jwd_user_registration_validate($account)) {
+    drupal_set_message(t('User was successfully validated.'));
+  } else {
+    drupal_set_message(t('User could not be validated.'),'error');
+  }
+  drupal_goto();
+}
+
+/**
+ * Re-sends validation e-mail to user specified by $uid.
+ */
+function jwd_user_registration_resend_validation($account) {
+  if ($account) {
+    _user_mail_notify('register_pending_approval', $account);
+    return TRUE;
+  } else {
+    return FALSE;
+  }
+}
+
+function jwd_user_registration_admin_resend_validation($account) {
+  if (jwd_user_registration_resend_validation($account)) {
+    drupal_set_message(t('A validation email was send to the user.'));
+  } else {
+    drupal_set_message(t('The validation email could not be send to the user.'),'error');
+  }
+  drupal_goto();
+}
+
+/**
+ * Implement hook_form_user_register_form_alter().
+ *
+ */
+function jwd_user_registration_form_user_register_form_alter(&$form, &$form_state) {
+  // Ignore admin created accounts
+  if (!user_access('administer users')) {
+    // add own submit handler before all other handlers
+    array_unshift($form['#submit'],'jwd_user_registration_user_register_submit');
+  }
+}
+
+/**
+ * Custom submit function for user registration form
+ *
+ */
+function jwd_user_registration_user_register_submit($form, &$form_state) {
+  // add unauthorized role to user
+  $unauthorized_role = variable_get('jwd_user_registration_unauthorized_role','0');
+
+  if(!isset($form_state['values']['roles'])) {
+    $form_state['values']['roles'] = array();
+  }
+  $form_state['values']['roles'][$unauthorized_role] = TRUE;
+}
+
+function jwd_user_registration_generate_customer_number($account) {
+  if (empty($account->field_customer_number['und'][0]['value'])) {
+    $account->field_customer_number['und'][0]['value'] = jwd_product_generate_customer_number($account);
+
+    user_save($account);
+
+    drupal_set_message(t('Customer number was generated.'));
+  }
+  drupal_goto();
+}
+
+/*
+ * Implementation of hook_cron().
+ */
+function jwd_user_registration_cron() {
+  $time = REQUEST_TIME;
+
+  $timeout = variable_get('jwd_user_registration_validate_timeout',604800);
+
+  $created_max = $time - $timeout;
+
+  $unauthorized_role = variable_get('jwd_user_registration_unauthorized_role','0');
+  $uids = array();
+  $result = db_query('SELECT DISTINCT uid FROM {users_roles} WHERE rid = '.$unauthorized_role);
+
+  foreach($result as $record) {
+    if(!in_array($record->uid,$uids)) {
+      $uids[] = $record->uid;
+    }
+  }
+
+  // if no users matched, abort
+  if (!count($uids)) {
+    return;
+  }
+
+  $uids_filtered = array();
+  $result = db_query('SELECT uid FROM {users} WHERE uid IN ('.implode(',',$uids).') AND created < '.$created_max);
+
+  foreach($result as $record) {
+    $uids_filtered[] = $record->uid;
+  }
+  if(count($uids_filtered) > 0) {
+    user_delete_multiple($uids_filtered);
+  }
+}
+
+/*
+ * Implementation of hook_user_presave().
+ * Adds Bestandskunden role to special customers
+ */
+function jwd_user_registration_user_presave(&$edit, $account, $category)
+{
+  $sc_role_id = 21;
+
+  $customer_roles = jwd_sc_customers_roles();
+
+  foreach($customer_roles as $role_id => $role_name) {
+    if (isset($edit['roles'][$role_id]) && !$edit['roles'][$sc_role_id]) {
+      $edit['roles'][$sc_role_id] = TRUE;
+
+      if (isset($edit['user_roles'])) {
+        $edit['user_roles'][$sc_role_id] = $sc_role_id;
+      }
+    }
+  }
+}

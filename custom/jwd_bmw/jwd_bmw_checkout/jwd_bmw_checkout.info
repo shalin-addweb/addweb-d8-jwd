@@ -1,0 +1,5 @@
+name = JWD BMW Checkout
+description = Adds checkout related settingsfor BMW
+core = 7.x
+package = JWD BMW
+version = 7.x-1.3

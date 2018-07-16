@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD View Modes feature.
+ */
+
+include_once 'jwd_view_modes.features.inc';

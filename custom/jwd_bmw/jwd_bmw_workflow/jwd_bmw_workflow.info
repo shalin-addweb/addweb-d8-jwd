@@ -1,0 +1,4 @@
+name = JWD BMW Workflow
+description = Changes for a better BMW workflow
+core = 7.x
+package = JWD BMW

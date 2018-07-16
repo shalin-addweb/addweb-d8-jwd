@@ -1,0 +1,10 @@
+name = JWD Homebox
+description = Provides a homebox
+core = 7.x
+package = JWD
+php = 5.2.4
+version = 7.x-1.0
+project = jwd_homebox
+dependencies[] = homebox
+features[features_api][] = api:1
+features[homebox][] = jwd_homebox

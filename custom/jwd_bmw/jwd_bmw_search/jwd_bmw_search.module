@@ -1,0 +1,16 @@
+<?php
+/**
+ * @file
+ * Code for the JWD BMW Search feature.
+ */
+
+function jwd_bmw_search_enable()
+{
+  $value = variable_get('search_config', array());
+  if (!in_array(52, $value['fields']['containing_any']['roles'])) $value['fields']['containing_any']['roles'][] = 0;
+  if (!in_array(52, $value['fields']['containing_phrase']['roles'])) $value['fields']['containing_phrase']['roles'][] = 0;
+  if (!in_array(52, $value['fields']['containing_none']['roles'])) $value['fields']['containing_none']['roles'][] = 0;
+  if (!in_array(52, $value['fields']['types']['roles'])) $value['fields']['types']['roles'][] = 0;
+  if (!in_array(52, $value['fields']['category']['roles'])) $value['fields']['category']['roles'][] = 0;
+  variable_set('search_config', $value);
+}

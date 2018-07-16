@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Textblock feature.
+ */
+
+include_once 'jwd_textblock.features.inc';

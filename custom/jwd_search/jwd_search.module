@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Search feature.
+ */
+
+include_once 'jwd_search.features.inc';

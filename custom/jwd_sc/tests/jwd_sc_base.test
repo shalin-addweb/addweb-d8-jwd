@@ -1,0 +1,300 @@
+<?php
+
+class JwdSpecialCustomersBaseTestCase extends DrupalWebTestCase
+{
+  public static function getInfo() {
+    return array(
+      'name' => 'Testing JWD special customers',
+      'description' => 'This will test the creation of JWD special customers.',
+      'group' => 'JWDSpecialCustomers',
+    );
+  }
+
+  protected function _rmdirR($path)
+  {
+    $files = scandir($path);
+
+    foreach($files as $file) {
+      if (!in_array($file, array('.', '..'))) {
+        $full_path = $path . '/' . $file;
+        if (is_dir($full_path)) {
+          $this->_rmdirR($full_path);
+        }
+        else {
+          unlink($full_path);
+        }
+      }
+    }
+
+    rmdir($path);
+  }
+
+  protected function setUp()
+  {
+    parent::setUp('jwd_sc');
+
+    // remove eventually generated module suite
+    $foo_module_path = DRUPAL_ROOT . '/sites/all/modules/custom/jwd_foo';
+    if (file_exists($foo_module_path)) {
+      $this->_rmdirR($foo_module_path);
+    }
+  }
+
+  protected function tearDown()
+  {
+    parent::tearDown('jwd_sc');
+
+    // remove eventually generated module suite
+    $foo_module_path = DRUPAL_ROOT . '/sites/all/modules/custom/jwd_foo';
+    if (file_exists($foo_module_path)) {
+      $this->_rmdirR($foo_module_path);
+    }
+  }
+
+  protected function _isCustomerValid(JwdSpecialCustomer $customer, $name = null, $machine_name = null)
+  {
+    $this->assertNotNull($customer);
+    $this->assertTrue(get_class($customer) === 'JwdSpecialCustomer');
+    $this->assertFalse(empty($customer->name));
+    $this->assertFalse(empty($customer->machine_name));
+
+    if ($name) {
+      $this->assertEqual($customer->name, $name);
+    }
+    if ($machine_name) {
+      $this->assertEqual($customer->machine_name, $machine_name);
+      $this->assertEqual($customer->product_name, 'jwd_' . $machine_name . '_product');
+      $this->assertEqual($customer->product_display_name, 'jwd_' . $machine_name . '_product_display');
+      $this->assertEqual($customer->menu_name, 'menu-' . $machine_name);
+    }
+    $this->assertFalse(empty($customer->role_id));
+    $this->assertFalse(empty($customer->product_menu_id));
+    $this->assertFalse(empty($customer->role));
+    $this->assertFalse(empty($customer->role->rid));
+    if ($name) {
+      $this->assertEqual($customer->role->name, $name);
+    }
+  }
+
+  protected function _isCustomerMenuValid(JwdSpecialCustomer $customer, $name, $machine_name)
+  {
+    $menu_name = 'menu-' . $machine_name;
+
+    // menu should be added to database
+    $menu = menu_load($menu_name);
+    $this->assertNotEqual($menu, false);
+
+    $this->assertIdentical($menu, array(
+      'menu_name' => $menu_name,
+      'title' => $name,
+      'description' => ''
+    ));
+
+    // menu should have correct structure
+    $menu_links = menu_load_links($menu_name);
+
+    $comparison = array(
+      0 => array(
+        'link_title' => 'Produkte',
+        'link_path' => 'produkte',
+        //'router_path' => 'produkte'
+      ),
+      1 =>  array(
+        'link_title' => 'Warenkorb',
+        'link_path' => 'cart',
+        //'router_path' => 'cart'
+      ),
+      2 => array(
+        'link_title' => 'Meine Bestellungen',
+        'link_path' => 'user/orders',
+        //'router_path' => 'user/orders'
+      ),
+      3 => array(
+        'link_title' => 'Mein Konto',
+        'link_path' => 'menutoken/5112f279caa81',
+        //'router_path' => 'menutoken/%'
+      ),
+      4 => array(
+        'link_title' => 'Abmelden',
+        'link_path' => 'user/logout',
+        //'router_path' => 'user/logout',
+        'parent' => 3
+      ),
+      5 => array(
+        'link_title' => 'Kontakt',
+        'link_path' => 'kontakt',
+        //'router_path' => 'kontakt',
+      ),
+      6 => array(
+        'link_title' => 'Kontakt und Anfahrt',
+        'link_path' => 'kontakt',
+        //'router_path' => 'kontakt',
+        'parent' => 5
+      ),
+      7 => array(
+        'link_title' => 'Impressum',
+        'link_path' => 'impressum',
+        //'router_path' => 'impressum',
+        'parent' => 5
+      ),
+      8 => array(
+        'link_title' => 'AGB',
+        'link_path' => 'agb',
+        //'router_path' => 'agb',
+        'parent' => 5
+      ),
+    );
+
+    $this->assertEqual(count($menu_links), count($comparison));
+
+    $i = 0;
+    foreach($menu_links as $link) {
+      if (isset($comparison[$i])) {
+        foreach($comparison[$i] as $key => $value) {
+          if ($key === 'parent') {
+            $parent_link = $menu_links[$value];
+            $this->assertEqual($link['plid'], $parent_link['mlid'], 'Menu Link ' . $i . ': has none or wrong parent.');
+          }
+          else {
+            $this->assertEqual($link[$key], $value, 'Menu Link ' . $i . ': ' . $key . ' has value "' . $link[$key] . '", expected "' . $value . '"');
+          }
+        }
+      }
+      $i++;
+    }
+
+    // product menu id's should match
+    $this->assertEqual($customer->product_menu_id, $menu_links[0]['mlid'], 'Product menu id in customer object is invalid. Got "' . $menu_links[0]['mlid'] . ', expected "' . $customer->product_menu_id . '".');
+  }
+
+  protected function _isCustomerRoleValid(JwdSpecialCustomer $customer, $name)
+  {
+    // role should be added to the database
+    $roles = user_roles();
+    $this->assertTrue(in_array($name, $roles));
+
+    // get role id
+    foreach($roles as $rid => $_name) {
+      if ($_name == $name) {
+        $role_id = $rid;
+        break;
+      }
+    }
+
+    $this->assertEqual($customer->role_id, $role_id);
+    $this->assertEqual($customer->role->rid, $role_id);
+
+    // role should be here too
+    $roles = jwd_sc_customers_roles();
+    $this->assertTrue(in_array($name, $roles));
+  }
+
+  /**
+   * Tests if loading customers from the json file works
+   */
+  public function testLoadCustomers()
+  {
+    debug('testLoadCustomer');
+    $customers = jwd_sc_customers();
+    $this->assertTrue(count($customers) > 0);
+
+    foreach($customers as $customer) {
+      $this->_isCustomerValid($customer);
+    }
+  }
+
+  /**
+   * Tests if creating a special customer works
+   */
+  public function testCreateCustomer()
+  {
+    debug('testCreateCustomer');
+
+    $foo_customer = jwd_sc_add_customer('Foo');
+
+    // customer is valid
+    $this->_isCustomerValid($foo_customer, 'Foo', 'foo');
+    $this->_isCustomerRoleValid($foo_customer, 'Foo');
+    $this->_isCustomerMenuValid($foo_customer, 'Foo', 'foo');
+
+    // check if our customer can be loaded
+    $customers = jwd_sc_customers();
+
+    foreach($customers as $customer) {
+      if ($customer->name === 'Foo') {
+        // customer is valid
+        $this->_isCustomerValid($foo_customer, 'Foo', 'foo');
+        break;
+      }
+    }
+  }
+
+  /**
+   * Creating the same customer twice should throw an error
+   */
+  public function testCreateCustomerTwice()
+  {
+    debug('testCreateCustomerTwice');
+
+    // clear messages first
+    drupal_get_messages(null, true);
+
+    jwd_sc_add_customer('Foo');
+    jwd_sc_add_customer('Foo');
+    $messages = drupal_get_messages('error');
+
+    foreach($messages as $message) {
+      if (is_array($message)) {
+        $this->assertTrue(in_array('Customer "Foo" already exists.', $message));
+      }
+      else {
+        $this->assertEqual('Customer "Foo" already exists.', $message);
+      }
+    }
+  }
+
+  /**
+   * Tests if a given user is a special customer
+   */
+  public function testUserIsCustomer()
+  {
+    debug('testUserIsCustomer');
+
+    // create Foo customer
+    jwd_sc_add_customer('Foo');
+
+    $user_stub = new StdClass();
+    $user_stub->roles = array(
+      'Foo',
+      'Bestandskunde'
+    );
+
+    $this->assertTrue(jwd_sc_user_is_customer($user_stub));
+  }
+
+  public function testCreateCustomerWithModules()
+  {
+    debug('testCreateCustomerWithModules');
+
+    // create Foo customer
+    $customer = jwd_sc_add_customer('Foo');
+    jwd_sc_create_customer_modules($customer);
+
+    $foo_module_path = DRUPAL_ROOT . '/sites/all/modules/custom/jwd_foo';
+
+    $this->assertTrue(file_exists($foo_module_path));
+    $this->assertTrue(is_dir($foo_module_path));
+  }
+
+  public function testCreateCustomerWithEnabledModules()
+  {
+    debug('testCreateCustomerWithEnabledModules');
+
+    // create Foo customer
+    $customer = jwd_sc_add_customer('Foo');
+    jwd_sc_create_customer_modules($customer);
+    jwd_sc_enable_customer_modules($customer);
+
+    // no assertions for now. If everything works as expected here we can be happy.
+  }
+}

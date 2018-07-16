@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD Affiliates feature.
+ */
+
+include_once 'jwd_affiliates.features.inc';

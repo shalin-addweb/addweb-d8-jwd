@@ -1,0 +1,6 @@
+name = "JWD Workflow"
+description = "Changes for a better workflow"
+core = "7.x"
+package = "JWD"
+dependencies[] = taxonomy
+dependencies[] = views

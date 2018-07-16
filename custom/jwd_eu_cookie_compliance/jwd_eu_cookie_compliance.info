@@ -1,0 +1,15 @@
+name = JWD EU Cookie Compliance
+core = 7.x
+package = JWD
+version = 7.x-1.4
+project = jwd_eu_cookie_compliance
+dependencies[] = ctools
+dependencies[] = eu_cookie_compliance
+dependencies[] = features
+dependencies[] = strongarm
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:1
+features[user_permission][] = administer EU Cookie Compliance popup
+features[user_permission][] = display EU Cookie Compliance popup
+features[variable][] = eu_cookie_compliance_de
+features[variable][] = eu_cookie_compliance_domain

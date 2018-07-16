@@ -1,0 +1,13 @@
+name = JWD %name% Pathauto
+description = Provides %name% pathauto settings
+core = 7.x
+package = JWD %name%
+php = 5.2.4
+version = 7.x-1.3
+project = jwd_%machine_name%_pathauto
+dependencies[] = ctools
+dependencies[] = strongarm
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:1
+features[variable][] = pathauto_node_jwd_%machine_name%_product_display_pattern
+features[varaible][] = pathauto_taxonomy_term_produktkategorien_%machine_name%_pattern

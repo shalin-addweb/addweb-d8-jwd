@@ -1,0 +1,13 @@
+name = JWD Textformats
+description = Provides text formats
+core = 7.x
+package = JWD
+php = 5.2.4
+version = 7.x-1.0
+project = jwd_textformats
+dependencies[] = features
+dependencies[] = markdown
+dependencies[] = token_filter
+features[features_api][] = api:1
+features[filter][] = markdown
+features[filter][] = plain_text

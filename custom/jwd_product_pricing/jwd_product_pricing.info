@@ -1,0 +1,5 @@
+name = JWD product pricing
+description = Calculate the product price.
+package = JWD
+dependencies[] = commerce
+core = 7.x

@@ -1,0 +1,8 @@
+name = "JWD User Registration"
+description = "Provides custom user registration"
+core = "7.x"
+package = "JWD"
+#dependencies[] = jwd_user
+dependencies[] = autoassignrole
+dependencies[] = token
+dependencies[] = rules

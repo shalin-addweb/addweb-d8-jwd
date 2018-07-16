@@ -1,0 +1,5 @@
+services:
+  jwd_event_alter.event_subscriber_example:
+    class: Drupal\jwd_event_alter\EventSubscriber\ExampleEventSubScriber
+    tags:
+      - { name: 'event_subscriber' }

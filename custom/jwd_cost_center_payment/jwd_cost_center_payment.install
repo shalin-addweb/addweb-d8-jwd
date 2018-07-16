@@ -1,0 +1,23 @@
+<?php
+/**
+ * set field_custom_cost_center value to the title of the cost center of the order
+ */
+function jwd_cost_center_payment_update_7140()
+{
+  // set field_custom_cost_center value to the cost center of the order
+  $orders = db_query('SELECT order_id FROM {commerce_order}')->fetchAll();
+
+  foreach($orders as $i => $_order) {
+    $order_id = $_order->order_id;
+    $order = commerce_order_load($order_id);
+
+    // custom cost center not set yet, but a cost center is present
+    if (isset($order->data['jwd_cost_center_payment']) && empty($order->field_custom_cost_center['und'][0]['value'])) {
+      $cost_center_node = node_load($order->data['jwd_cost_center_payment']['cost_center']);
+      $order->field_custom_cost_center['und'][0]['value'] = $cost_center_node->title;
+      commerce_order_save($order);
+    }
+  }
+
+  return t('Updated module jwd_cost_center_payment to 7.x-1.4');
+}

@@ -1,0 +1,217 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: JWD 7.x-1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-08-14 13:05+0100\n"
+"PO-Revision-Date: 2012-08-14 13:05+0100\n"
+"Last-Translator: Ondrej Brinkel <info@anzui.de>\n"
+"Language-Team:  <info@anzui.de>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;t\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: jwd_product/templates/jwd-product-commerce-order.tpl.php:2
+#: jwd_product/templates/jwd-product-commerce-order-plain-text.tpl.php:2
+msgid "Address"
+msgstr "Adresse"
+
+#: jwd_product/templates/jwd-product-commerce-order.tpl.php:15
+#: jwd_product/templates/jwd-product-commerce-order-plain-text.tpl.php:15
+msgid "Contact"
+msgstr "Kontakt"
+
+#: jwd_product/templates/jwd-product-commerce-order.tpl.php:17
+#: jwd_product/templates/jwd-product-commerce-order-plain-text.tpl.php:17
+msgid "Phone"
+msgstr "Telefon"
+
+#: jwd_product/templates/jwd-product-commerce-order.tpl.php:18
+#: jwd_product/templates/jwd-product-commerce-order-plain-text.tpl.php:18
+msgid "Fax"
+msgstr "Fax"
+
+#: jwd_product/templates/jwd-product-commerce-order.tpl.php:19
+#: jwd_product/templates/jwd-product-commerce-order-plain-text.tpl.php:19
+msgid "Email"
+msgstr "E-Mail"
+
+#: jwd_product/templates/jwd-product-commerce-order.tpl.php:22
+#: jwd_product/templates/jwd-product-commerce-order-plain-text.tpl.php:22
+msgid "Notes"
+msgstr "Bemerkungen"
+
+#: jwd_product/templates/jwd-product-commerce-order.tpl.php:27
+#: jwd_product/templates/jwd-product-commerce-order-plain-text.tpl.php:27
+msgid "Products"
+msgstr "Produkte"
+
+#~ msgid "Product tabs"
+#~ msgstr "Produkt-Tabs"
+
+#~ msgid "Direct-Comparison"
+#~ msgstr "Direkt-Vergleich"
+
+#~ msgid "Current offer"
+#~ msgstr "Aktuelles Angebot"
+
+#~ msgid "Opening hours"
+#~ msgstr "Öffnungszeiten"
+
+#~ msgid "Contact with photo"
+#~ msgstr "Kontakt mit Foto"
+
+#~ msgid "Image"
+#~ msgstr "Bild"
+
+#~ msgid "Contact form"
+#~ msgstr "Kontaktformular"
+
+#~ msgid "Imprint"
+#~ msgstr "Impressum"
+
+#~ msgid "Search"
+#~ msgstr "Suche"
+
+#~ msgid "Affiliates"
+#~ msgstr "Partner"
+
+#~ msgid "Gallery"
+#~ msgstr "Galerie"
+
+#~ msgid "Description"
+#~ msgstr "Beschreibung"
+
+#~ msgid "Foot notes"
+#~ msgstr "Fußnoten"
+
+#~ msgid "Discount"
+#~ msgstr "Abzug"
+
+#~ msgid "Body"
+#~ msgstr "Textkörper"
+
+#~ msgid "Latitude"
+#~ msgstr "Breitengrad"
+
+#~ msgid "Longitude"
+#~ msgstr "Längengrad"
+
+#~ msgid "Search address"
+#~ msgstr "Adresse suchen"
+
+#~ msgid ""
+#~ "I am interested in your current offer of the month:\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Ich interessiere mich für ihr aktuelles Monatsangebot:\n"
+#~ "\n"
+
+#~ msgid "Send"
+#~ msgstr "Senden"
+
+#~ msgid "Edit product"
+#~ msgstr "Produkt bearbeiten"
+
+#~ msgid "Street"
+#~ msgstr "Straße"
+
+#~ msgid "Nr."
+#~ msgstr "Nr."
+
+#~ msgid "individual"
+#~ msgstr "individuell"
+
+#~ msgid "Heading 1"
+#~ msgstr "Überschrift 1"
+
+#~ msgid "Heading 2"
+#~ msgstr "Überschrift 2"
+
+#~ msgid "Heading 3"
+#~ msgstr "Überschrift 3"
+
+#~ msgid "Heading 4"
+#~ msgstr "Überschrift 4"
+
+#~ msgid "Paragraph"
+#~ msgstr "Absatz"
+
+#~ msgid "Add option"
+#~ msgstr "Option hinzufügen"
+
+#~ msgid "Add field"
+#~ msgstr "Feld hinzufügen"
+
+#~ msgid "Back"
+#~ msgstr "Zurück"
+
+#~ msgid "Various"
+#~ msgstr "Diverses"
+
+#~ msgid "Header"
+#~ msgstr "Kopfbereich"
+
+#~ msgid "Preis"
+#~ msgstr "Preis"
+
+#~ msgid "Price"
+#~ msgstr "Price"
+
+#~ msgid "Verfügbare Produkteigenschaften"
+#~ msgstr "Verfügbare Produkteigenschaften"
+
+#~ msgid "Title"
+#~ msgstr "Titel"
+
+#~ msgid "Produktpaket"
+#~ msgstr "Produktpaket"
+
+#~ msgid "Produkt"
+#~ msgstr "Produkt"
+
+#~ msgid "Automatic checkout"
+#~ msgstr "Automatischer Checkout"
+
+#~ msgid "Auto create product display"
+#~ msgstr "Produktanzeige automatisch erstellen"
+
+#~ msgid "Created entity"
+#~ msgstr "Erstellte Entität"
+
+#~ msgid "Create a customer profile for order"
+#~ msgstr "Kundenprofil oder Bestellung erstellen"
+
+#~ msgid "Order"
+#~ msgstr "Bestellung"
+
+#~ msgid "JWD Product"
+#~ msgstr "JWD Produkt"
+
+#~ msgid "Direct comparison"
+#~ msgstr "Direct-Vergleich"
+
+#~ msgid "Please send me information about current offers."
+#~ msgstr "Ich möchte Informationen zu aktuellen Angeboten erhalten."
+
+#~ msgid "Display path"
+#~ msgstr "Anzeigepfad"
+
+#~ msgid "Total"
+#~ msgstr "Gesamt"
+
+#~ msgid "Unit price"
+#~ msgstr "Einheitspreis"
+
+#~ msgid "Your way to us?"
+#~ msgstr "Ihr Weg zu uns?"
+
+#~ msgid "I agree to the storage of my data."
+#~ msgstr "Ich stimme der Speicherung meiner Daten zu."

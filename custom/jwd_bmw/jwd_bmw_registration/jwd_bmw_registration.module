@@ -1,0 +1,24 @@
+<?php
+/**
+ * @file
+ * Code for the JWD BMW Registration.
+ */
+
+function jwd_bmw_registration_enable()
+{
+  $value = variable_get('autoassignrole_user_roles', array());
+  $value[52] = '52';
+  variable_set('autoassignrole_user_roles', $value);
+
+  $value = variable_get('jwd_product_bestandskunden_roles', array());
+  if (!in_array(52, $value)) {
+    $value[] = 52;
+  }
+  variable_set('autoassignrole_user_roles', $value);
+
+  $value = variable_get('jwd_user_registration_authorized_roles', array());
+  if (!in_array(52, $value)) {
+    $value[] = 52;
+  }
+  variable_set('jwd_user_registration_authorized_roles', $value);
+}

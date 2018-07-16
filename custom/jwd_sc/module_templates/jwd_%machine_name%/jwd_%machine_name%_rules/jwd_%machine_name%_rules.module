@@ -1,0 +1,46 @@
+<?php
+
+function jwd_%machine_name%_rules_default_rules_configuration() {
+  $rules = array();
+
+  $rule = '{ "jwd_%machine_name%_discount_line_item" : {
+    "LABEL" : "%name% discount",
+    "PLUGIN" : "reaction rule",
+    "WEIGHT" : "-10",
+    "REQUIRES" : [
+      "commerce_cart",
+      "rules",
+      "commerce_line_item",
+      "commerce_tax",
+      "commerce_product_reference"
+    ],
+    "ON" : [ "commerce_product_calculate_sell_price" ],
+    "IF" : [
+      { "commerce_order_is_cart" : { "commerce_order" : [ "commerce-line-item:order" ] } },
+      { "user_has_role" : {
+          "account" : [ "site:current-user" ],
+          "roles" : { "value" : { "%role_id%" : "%role_id%" } }
+        }
+      }
+    ],
+    "DO" : [
+      { "commerce_line_item_unit_price_multiply" : {
+          "commerce_line_item" : [ "commerce_line_item" ],
+          "amount" : ".97",
+          "component_name" : "base_price",
+          "round_mode" : "0"
+        }
+      },
+      { "commerce_tax_calculate_by_type" : {
+          "commerce_line_item" : [ "commerce_line_item" ],
+          "tax_type_name" : "vat"
+        }
+      }
+    ]
+  }
+}';
+
+  $rules['jwd_%machine_name%_discount_line_item'] = rules_import($rule);
+
+  return $rules;
+}

@@ -1,0 +1,663 @@
+<?php
+$view = new view();
+$view->name = 'commerce_orders';
+$view->description = 'Display a list of orders for the store admin.';
+$view->tag = 'commerce';
+$view->base_table = 'commerce_order';
+$view->human_name = 'Orders';
+$view->core = 0;
+$view->api_version = '3.0';
+$view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+/* Display: Defaults */
+$handler = $view->new_display('default', 'Defaults', 'default');
+$handler->display->display_options['title'] = 'Orders';
+$handler->display->display_options['use_more_always'] = FALSE;
+$handler->display->display_options['use_more_text'] = 'mehr';
+$handler->display->display_options['access']['type'] = 'perm';
+$handler->display->display_options['access']['perm'] = 'view any commerce_order entity';
+$handler->display->display_options['cache']['type'] = 'none';
+$handler->display->display_options['query']['type'] = 'views_query';
+$handler->display->display_options['query']['options']['distinct'] = TRUE;
+$handler->display->display_options['exposed_form']['type'] = 'basic';
+$handler->display->display_options['exposed_form']['options']['submit_button'] = 'Anwenden';
+$handler->display->display_options['exposed_form']['options']['reset_button'] = TRUE;
+$handler->display->display_options['exposed_form']['options']['reset_button_label'] = 'Zurücksetzen';
+$handler->display->display_options['exposed_form']['options']['exposed_sorts_label'] = 'Sortieren nach';
+$handler->display->display_options['exposed_form']['options']['sort_asc_label'] = 'Aufsteigend';
+$handler->display->display_options['exposed_form']['options']['sort_desc_label'] = 'Absteigend';
+$handler->display->display_options['pager']['type'] = 'full';
+$handler->display->display_options['pager']['options']['items_per_page'] = 50;
+$handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = 'Elemente pro Seite';
+$handler->display->display_options['pager']['options']['expose']['items_per_page_options_all_label'] = '- Alle -';
+$handler->display->display_options['pager']['options']['tags']['first'] = '« erste Seite';
+$handler->display->display_options['pager']['options']['tags']['previous'] = '‹ vorherige Seite';
+$handler->display->display_options['pager']['options']['tags']['next'] = 'nächste Seite ›';
+$handler->display->display_options['pager']['options']['tags']['last'] = 'letzte Seite »';
+$handler->display->display_options['style_plugin'] = 'table';
+$handler->display->display_options['style_options']['columns'] = array(
+  'order_number' => 'order_number',
+  'field_order_number' => 'field_order_number',
+  'created' => 'created',
+  'name' => 'name',
+  'uid' => 'uid',
+  'commerce_order_total' => 'commerce_order_total',
+  'status' => 'status',
+  'operations' => 'operations',
+);
+$handler->display->display_options['style_options']['default'] = 'created';
+$handler->display->display_options['style_options']['info'] = array(
+  'order_number' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'desc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'field_order_number' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'desc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'created' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'desc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'name' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'uid' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'commerce_order_total' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'status' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'operations' => array(
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+);
+$handler->display->display_options['style_options']['empty_table'] = TRUE;
+/* Kopfbereich: Global: Bestellformular anzeigen */
+$handler->display->display_options['header']['view_order_form']['id'] = 'view_order_form';
+$handler->display->display_options['header']['view_order_form']['table'] = 'views';
+$handler->display->display_options['header']['view_order_form']['field'] = 'view_order_form';
+/* Verhalten, wenn keine Ergebnisse vorliegen: Commerce Order: Leerer Text */
+$handler->display->display_options['empty']['empty_text']['id'] = 'empty_text';
+$handler->display->display_options['empty']['empty_text']['table'] = 'commerce_order';
+$handler->display->display_options['empty']['empty_text']['field'] = 'empty_text';
+$handler->display->display_options['empty']['empty_text']['add_path'] = 'admin/commerce/orders/add';
+/* Beziehung: Commerce Order: Eigentümer */
+$handler->display->display_options['relationships']['uid']['id'] = 'uid';
+$handler->display->display_options['relationships']['uid']['table'] = 'commerce_order';
+$handler->display->display_options['relationships']['uid']['field'] = 'uid';
+$handler->display->display_options['relationships']['uid']['required'] = TRUE;
+/* Beziehung: Commerce Order: Referenziertes Kundenprofil */
+$handler->display->display_options['relationships']['commerce_customer_billing_profile_id']['id'] = 'commerce_customer_billing_profile_id';
+$handler->display->display_options['relationships']['commerce_customer_billing_profile_id']['table'] = 'field_data_commerce_customer_billing';
+$handler->display->display_options['relationships']['commerce_customer_billing_profile_id']['field'] = 'commerce_customer_billing_profile_id';
+/* Beziehung: Commerce Order: Referenced line items */
+$handler->display->display_options['relationships']['commerce_line_items_line_item_id']['id'] = 'commerce_line_items_line_item_id';
+$handler->display->display_options['relationships']['commerce_line_items_line_item_id']['table'] = 'field_data_commerce_line_items';
+$handler->display->display_options['relationships']['commerce_line_items_line_item_id']['field'] = 'commerce_line_items_line_item_id';
+$handler->display->display_options['relationships']['commerce_line_items_line_item_id']['required'] = TRUE;
+/* Beziehung: Commerce Belegzeile: Referenced products */
+$handler->display->display_options['relationships']['commerce_product_product_id']['id'] = 'commerce_product_product_id';
+$handler->display->display_options['relationships']['commerce_product_product_id']['table'] = 'field_data_commerce_product';
+$handler->display->display_options['relationships']['commerce_product_product_id']['field'] = 'commerce_product_product_id';
+$handler->display->display_options['relationships']['commerce_product_product_id']['relationship'] = 'commerce_line_items_line_item_id';
+/* Feld: Commerce Order: Bestellnummer */
+$handler->display->display_options['fields']['order_number']['id'] = 'order_number';
+$handler->display->display_options['fields']['order_number']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['order_number']['field'] = 'order_number';
+$handler->display->display_options['fields']['order_number']['label'] = 'ID';
+$handler->display->display_options['fields']['order_number']['link_to_order'] = 'admin';
+/* Feld: Commerce Order: Bestellnummer */
+$handler->display->display_options['fields']['field_order_number']['id'] = 'field_order_number';
+$handler->display->display_options['fields']['field_order_number']['table'] = 'field_data_field_order_number';
+$handler->display->display_options['fields']['field_order_number']['field'] = 'field_order_number';
+$handler->display->display_options['fields']['field_order_number']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['field_order_number']['element_default_classes'] = FALSE;
+$handler->display->display_options['fields']['field_order_number']['field_api_classes'] = TRUE;
+/* Feld: Commerce Order: Erstellungsdatum */
+$handler->display->display_options['fields']['created']['id'] = 'created';
+$handler->display->display_options['fields']['created']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['created']['field'] = 'created';
+$handler->display->display_options['fields']['created']['label'] = 'Datum';
+$handler->display->display_options['fields']['created']['date_format'] = 'short';
+/* Feld: Benutzer: Name */
+$handler->display->display_options['fields']['name']['id'] = 'name';
+$handler->display->display_options['fields']['name']['table'] = 'users';
+$handler->display->display_options['fields']['name']['field'] = 'name';
+$handler->display->display_options['fields']['name']['relationship'] = 'uid';
+$handler->display->display_options['fields']['name']['label'] = 'Kunde / Kundin';
+/* Feld: Benutzer: Uid */
+$handler->display->display_options['fields']['uid']['id'] = 'uid';
+$handler->display->display_options['fields']['uid']['table'] = 'users';
+$handler->display->display_options['fields']['uid']['field'] = 'uid';
+$handler->display->display_options['fields']['uid']['relationship'] = 'uid';
+$handler->display->display_options['fields']['uid']['label'] = '';
+$handler->display->display_options['fields']['uid']['alter']['alter_text'] = TRUE;
+$handler->display->display_options['fields']['uid']['alter']['text'] = 'Bestellungen des Nutzer';
+$handler->display->display_options['fields']['uid']['alter']['make_link'] = TRUE;
+$handler->display->display_options['fields']['uid']['alter']['path'] = 'admin/commerce/user/[uid]/orders';
+$handler->display->display_options['fields']['uid']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['uid']['link_to_user'] = FALSE;
+/* Feld: Commerce Order: Order total */
+$handler->display->display_options['fields']['commerce_order_total']['id'] = 'commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total']['table'] = 'field_data_commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total']['field'] = 'commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total']['label'] = 'Gesamt';
+$handler->display->display_options['fields']['commerce_order_total']['click_sort_column'] = 'amount';
+$handler->display->display_options['fields']['commerce_order_total']['settings'] = array(
+  'calculation' => FALSE,
+);
+/* Feld: Commerce Order: Bestellstatus */
+$handler->display->display_options['fields']['status']['id'] = 'status';
+$handler->display->display_options['fields']['status']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['status']['field'] = 'status';
+/* Feld: Commerce Order: Operationslinks */
+$handler->display->display_options['fields']['operations']['id'] = 'operations';
+$handler->display->display_options['fields']['operations']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['operations']['field'] = 'operations';
+$handler->display->display_options['fields']['operations']['label'] = 'Aktionen';
+$handler->display->display_options['fields']['operations']['add_destination'] = 0;
+/* Feld: Commerce Order: Kostenstelle */
+$handler->display->display_options['fields']['field_custom_cost_center']['id'] = 'field_custom_cost_center';
+$handler->display->display_options['fields']['field_custom_cost_center']['table'] = 'field_data_field_custom_cost_center';
+$handler->display->display_options['fields']['field_custom_cost_center']['field'] = 'field_custom_cost_center';
+$handler->display->display_options['fields']['field_custom_cost_center']['label'] = '';
+$handler->display->display_options['fields']['field_custom_cost_center']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_custom_cost_center']['alter']['text'] = '[field_custom_cost_center-value]';
+$handler->display->display_options['fields']['field_custom_cost_center']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['field_custom_cost_center']['element_wrapper_type'] = '0';
+$handler->display->display_options['fields']['field_custom_cost_center']['element_default_classes'] = FALSE;
+$handler->display->display_options['fields']['field_custom_cost_center']['type'] = 'text_plain';
+$handler->display->display_options['fields']['field_custom_cost_center']['settings'] = array(
+  'trim_length' => '600',
+);
+/* Filterkriterium: Commerce Order: Bestellstatus */
+$handler->display->display_options['filters']['state']['id'] = 'state';
+$handler->display->display_options['filters']['state']['table'] = 'commerce_order';
+$handler->display->display_options['filters']['state']['field'] = 'state';
+$handler->display->display_options['filters']['state']['operator'] = 'not in';
+$handler->display->display_options['filters']['state']['value'] = array(
+  'cart' => 'cart',
+  'checkout' => 'checkout',
+);
+$handler->display->display_options['filters']['state']['group'] = 1;
+$handler->display->display_options['filters']['state']['expose']['label'] = 'Order state';
+$handler->display->display_options['filters']['state']['expose']['use_operator'] = TRUE;
+$handler->display->display_options['filters']['state']['expose']['operator'] = 'state_op';
+$handler->display->display_options['filters']['state']['expose']['identifier'] = 'state';
+/* Filterkriterium: Benutzer: Rollen */
+$handler->display->display_options['filters']['rid']['id'] = 'rid';
+$handler->display->display_options['filters']['rid']['table'] = 'users_roles';
+$handler->display->display_options['filters']['rid']['field'] = 'rid';
+$handler->display->display_options['filters']['rid']['relationship'] = 'uid';
+$handler->display->display_options['filters']['rid']['value'] = array(
+  'all' => 'all',
+  21 => '21',
+  31 => '31',
+  52 => '52',
+);
+$handler->display->display_options['filters']['rid']['group'] = 1;
+$handler->display->display_options['filters']['rid']['exposed'] = TRUE;
+$handler->display->display_options['filters']['rid']['expose']['operator_id'] = 'rid_op';
+$handler->display->display_options['filters']['rid']['expose']['label'] = 'Rolle';
+$handler->display->display_options['filters']['rid']['expose']['use_operator'] = TRUE;
+$handler->display->display_options['filters']['rid']['expose']['operator'] = 'rid_op';
+$handler->display->display_options['filters']['rid']['expose']['identifier'] = 'rid';
+$handler->display->display_options['filters']['rid']['expose']['remember_roles'] = array(
+  2 => '2',
+  1 => 0,
+  51 => 0,
+  3 => 0,
+  4 => 0,
+  5 => 0,
+  11 => 0,
+  21 => 0,
+  41 => 0,
+  31 => 0,
+  52 => 0,
+);
+$handler->display->display_options['filters']['rid']['expose']['reduce'] = TRUE;
+/* Filterkriterium: Commerce Order: Erstellungsdatum */
+$handler->display->display_options['filters']['created']['id'] = 'created';
+$handler->display->display_options['filters']['created']['table'] = 'commerce_order';
+$handler->display->display_options['filters']['created']['field'] = 'created';
+$handler->display->display_options['filters']['created']['operator'] = 'between';
+$handler->display->display_options['filters']['created']['group'] = 1;
+$handler->display->display_options['filters']['created']['exposed'] = TRUE;
+$handler->display->display_options['filters']['created']['expose']['operator_id'] = 'created_op';
+$handler->display->display_options['filters']['created']['expose']['label'] = 'Rechnungsdatum';
+$handler->display->display_options['filters']['created']['expose']['operator'] = 'created_op';
+$handler->display->display_options['filters']['created']['expose']['identifier'] = 'created';
+$handler->display->display_options['filters']['created']['expose']['remember_roles'] = array(
+  2 => '2',
+  1 => 0,
+  51 => 0,
+  3 => 0,
+  4 => 0,
+  5 => 0,
+  11 => 0,
+  21 => 0,
+  41 => 0,
+  31 => 0,
+  52 => 0,
+);
+$handler->display->display_options['filters']['created']['group_info']['label'] = 'Erstellungsdatum';
+$handler->display->display_options['filters']['created']['group_info']['identifier'] = 'created';
+$handler->display->display_options['filters']['created']['group_info']['remember'] = FALSE;
+$handler->display->display_options['filters']['created']['group_info']['group_items'] = array(
+  1 => array(),
+  2 => array(),
+  3 => array(),
+);
+/* Filterkriterium: Benutzer: Adresse - Nachname */
+$handler->display->display_options['filters']['field_user_address_last_name']['id'] = 'field_user_address_last_name';
+$handler->display->display_options['filters']['field_user_address_last_name']['table'] = 'field_data_field_user_address';
+$handler->display->display_options['filters']['field_user_address_last_name']['field'] = 'field_user_address_last_name';
+$handler->display->display_options['filters']['field_user_address_last_name']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_user_address_last_name']['operator'] = 'contains';
+$handler->display->display_options['filters']['field_user_address_last_name']['group'] = 1;
+$handler->display->display_options['filters']['field_user_address_last_name']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_user_address_last_name']['expose']['operator_id'] = 'field_user_address_last_name_op';
+$handler->display->display_options['filters']['field_user_address_last_name']['expose']['label'] = 'Nachname';
+$handler->display->display_options['filters']['field_user_address_last_name']['expose']['operator'] = 'field_user_address_last_name_op';
+$handler->display->display_options['filters']['field_user_address_last_name']['expose']['identifier'] = 'field_user_address_last_name';
+$handler->display->display_options['filters']['field_user_address_last_name']['expose']['remember_roles'] = array(
+  2 => '2',
+  1 => 0,
+  51 => 0,
+  3 => 0,
+  4 => 0,
+  5 => 0,
+  11 => 0,
+  21 => 0,
+  41 => 0,
+  31 => 0,
+  52 => 0,
+);
+/* Filterkriterium: Benutzer: Adresse - Vorname */
+$handler->display->display_options['filters']['field_user_address_first_name']['id'] = 'field_user_address_first_name';
+$handler->display->display_options['filters']['field_user_address_first_name']['table'] = 'field_data_field_user_address';
+$handler->display->display_options['filters']['field_user_address_first_name']['field'] = 'field_user_address_first_name';
+$handler->display->display_options['filters']['field_user_address_first_name']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_user_address_first_name']['operator'] = 'contains';
+$handler->display->display_options['filters']['field_user_address_first_name']['group'] = 1;
+$handler->display->display_options['filters']['field_user_address_first_name']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_user_address_first_name']['expose']['operator_id'] = 'field_user_address_first_name_op';
+$handler->display->display_options['filters']['field_user_address_first_name']['expose']['label'] = 'Vorname';
+$handler->display->display_options['filters']['field_user_address_first_name']['expose']['operator'] = 'field_user_address_first_name_op';
+$handler->display->display_options['filters']['field_user_address_first_name']['expose']['identifier'] = 'field_user_address_first_name';
+$handler->display->display_options['filters']['field_user_address_first_name']['expose']['remember_roles'] = array(
+  2 => '2',
+  1 => 0,
+  51 => 0,
+  3 => 0,
+  4 => 0,
+  5 => 0,
+  11 => 0,
+  21 => 0,
+  41 => 0,
+  31 => 0,
+  52 => 0,
+);
+/* Filterkriterium: Commerce Product: Artikelnummer (SKU) */
+$handler->display->display_options['filters']['sku']['id'] = 'sku';
+$handler->display->display_options['filters']['sku']['table'] = 'commerce_product';
+$handler->display->display_options['filters']['sku']['field'] = 'sku';
+$handler->display->display_options['filters']['sku']['relationship'] = 'commerce_product_product_id';
+$handler->display->display_options['filters']['sku']['operator'] = 'contains';
+$handler->display->display_options['filters']['sku']['group'] = 1;
+$handler->display->display_options['filters']['sku']['exposed'] = TRUE;
+$handler->display->display_options['filters']['sku']['expose']['operator_id'] = 'sku_op';
+$handler->display->display_options['filters']['sku']['expose']['label'] = 'Artikelnummer';
+$handler->display->display_options['filters']['sku']['expose']['operator'] = 'sku_op';
+$handler->display->display_options['filters']['sku']['expose']['identifier'] = 'sku';
+$handler->display->display_options['filters']['sku']['expose']['remember_roles'] = array(
+  2 => '2',
+  1 => 0,
+  51 => 0,
+  3 => 0,
+  4 => 0,
+  5 => 0,
+  11 => 0,
+  21 => 0,
+  41 => 0,
+  31 => 0,
+  52 => 0,
+);
+/* Filterkriterium: Commerce Product: Titel */
+$handler->display->display_options['filters']['title']['id'] = 'title';
+$handler->display->display_options['filters']['title']['table'] = 'commerce_product';
+$handler->display->display_options['filters']['title']['field'] = 'title';
+$handler->display->display_options['filters']['title']['relationship'] = 'commerce_product_product_id';
+$handler->display->display_options['filters']['title']['operator'] = 'word';
+$handler->display->display_options['filters']['title']['group'] = 1;
+$handler->display->display_options['filters']['title']['exposed'] = TRUE;
+$handler->display->display_options['filters']['title']['expose']['operator_id'] = 'title_op';
+$handler->display->display_options['filters']['title']['expose']['label'] = 'Produkttitel';
+$handler->display->display_options['filters']['title']['expose']['operator'] = 'title_op';
+$handler->display->display_options['filters']['title']['expose']['identifier'] = 'title';
+$handler->display->display_options['filters']['title']['expose']['remember_roles'] = array(
+  2 => '2',
+  1 => 0,
+  51 => 0,
+  3 => 0,
+  4 => 0,
+  5 => 0,
+  11 => 0,
+  21 => 0,
+  41 => 0,
+  31 => 0,
+  52 => 0,
+);
+/* Filterkriterium: Commerce Order: Kostenstelle (field_custom_cost_center) */
+$handler->display->display_options['filters']['field_custom_cost_center_value']['id'] = 'field_custom_cost_center_value';
+$handler->display->display_options['filters']['field_custom_cost_center_value']['table'] = 'field_data_field_custom_cost_center';
+$handler->display->display_options['filters']['field_custom_cost_center_value']['field'] = 'field_custom_cost_center_value';
+$handler->display->display_options['filters']['field_custom_cost_center_value']['group'] = 1;
+$handler->display->display_options['filters']['field_custom_cost_center_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_custom_cost_center_value']['expose']['operator_id'] = 'field_custom_cost_center_value_op';
+$handler->display->display_options['filters']['field_custom_cost_center_value']['expose']['label'] = 'Kostenstelle (Gesobau)';
+$handler->display->display_options['filters']['field_custom_cost_center_value']['expose']['operator'] = 'field_custom_cost_center_value_op';
+$handler->display->display_options['filters']['field_custom_cost_center_value']['expose']['identifier'] = 'field_custom_cost_center_value';
+$handler->display->display_options['filters']['field_custom_cost_center_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  1 => 0,
+  51 => 0,
+  3 => 0,
+  4 => 0,
+  5 => 0,
+  11 => 0,
+  21 => 0,
+  41 => 0,
+  31 => 0,
+  52 => 0,
+);
+/* Filterkriterium: Commerce Belegzeile: Kostenstelle / Bestellnummer (field_bmw_cost_center) */
+$handler->display->display_options['filters']['field_bmw_cost_center_value']['id'] = 'field_bmw_cost_center_value';
+$handler->display->display_options['filters']['field_bmw_cost_center_value']['table'] = 'field_data_field_bmw_cost_center';
+$handler->display->display_options['filters']['field_bmw_cost_center_value']['field'] = 'field_bmw_cost_center_value';
+$handler->display->display_options['filters']['field_bmw_cost_center_value']['relationship'] = 'commerce_line_items_line_item_id';
+$handler->display->display_options['filters']['field_bmw_cost_center_value']['group'] = 1;
+$handler->display->display_options['filters']['field_bmw_cost_center_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_bmw_cost_center_value']['expose']['operator_id'] = 'field_bmw_cost_center_value_op';
+$handler->display->display_options['filters']['field_bmw_cost_center_value']['expose']['label'] = 'Kostenstelle / Bestellnummer (BMW)';
+$handler->display->display_options['filters']['field_bmw_cost_center_value']['expose']['operator'] = 'field_bmw_cost_center_value_op';
+$handler->display->display_options['filters']['field_bmw_cost_center_value']['expose']['identifier'] = 'field_bmw_cost_center_value';
+$handler->display->display_options['filters']['field_bmw_cost_center_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  1 => 0,
+  51 => 0,
+  3 => 0,
+  4 => 0,
+  5 => 0,
+  11 => 0,
+  21 => 0,
+  41 => 0,
+  31 => 0,
+  52 => 0,
+);
+
+/* Display: Admin page */
+$handler = $view->new_display('page', 'Admin page', 'admin_page');
+$handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+$handler->display->display_options['path'] = 'admin/commerce/orders/list';
+$handler->display->display_options['menu']['type'] = 'default tab';
+$handler->display->display_options['menu']['title'] = 'Orders';
+$handler->display->display_options['menu']['weight'] = '-10';
+$handler->display->display_options['tab_options']['type'] = 'normal';
+$handler->display->display_options['tab_options']['title'] = 'Orders';
+$handler->display->display_options['tab_options']['description'] = 'Manage orders in the store.';
+$handler->display->display_options['tab_options']['weight'] = '';
+$handler->display->display_options['tab_options']['name'] = 'management';
+
+/* Display: Shopping carts */
+$handler = $view->new_display('page', 'Shopping carts', 'shopping_carts');
+$handler->display->display_options['defaults']['title'] = FALSE;
+$handler->display->display_options['title'] = 'Shopping carts';
+$handler->display->display_options['defaults']['empty'] = FALSE;
+/* Verhalten, wenn keine Ergebnisse vorliegen: Global: Textbereich */
+$handler->display->display_options['empty']['text']['id'] = 'text';
+$handler->display->display_options['empty']['text']['table'] = 'views';
+$handler->display->display_options['empty']['text']['field'] = 'area';
+$handler->display->display_options['empty']['text']['content'] = 'There are currently no shopping cart orders.';
+$handler->display->display_options['empty']['text']['format'] = 'plain_text';
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filterkriterium: Commerce Order: Bestellstatus */
+$handler->display->display_options['filters']['state']['id'] = 'state';
+$handler->display->display_options['filters']['state']['table'] = 'commerce_order';
+$handler->display->display_options['filters']['state']['field'] = 'state';
+$handler->display->display_options['filters']['state']['value'] = array(
+  'cart' => 'cart',
+  'checkout' => 'checkout',
+);
+$handler->display->display_options['filters']['state']['expose']['label'] = 'Order state';
+$handler->display->display_options['filters']['state']['expose']['use_operator'] = TRUE;
+$handler->display->display_options['filters']['state']['expose']['operator'] = 'state_op';
+$handler->display->display_options['filters']['state']['expose']['identifier'] = 'state';
+$handler->display->display_options['path'] = 'admin/commerce/orders/carts';
+$handler->display->display_options['menu']['type'] = 'tab';
+$handler->display->display_options['menu']['title'] = 'Shopping carts';
+$handler->display->display_options['menu']['weight'] = '0';
+
+/* Display: User orders */
+$handler = $view->new_display('page', 'User orders', 'admin_page_user_orders');
+$handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+$handler->display->display_options['defaults']['fields'] = FALSE;
+/* Feld: Commerce Order: Bestellnummer */
+$handler->display->display_options['fields']['order_number']['id'] = 'order_number';
+$handler->display->display_options['fields']['order_number']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['order_number']['field'] = 'order_number';
+$handler->display->display_options['fields']['order_number']['label'] = 'ID';
+$handler->display->display_options['fields']['order_number']['link_to_order'] = 'admin';
+/* Feld: Commerce Order: Bestellnummer */
+$handler->display->display_options['fields']['field_order_number']['id'] = 'field_order_number';
+$handler->display->display_options['fields']['field_order_number']['table'] = 'field_data_field_order_number';
+$handler->display->display_options['fields']['field_order_number']['field'] = 'field_order_number';
+$handler->display->display_options['fields']['field_order_number']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['field_order_number']['element_default_classes'] = FALSE;
+$handler->display->display_options['fields']['field_order_number']['field_api_classes'] = TRUE;
+/* Feld: Commerce Order: Erstellungsdatum */
+$handler->display->display_options['fields']['created']['id'] = 'created';
+$handler->display->display_options['fields']['created']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['created']['field'] = 'created';
+$handler->display->display_options['fields']['created']['label'] = 'Created';
+$handler->display->display_options['fields']['created']['date_format'] = 'medium';
+/* Feld: Benutzer: Name */
+$handler->display->display_options['fields']['name']['id'] = 'name';
+$handler->display->display_options['fields']['name']['table'] = 'users';
+$handler->display->display_options['fields']['name']['field'] = 'name';
+$handler->display->display_options['fields']['name']['relationship'] = 'uid';
+$handler->display->display_options['fields']['name']['label'] = 'User';
+/* Feld: Commerce Order: Order total */
+$handler->display->display_options['fields']['commerce_order_total']['id'] = 'commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total']['table'] = 'field_data_commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total']['field'] = 'commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total']['label'] = 'Total';
+$handler->display->display_options['fields']['commerce_order_total']['click_sort_column'] = 'amount';
+$handler->display->display_options['fields']['commerce_order_total']['settings'] = array(
+  'calculation' => FALSE,
+);
+/* Feld: Commerce Order: Bestellstatus */
+$handler->display->display_options['fields']['status']['id'] = 'status';
+$handler->display->display_options['fields']['status']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['status']['field'] = 'status';
+/* Feld: Commerce Order: Operationslinks */
+$handler->display->display_options['fields']['operations']['id'] = 'operations';
+$handler->display->display_options['fields']['operations']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['operations']['field'] = 'operations';
+$handler->display->display_options['fields']['operations']['label'] = 'Operations';
+$handler->display->display_options['defaults']['arguments'] = FALSE;
+/* Kontextfilter: Benutzer: Uid */
+$handler->display->display_options['arguments']['uid']['id'] = 'uid';
+$handler->display->display_options['arguments']['uid']['table'] = 'users';
+$handler->display->display_options['arguments']['uid']['field'] = 'uid';
+$handler->display->display_options['arguments']['uid']['relationship'] = 'uid';
+$handler->display->display_options['arguments']['uid']['default_action'] = 'empty';
+$handler->display->display_options['arguments']['uid']['exception']['title'] = 'Alles';
+$handler->display->display_options['arguments']['uid']['default_argument_type'] = 'fixed';
+$handler->display->display_options['arguments']['uid']['summary']['number_of_records'] = '0';
+$handler->display->display_options['arguments']['uid']['summary']['format'] = 'default_summary';
+$handler->display->display_options['arguments']['uid']['summary_options']['items_per_page'] = '25';
+$handler->display->display_options['path'] = 'admin/commerce/user/%/orders';
+
+/* Display: Data export */
+$handler = $view->new_display('views_data_export', 'Data export', 'views_data_export_1');
+$handler->display->display_options['pager']['type'] = 'none';
+$handler->display->display_options['pager']['options']['offset'] = '0';
+$handler->display->display_options['style_plugin'] = 'views_data_export_xls';
+$handler->display->display_options['style_options']['provide_file'] = 1;
+$handler->display->display_options['style_options']['filename'] = 'jwdberlin_bestellungen_%timestamp-dd-%timestamp-mm-%timestamp-yyyy_%timestamp-hh-%timestamp-ii-%timestamp-ss.xls';
+$handler->display->display_options['style_options']['parent_sort'] = 1;
+$handler->display->display_options['defaults']['fields'] = FALSE;
+/* Feld: Commerce Order: Bestellnummer */
+$handler->display->display_options['fields']['order_number']['id'] = 'order_number';
+$handler->display->display_options['fields']['order_number']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['order_number']['field'] = 'order_number';
+$handler->display->display_options['fields']['order_number']['label'] = 'ID';
+$handler->display->display_options['fields']['order_number']['link_to_order'] = 'admin';
+/* Feld: Commerce Order: Bestellnummer */
+$handler->display->display_options['fields']['field_order_number']['id'] = 'field_order_number';
+$handler->display->display_options['fields']['field_order_number']['table'] = 'field_data_field_order_number';
+$handler->display->display_options['fields']['field_order_number']['field'] = 'field_order_number';
+$handler->display->display_options['fields']['field_order_number']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['field_order_number']['element_default_classes'] = FALSE;
+$handler->display->display_options['fields']['field_order_number']['field_api_classes'] = TRUE;
+/* Feld: Commerce Order: Erstellungsdatum */
+$handler->display->display_options['fields']['created']['id'] = 'created';
+$handler->display->display_options['fields']['created']['table'] = 'commerce_order';
+$handler->display->display_options['fields']['created']['field'] = 'created';
+$handler->display->display_options['fields']['created']['label'] = 'Datum';
+$handler->display->display_options['fields']['created']['date_format'] = 'short';
+/* Feld: Benutzer: Name */
+$handler->display->display_options['fields']['name']['id'] = 'name';
+$handler->display->display_options['fields']['name']['table'] = 'users';
+$handler->display->display_options['fields']['name']['field'] = 'name';
+$handler->display->display_options['fields']['name']['relationship'] = 'uid';
+$handler->display->display_options['fields']['name']['label'] = 'User';
+/* Feld: Commerce Order: Line items */
+$handler->display->display_options['fields']['commerce_line_items']['id'] = 'commerce_line_items';
+$handler->display->display_options['fields']['commerce_line_items']['table'] = 'field_data_commerce_line_items';
+$handler->display->display_options['fields']['commerce_line_items']['field'] = 'commerce_line_items';
+$handler->display->display_options['fields']['commerce_line_items']['label'] = 'Positionen';
+$handler->display->display_options['fields']['commerce_line_items']['element_type'] = '0';
+$handler->display->display_options['fields']['commerce_line_items']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['commerce_line_items']['element_wrapper_type'] = '0';
+$handler->display->display_options['fields']['commerce_line_items']['element_default_classes'] = FALSE;
+$handler->display->display_options['fields']['commerce_line_items']['settings'] = array(
+  'view' => 'commerce_line_item_table|default',
+);
+$handler->display->display_options['fields']['commerce_line_items']['delta_offset'] = '0';
+$handler->display->display_options['fields']['commerce_line_items']['multi_type'] = 'ol';
+$handler->display->display_options['fields']['commerce_line_items']['field_api_classes'] = TRUE;
+/* Feld: Commerce Order: Order total */
+$handler->display->display_options['fields']['commerce_order_total']['id'] = 'commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total']['table'] = 'field_data_commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total']['field'] = 'commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total']['label'] = 'Total';
+$handler->display->display_options['fields']['commerce_order_total']['click_sort_column'] = 'amount';
+$handler->display->display_options['fields']['commerce_order_total']['type'] = 'commerce_price_formatted_components';
+$handler->display->display_options['fields']['commerce_order_total']['settings'] = array(
+  'calculation' => FALSE,
+);
+/* Feld: Commerce Order: Order total */
+$handler->display->display_options['fields']['commerce_order_total_1']['id'] = 'commerce_order_total_1';
+$handler->display->display_options['fields']['commerce_order_total_1']['table'] = 'field_data_commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total_1']['field'] = 'commerce_order_total';
+$handler->display->display_options['fields']['commerce_order_total_1']['label'] = 'Gesamtbetrag';
+$handler->display->display_options['fields']['commerce_order_total_1']['click_sort_column'] = 'amount';
+$handler->display->display_options['fields']['commerce_order_total_1']['settings'] = array(
+  'calculation' => FALSE,
+);
+$handler->display->display_options['path'] = 'admin/commerce/orders/export';
+$handler->display->display_options['displays'] = array(
+  'admin_page' => 'admin_page',
+  'default' => 0,
+  'shopping_carts' => 0,
+  'admin_page_user_orders' => 0,
+);
+$handler->display->display_options['use_batch'] = 'batch';
+$handler->display->display_options['return_path'] = 'admin/commerce/orders';
+$handler->display->display_options['segment_size'] = '100';
+$translatables['commerce_orders'] = array(
+  t('Defaults'),
+  t('Orders'),
+  t('mehr'),
+  t('Anwenden'),
+  t('Zurücksetzen'),
+  t('Sortieren nach'),
+  t('Aufsteigend'),
+  t('Absteigend'),
+  t('Elemente pro Seite'),
+  t('- Alle -'),
+  t('Offset'),
+  t('« erste Seite'),
+  t('‹ vorherige Seite'),
+  t('nächste Seite ›'),
+  t('letzte Seite »'),
+  t('Besteller'),
+  t('Customer profile referenced by commerce_customer_billing'),
+  t('Line items referenced by commerce_line_items'),
+  t('Products referenced by commerce_product'),
+  t('ID'),
+  t('Bestellnummer'),
+  t('Datum'),
+  t('Kunde / Kundin'),
+  t('Bestellungen des Nutzer'),
+  t('Gesamt'),
+  t('Bestellstatus'),
+  t('Aktionen'),
+  t('[field_custom_cost_center-value]'),
+  t('Order state'),
+  t('Rolle'),
+  t('Rechnungsdatum'),
+  t('Erstellungsdatum'),
+  t('Nachname'),
+  t('Vorname'),
+  t('Artikelnummer'),
+  t('Produkttitel'),
+  t('Kostenstelle (Gesobau)'),
+  t('Kostenstelle / Bestellnummer (BMW)'),
+  t('Admin page'),
+  t('Shopping carts'),
+  t('There are currently no shopping cart orders.'),
+  t('User orders'),
+  t('Created'),
+  t('User'),
+  t('Total'),
+  t('Operations'),
+  t('Alles'),
+  t('Data export'),
+  t('Positionen'),
+  t('Gesamtbetrag'),
+);

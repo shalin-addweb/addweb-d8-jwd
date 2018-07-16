@@ -1,0 +1,14 @@
+<?php
+
+function jwd_security_enable() {
+  // no honeypot for authenticated user roles
+  $role = user_role_load_by_name('authenticated user');
+  user_role_grant_permissions($role->rid, array('bypass honeypot protection'));
+}
+
+function jwd_security_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'user_register_form' ||
+      substr($form_id, 0, strlen('commerce_cart_add_to_cart_form')) == 'commerce_cart_add_to_cart_form') {
+    honeypot_add_form_protection($form, $form_state, array('honeypot', 'time_restriction'));
+  }
+}

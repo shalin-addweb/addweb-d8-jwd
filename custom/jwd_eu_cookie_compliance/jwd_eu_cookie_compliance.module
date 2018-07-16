@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the JWD EU Cookie Compliance feature.
+ */
+
+include_once 'jwd_eu_cookie_compliance.features.inc';

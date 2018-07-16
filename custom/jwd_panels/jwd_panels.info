@@ -1,0 +1,15 @@
+name = JWD Panels
+description = Provides settings for panels.
+core = 7.x
+package = JWD
+php = 5.2.4
+version = 7.x-1.0
+project = jwd_panels
+dependencies[] = ctools
+dependencies[] = strongarm
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:1
+features[variable][] = panels_createnode_nodetypes
+features[variable][] = panels_page_allowed_layouts
+features[variable][] = panels_page_allowed_types
+features[variable][] = panels_page_default

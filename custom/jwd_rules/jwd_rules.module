@@ -1,0 +1,398 @@
+<?php
+
+function jwd_rules_default_rules_configuration() {
+  $rules = array();
+
+  $rule = '{ "jwd_checkout_order_mail_returning_customers" : {
+    "LABEL" : "Senden Sie eine Benachrichtigungs-E-Mail f\u00fcr eine Bestellung (Bestandskunden)",
+    "PLUGIN" : "reaction rule",
+    "WEIGHT" : "4",
+    "REQUIRES" : [ "rules", "commerce_checkout" ],
+    "ON" : [ "commerce_checkout_complete" ],
+    "IF" : [
+      { "user_has_role" : {
+          "account" : [ "site:current-user" ],
+          "roles" : { "value" : { "21" : "21" } }
+        }
+      }
+    ],
+    "DO" : [
+      { "mail" : {
+          "to" : [ "commerce-order:mail" ],
+          "subject" : "Bestellung [commerce-order:field-order-number] bei [site:name]",
+          "message" : "Vielen Dank f\u00fcr Ihre Bestellung bei [site:name],\r\n\r\nIhre Bestellnummer lautet: [commerce-order:field-order-number].\r\nSie k\u00f6nnen Ihre Bestellung unter folgendem Link einsehen: [commerce-order:customer-url]\r\n\r\nNachfolgend erhalten Sie eine Zusammenfassung Ihrer Bestellung:\r\n\r\n-- Produkte --\r\n\r\n[commerce-order:jwd-order-rendered-plain-text]\r\n\r\n\r\nMit freundlichen Gr\u00fc\u00dfen,\r\n\r\nIhr Team von jwd-Berlin",
+          "from" : "[site:mail]",
+          "language" : [ "commerce-order:state" ]
+        }
+      },
+      { "mail" : {
+          "to" : [ "site:mail" ],
+          "subject" : "Bestellung [commerce-order:field-order-number] bei [site:name]",
+          "message" : "Auf [site:name] ist eine neue Bestellung eingegangen.\r\n\r\nDie Bestellnummer lautet: [commerce-order:field-order-number]\r\nSie k\u00f6nnen die Bestellung hier einsehen: [commerce-order:admin-url]",
+          "from" : "noreply@jwdberlin.de",
+          "language" : [ "commerce-order:state" ]
+        }
+      }
+    ]
+  }
+}';
+
+  $rules['jwd_checkout_order_mail_returning_customers'] = rules_import($rule);
+
+  $rule = '{ "jwd_checkout_order_mail" : {
+    "LABEL" : "Senden Sie eine Benachrichtigungs-E-Mail f\u00fcr eine Bestellung",
+    "PLUGIN" : "reaction rule",
+    "WEIGHT" : "4",
+    "REQUIRES" : [ "rules", "commerce_checkout" ],
+    "ON" : [ "commerce_checkout_complete" ],
+    "IF" : [
+      { "NOT user_has_role" : {
+          "account" : [ "site:current-user" ],
+          "roles" : { "value" : { "21" : "21" } }
+        }
+      }
+    ],
+    "DO" : [
+      { "mail" : {
+          "to" : [ "commerce-order:mail" ],
+          "subject" : "Anfrage [commerce-order:field-order-number] bei [site:name]",
+          "message" : "Vielen Dank f\u00fcr Ihre Anfrage bei [site:name].\r\n\r\nsobald wir Ihre Anfrage bearbeitet haben, werden wir Sie kontaktieren.\r\n\r\nDie Nummber Ihrer Anfrage lautet: [commerce-order:field-order-number]\r\n\r\nNachfolgend finden Sie nochmals alle Daten Ihrer Anfrage:\r\n\r\n[commerce-order:jwd-order-rendered-plain-text]\r\n\r\n\r\nMit freundlichen Gr\u00fc\u00dfen,\r\n\r\nIhr Team von jwd-Berlin",
+          "from" : "[site:mail]",
+          "language" : [ "commerce-order:state" ]
+        }
+      },
+      { "mail" : {
+          "to" : [ "site:mail" ],
+          "subject" : "Anfrage bei [site:name]",
+          "message" : "Auf [site:name] ist eine neue Anfrage eingegangen.\r\n\r\nDie Nummer der Anfrage lautet: [commerce-order:field-order-number]\r\nSie k\u00f6nnen die Anfrage hier einsehen: [commerce-order:view-url]\r\n",
+          "from" : "noreply@jwdberlin.de",
+          "language" : [ "commerce-order:state" ]
+        }
+      }
+    ]
+  }
+}';
+
+  $rules['jwd_checkout_order_mail'] = rules_import($rule);
+
+  $rule = '{ "jwd_add_to_cart_message" : {
+    "LABEL" : "Display an Add to Cart message",
+    "PLUGIN" : "reaction rule",
+    "REQUIRES" : [ "rules", "commerce_cart" ],
+    "ON" : [ "commerce_cart_product_add" ],
+    "IF" : [
+      { "user_has_role" : {
+          "account" : [ "site:current-user" ],
+          "roles" : { "value" : { "21" : "21" } }
+        }
+      }
+    ],
+    "DO" : [
+      { "commerce_cart_add_to_cart_message" : { "commerce_product" : [ "commerce-product" ] } }
+    ]
+  }
+}';
+
+  $rules['jwd_add_to_cart_message'] = rules_import($rule);
+
+  $rule = '{ "jwd_redirect_to_homebox_after_login" : {
+    "LABEL" : "Redirect zu Homebox nach login",
+    "PLUGIN" : "reaction rule",
+    "REQUIRES" : [ "rules" ],
+    "ON" : [ "user_login" ],
+    "IF" : [
+      { "user_has_role" : {
+          "account" : [ "account" ],
+          "roles" : { "value" : { "4" : "4", "5" : "5", "11" : "11" } },
+          "operation" : "OR"
+        }
+      },
+      { "data_is" : {
+          "data" : [ "site:current-page:path" ],
+          "op" : "IN",
+          "value" : { "value" : [ "login", "user", "user\/login" ] }
+        }
+      }
+    ],
+    "DO" : [ { "redirect" : { "url" : "admin\/homebox", "force" : 0 } } ]
+  }
+}';
+
+  $rules['jwd_redirect_to_homebox_after_login'] = rules_import($rule);
+
+  $rule = '{ "jwd_redirect_returning_customers_after_login" : {
+    "LABEL" : "Redirect zu Startseite nach login (Bestandskunden)",
+    "PLUGIN" : "reaction rule",
+    "REQUIRES" : [ "rules" ],
+    "ON" : [ "user_login" ],
+    "IF" : [
+      { "user_has_role" : { "account" : [ "account" ], "roles" : { "value" : { "21" : "21" } } } },
+      { "data_is" : {
+          "data" : [ "site:current-page:path" ],
+          "op" : "IN",
+          "value" : { "value" : [ "login", "user", "user\/login" ] }
+        }
+      }
+    ],
+    "DO" : [ { "redirect" : { "url" : "\u003Cfront\u003E", "force" : 0 } } ]
+  }
+}';
+
+  $rules['jwd_redirect_returning_customers_after_login'] = rules_import($rule);
+
+  $rule = '{ "jwd_checkout_order_status_update" : {
+    "LABEL" : "Aktualisieren Sie den Bestellstatus auf Abschluss der Bezahlung",
+    "PLUGIN" : "reaction rule",
+    "REQUIRES" : [ "commerce_order", "commerce_checkout" ],
+    "ON" : [ "commerce_checkout_complete" ],
+    "DO" : [
+      { "commerce_order_update_state" : { "commerce_order" : [ "commerce-order" ], "order_state" : "pending" } }
+    ]
+  }
+}';
+
+  $rules['jwd_checkout_order_status_update'] = rules_import($rule);
+
+  $rule = '{ "jwd_checkout_new_account" : {
+    "LABEL" : "Erstellen Sie ein neues Konto f\u00fcr eine anonyme Bestellung",
+    "PLUGIN" : "reaction rule",
+    "WEIGHT" : "2",
+    "REQUIRES" : [ "rules", "commerce", "jwd_product", "commerce_checkout" ],
+    "ON" : [ "commerce_checkout_complete" ],
+    "IF" : [
+      { "NOT user_has_role" : {
+          "account" : [ "site:current-user" ],
+          "roles" : { "value" : { "21" : "21" } }
+        }
+      },
+      { "data_is" : { "data" : [ "commerce-order:uid" ], "value" : "0" } },
+      { "NOT entity_exists" : {
+          "type" : "user",
+          "property" : "mail",
+          "value" : [ "commerce-order:mail" ]
+        }
+      },
+      { "data_is" : { "data" : [ "commerce-order:type" ], "value" : "commerce_order" } },
+      { "entity_has_field" : {
+          "entity" : [ "commerce-order:commerce-line-items:0" ],
+          "field" : "field_customer_address"
+        }
+      },
+      { "entity_has_field" : {
+          "entity" : [ "commerce-order:commerce-line-items:0" ],
+          "field" : "field_customer_email"
+        }
+      }
+    ],
+    "DO" : [
+      { "entity_create" : {
+          "USING" : {
+            "type" : "user",
+            "param_field_user_title" : "Herr",
+            "param_field_user_address" : [ "commerce-order:commerce-line-items:0:field-customer-address" ],
+            "param_name" : "[commerce-order:commerce-line-items:0:field-customer-address:first-name] [commerce-order:commerce-line-items:0:field-customer-address:last-name]",
+            "param_mail" : [ "commerce-order:commerce-line-items:0:field-customer-email" ]
+          },
+          "PROVIDE" : { "entity_created" : { "account_created" : "Erstelltes Konto" } }
+        }
+      },
+      { "data_set" : { "data" : [ "account-created:status" ], "value" : 1 } },
+      { "data_set" : {
+          "data" : [ "account-created:field-customer-number" ],
+          "value" : "[account-created:jwd-customer-number]"
+        }
+      },
+      { "entity_save" : { "data" : [ "account-created" ], "immediate" : 1 } },
+      { "entity_query" : {
+          "USING" : {
+            "type" : "user",
+            "property" : "mail",
+            "value" : [ "commerce-order:mail" ],
+            "limit" : 1
+          },
+          "PROVIDE" : { "entity_fetched" : { "account_fetched" : "Abgerufenes Konto" } }
+        }
+      },
+      { "LOOP" : {
+          "USING" : { "list" : [ "account-fetched" ] },
+          "ITEM" : { "list_item" : "Aktuelle Listenelement" },
+          "DO" : [
+            { "data_set" : { "data" : [ "commerce-order:uid" ], "value" : [ "list-item:uid" ] } },
+            { "data_set" : {
+                "data" : [ "commerce-order:commerce-customer-billing:uid" ],
+                "value" : [ "list-item:uid" ]
+              }
+            },
+            { "data_set" : {
+                "data" : [ "commerce-order:field-order-number" ],
+                "value" : "[commerce-order:jwd-order-number]"
+              }
+            }
+          ]
+        }
+      },
+      { "jwd_product_create_customer_profile" : { "commerce_order" : [ "commerce-order" ] } }
+    ]
+  }
+}';
+
+  $rules['jwd_checkout_new_account'] = rules_import($rule);
+
+  $rule = '{ "jwd_checkout_order_convert" : {
+    "LABEL" : "Zuweisen einer anonymen Bestellung an einen bereits vorhandenen Benutzer",
+    "PLUGIN" : "reaction rule",
+    "WEIGHT" : "1",
+    "REQUIRES" : [ "rules", "commerce", "jwd_product", "commerce_checkout" ],
+    "ON" : [ "commerce_checkout_complete" ],
+    "IF" : [
+      { "data_is" : { "data" : [ "commerce-order:uid" ], "value" : "0" } },
+      { "entity_exists" : {
+          "type" : "user",
+          "property" : "mail",
+          "value" : [ "commerce-order:mail" ]
+        }
+      },
+      { "data_is" : { "data" : [ "commerce-order:type" ], "value" : "commerce_order" } }
+    ],
+    "DO" : [
+      { "entity_query" : {
+          "USING" : {
+            "type" : "user",
+            "property" : "mail",
+            "value" : [ "commerce-order:mail" ],
+            "limit" : 1
+          },
+          "PROVIDE" : { "entity_fetched" : { "account_fetched" : "Abgerufenes Konto" } }
+        }
+      },
+      { "LOOP" : {
+          "USING" : { "list" : [ "account-fetched" ] },
+          "ITEM" : { "list_item" : "Aktuelle Listenelement" },
+          "DO" : [
+            { "data_set" : { "data" : [ "commerce-order:uid" ], "value" : [ "list-item:uid" ] } },
+            { "data_set" : {
+                "data" : [ "commerce-order:commerce-customer-billing:uid" ],
+                "value" : [ "list-item:uid" ]
+              }
+            },
+            { "data_set" : {
+                "data" : [ "commerce-order:field-order-number" ],
+                "value" : "[commerce-order:jwd-order-number]"
+              }
+            }
+          ]
+        }
+      },
+      { "jwd_product_create_customer_profile" : { "commerce_order" : [ "commerce-order" ] } }
+    ]
+  }
+}';
+
+  $rules['jwd_checkout_order_convert'] = rules_import($rule);
+
+  $rule = '{ "jwd_product_min_order_quantity" : {
+    "LABEL" : "Mindestbestellmenge",
+    "PLUGIN" : "reaction rule",
+    "REQUIRES" : [ "jwd_product", "rules", "entity" ],
+    "ON" : [ "commerce_line_item_update" ],
+    "IF" : [
+      { "jwd_product_line_item_below_min_quantity" : {
+          "commerce_line_item" : [ "commerce-line-item" ],
+          "field_name" : "field_product_min_order_quantity"
+        }
+      }
+    ],
+    "DO" : [
+      { "jwd_product_set_min_line_item_quantity" : {
+          "commerce_line_item" : [ "commerce-line-item" ],
+          "field_name" : "field_product_min_order_quantity"
+        }
+      },
+      { "drupal_message" : { "message" : "Die Mindestbestellmenge f\u00fcr das Produkt \u0022[commerce-line-item:commerce-product:title]\u0022 betr\u00e4gt [commerce-line-item:quantity] und wurde deshalb korrigiert." } }
+    ]
+  }
+}';
+
+  $rules['jwd_product_min_order_quantity'] = rules_import($rule);
+
+  $rule = '{ "jwd_gb_discount_line_item" : {
+    "LABEL" : "Gesobau discount",
+    "PLUGIN" : "reaction rule",
+    "WEIGHT" : "-10",
+    "REQUIRES" : [
+      "commerce_cart",
+      "rules",
+      "commerce_line_item",
+      "commerce_tax",
+      "commerce_product_reference"
+    ],
+    "ON" : [ "commerce_product_calculate_sell_price" ],
+    "IF" : [
+      { "commerce_order_is_cart" : { "commerce_order" : [ "commerce-line-item:order" ] } },
+      { "user_has_role" : {
+          "account" : [ "site:current-user" ],
+          "roles" : { "value" : { "31" : "31" } }
+        }
+      }
+    ],
+    "DO" : [
+      { "commerce_line_item_unit_price_multiply" : {
+          "commerce_line_item" : [ "commerce_line_item" ],
+          "amount" : ".97",
+          "component_name" : "base_price",
+          "round_mode" : "0"
+        }
+      },
+      { "commerce_tax_calculate_by_type" : {
+          "commerce_line_item" : [ "commerce_line_item" ],
+          "tax_type_name" : "vat"
+        }
+      }
+    ]
+  }
+}';
+
+  $rules['jwd_gb_discount_line_item'] = rules_import($rule);
+
+  $rule = '{ "jwd_generate_customer_number" : {
+    "LABEL" : "Generate customer number",
+    "PLUGIN" : "reaction rule",
+    "REQUIRES" : [ "rules", "jwd_user_registration" ],
+    "ON" : [ "jwd_user_registration_validated" ],
+    "IF" : [ { "data_is_empty" : { "data" : [ "account:field-customer-number" ] } } ],
+    "DO" : [
+      { "data_set" : {
+          "data" : [ "account:field-customer-number" ],
+          "value" : "[account:jwd-customer-number]"
+        }
+      }
+    ]
+  }
+}';
+
+  $rules['jwd_generate_customer_number'] = rules_import($rule);
+
+  $rule = '{ "jwd_generate_order_number" : {
+    "LABEL" : "Generate order number",
+    "PLUGIN" : "reaction rule",
+    "REQUIRES" : [ "rules", "entity" ],
+    "ON" : [ "commerce_order_insert" ],
+    "IF" : [
+      { "entity_has_field" : { "entity" : [ "commerce-order" ], "field" : "field_order_number" } },
+      { "data_is_empty" : { "data" : [ "commerce-order:field-order-number" ] } },
+      { "NOT data_is_empty" : { "data" : [ "commerce-order:uid" ] } }
+    ],
+    "DO" : [
+      { "data_set" : {
+          "data" : [ "commerce-order:field-order-number" ],
+          "value" : "[commerce-order:jwd-order-number]"
+        }
+      }
+    ]
+  }
+}';
+
+  $rules['jwd_generate_order_number'] = rules_import($rule);
+
+  return $rules;
+}
