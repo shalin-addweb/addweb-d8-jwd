@@ -1,0 +1,29 @@
+uuid: 1995978c-f0cc-4f06-9fe4-c845e21fed68
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_product_kategorie_gesobau
+    - node.type.jwd_gesobau_product_display
+    - taxonomy.vocabulary.tags
+id: node.jwd_gesobau_product_display.field_product_kategorie_gesobau
+field_name: field_product_kategorie_gesobau
+entity_type: node
+bundle: jwd_gesobau_product_display
+label: Kategorie
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      tags: tags
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

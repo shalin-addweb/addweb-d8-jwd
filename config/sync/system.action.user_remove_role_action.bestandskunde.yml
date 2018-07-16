@@ -1,0 +1,14 @@
+uuid: 7f83f11c-4796-4f9d-b224-d83c567c09df
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.bestandskunde
+  module:
+    - user
+id: user_remove_role_action.bestandskunde
+label: 'Remove the Bestandskunde role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: bestandskunde

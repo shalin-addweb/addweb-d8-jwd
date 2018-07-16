@@ -1,0 +1,19 @@
+uuid: 4f7c335c-a0fd-4ff2-a821-6ff121f7a2d4
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_price
+    - commerce_product
+id: commerce_product.field_bmw_preis_stk
+field_name: field_bmw_preis_stk
+entity_type: commerce_product
+type: commerce_price
+settings: {  }
+module: commerce_price
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

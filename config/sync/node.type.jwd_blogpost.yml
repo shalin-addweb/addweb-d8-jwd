@@ -1,0 +1,18 @@
+uuid: b6885e35-5445-404a-8e79-9e9e5d52c27a
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+name: Blogeintrag
+type: jwd_blogpost
+description: ''
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: true

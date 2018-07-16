@@ -1,0 +1,28 @@
+uuid: f5f13e40-f598-49e6-92cb-bf76aaf0a5eb
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.jwd_delivery_returning_customers.body
+    - node.type.jwd_delivery_returning_customers
+  module:
+    - text
+    - user
+id: node.jwd_delivery_returning_customers.teaser
+targetEntityType: node
+bundle: jwd_delivery_returning_customers
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

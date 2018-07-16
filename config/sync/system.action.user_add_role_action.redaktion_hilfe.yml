@@ -1,0 +1,14 @@
+uuid: a343ee5d-ed0f-463d-98fd-630ceed7ccec
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.redaktion_hilfe
+  module:
+    - user
+id: user_add_role_action.redaktion_hilfe
+label: 'Add the Redaktion Hilfe role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: redaktion_hilfe

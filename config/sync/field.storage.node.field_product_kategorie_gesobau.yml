@@ -1,0 +1,20 @@
+uuid: 3865d049-dd74-45d3-9ad7-f58460bd454e
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - taxonomy
+id: node.field_product_kategorie_gesobau
+field_name: field_product_kategorie_gesobau
+entity_type: node
+type: entity_reference
+settings:
+  target_type: taxonomy_term
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

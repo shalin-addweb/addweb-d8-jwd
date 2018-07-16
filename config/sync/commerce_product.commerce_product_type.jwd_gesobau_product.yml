@@ -1,0 +1,11 @@
+uuid: 202c0933-9f01-4453-983d-5cc3c668d3f1
+langcode: en
+status: true
+dependencies: {  }
+id: jwd_gesobau_product
+label: 'Gesobau Produkt'
+description: ''
+variationType: default
+injectVariationFields: true
+traits: {  }
+locked: false

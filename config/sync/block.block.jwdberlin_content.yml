@@ -1,0 +1,22 @@
+uuid: 32876860-f6e1-4287-826c-17328281896b
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - jwdberlin
+_core:
+  default_config_hash: 9EoWV2Lot6FVSr50t4hoKgiz1LIXYWNG-IIPYsWxBqo
+id: jwdberlin_content
+theme: jwdberlin
+region: content
+weight: 0
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  provider: system
+  label_display: '0'
+visibility: {  }

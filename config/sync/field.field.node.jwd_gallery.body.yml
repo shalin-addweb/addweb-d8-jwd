@@ -1,0 +1,22 @@
+uuid: 62876def-b8e3-4bcf-a256-788fd5ba5b39
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.jwd_gallery
+  module:
+    - text
+id: node.jwd_gallery.body
+field_name: body
+entity_type: node
+bundle: jwd_gallery
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+field_type: text_with_summary

@@ -1,0 +1,22 @@
+uuid: 017acf9d-2c88-4f91-851e-27d79d4a3558
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.jwd_blogpost
+  module:
+    - text
+id: node.jwd_blogpost.body
+field_name: body
+entity_type: node
+bundle: jwd_blogpost
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+field_type: text_with_summary

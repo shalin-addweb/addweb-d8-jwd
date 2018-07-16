@@ -1,0 +1,19 @@
+uuid: 82f64d3a-0e63-4d54-9279-3c1077a060c4
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - text
+id: node.field_product_bundle_tease
+field_name: field_product_bundle_tease
+entity_type: node
+type: text_long
+settings: {  }
+module: text
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

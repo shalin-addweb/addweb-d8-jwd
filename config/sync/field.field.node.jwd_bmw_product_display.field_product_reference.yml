@@ -1,0 +1,28 @@
+uuid: 5bae8eeb-2517-41f7-8740-ff6c05db1eea
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.business_product_type
+    - field.storage.node.field_product_reference
+    - node.type.jwd_bmw_product_display
+id: node.jwd_bmw_product_display.field_product_reference
+field_name: field_product_reference
+entity_type: node
+bundle: jwd_bmw_product_display
+label: Produkt
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:commerce_product'
+  handler_settings:
+    target_bundles:
+      business_product_type: business_product_type
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

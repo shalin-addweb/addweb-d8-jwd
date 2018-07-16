@@ -1,0 +1,21 @@
+uuid: 3f2487d1-c691-41ac-bebd-0b48f3d1ca0c
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.jwd_bmw_product
+    - field.storage.commerce_product.field_product_extra_fields
+  module:
+    - options
+id: commerce_product.jwd_bmw_product.field_product_extra_fields
+field_name: field_product_extra_fields
+entity_type: commerce_product
+bundle: jwd_bmw_product
+label: 'Verfügbare Freitextfelder'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

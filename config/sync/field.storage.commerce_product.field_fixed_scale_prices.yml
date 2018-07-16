@@ -1,0 +1,18 @@
+uuid: ceecf6e3-96be-4e78-8c92-80de2a4f93ea
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_product
+id: commerce_product.field_fixed_scale_prices
+field_name: field_fixed_scale_prices
+entity_type: commerce_product
+type: boolean
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

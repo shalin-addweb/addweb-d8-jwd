@@ -1,0 +1,24 @@
+uuid: 920b9372-d06a-4e86-b37d-75d6f3b5d3d7
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.business_product_type
+    - commerce_product.commerce_product_variation_type.default
+    - field.storage.commerce_product.variations
+id: commerce_product.business_product_type.variations
+field_name: variations
+entity_type: commerce_product
+bundle: business_product_type
+label: Variations
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: null
+settings:
+  handler: 'default:commerce_product_variation'
+  handler_settings:
+    target_bundles:
+      - default
+field_type: entity_reference

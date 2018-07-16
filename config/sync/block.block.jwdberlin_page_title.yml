@@ -1,0 +1,20 @@
+uuid: 8c2d9620-fd52-4c70-851c-9ca384b2c150
+langcode: en
+status: true
+dependencies:
+  theme:
+    - jwdberlin
+_core:
+  default_config_hash: 7rR9chwXvdM2H8OYMAYx9Zj3GGlPMrZp_M3ZA4thYTk
+id: jwdberlin_page_title
+theme: jwdberlin
+region: header
+weight: -4
+provider: null
+plugin: page_title_block
+settings:
+  id: page_title_block
+  label: 'Page title'
+  provider: core
+  label_display: '0'
+visibility: {  }

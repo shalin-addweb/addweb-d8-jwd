@@ -1,0 +1,22 @@
+uuid: 253e6784-a4c0-415a-be7a-82b8f46acb21
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.jwd_reference
+  module:
+    - text
+id: node.jwd_reference.body
+field_name: body
+entity_type: node
+bundle: jwd_reference
+label: Beschreibung
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+field_type: text_with_summary

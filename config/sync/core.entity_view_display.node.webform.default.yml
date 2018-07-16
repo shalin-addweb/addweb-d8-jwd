@@ -1,0 +1,26 @@
+uuid: 94180f61-975c-4131-9f77-dac114a0da35
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.webform.body
+    - node.type.webform
+  module:
+    - text
+    - user
+id: node.webform.default
+targetEntityType: node
+bundle: webform
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

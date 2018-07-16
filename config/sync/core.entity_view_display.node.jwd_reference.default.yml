@@ -1,0 +1,47 @@
+uuid: a6b43067-40db-4c1e-87bb-a7e4a3f2f73e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.jwd_reference.body
+    - field.field.node.jwd_reference.field_reference_image
+    - field.field.node.jwd_reference.field_reference_images
+    - node.type.jwd_reference
+  module:
+    - image
+    - text
+    - user
+id: node.jwd_reference.default
+targetEntityType: node
+bundle: jwd_reference
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_reference_image:
+    weight: 102
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_reference_images:
+    weight: 103
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

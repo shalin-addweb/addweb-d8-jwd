@@ -1,0 +1,25 @@
+uuid: f4310c59-24f0-47aa-9db3-973f5754551f
+langcode: en
+status: true
+dependencies:
+  content:
+    - 'block_content:basic:ce0d2739-3dbc-4a82-a07b-97d5dd10daf1'
+  module:
+    - block_content
+  theme:
+    - jwdberlin
+id: footercopyright
+theme: jwdberlin
+region: footer
+weight: -6
+provider: null
+plugin: 'block_content:ce0d2739-3dbc-4a82-a07b-97d5dd10daf1'
+settings:
+  id: 'block_content:ce0d2739-3dbc-4a82-a07b-97d5dd10daf1'
+  label: 'Footer Copyright'
+  provider: block_content
+  label_display: '0'
+  status: true
+  info: ''
+  view_mode: full
+visibility: {  }

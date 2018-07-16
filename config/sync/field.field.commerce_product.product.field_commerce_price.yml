@@ -1,0 +1,23 @@
+uuid: f7470fa0-d284-4001-a25d-d3747c294818
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.product
+    - field.storage.commerce_product.field_commerce_price
+  module:
+    - commerce_price
+id: commerce_product.product.field_commerce_price
+field_name: field_commerce_price
+entity_type: commerce_product
+bundle: product
+label: Price
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  available_currencies:
+    - INR
+field_type: commerce_price

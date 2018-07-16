@@ -1,0 +1,22 @@
+uuid: 5812504f-fe17-4c4d-9a37-2831a383c172
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - jwdberlin
+_core:
+  default_config_hash: KHQIJ7Vfl25lTjzIc7qIvnuistt-Mw2O0kG4jCofmkI
+id: jwdberlin_messages
+theme: jwdberlin
+region: header
+weight: -5
+provider: null
+plugin: system_messages_block
+settings:
+  id: system_messages_block
+  label: 'Status messages'
+  provider: system
+  label_display: '0'
+visibility: {  }

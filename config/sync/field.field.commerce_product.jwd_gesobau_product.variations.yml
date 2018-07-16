@@ -1,0 +1,24 @@
+uuid: 5110e347-782f-4178-a7a9-a1449f206f94
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.jwd_gesobau_product
+    - commerce_product.commerce_product_variation_type.default
+    - field.storage.commerce_product.variations
+id: commerce_product.jwd_gesobau_product.variations
+field_name: variations
+entity_type: commerce_product
+bundle: jwd_gesobau_product
+label: Variations
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: null
+settings:
+  handler: 'default:commerce_product_variation'
+  handler_settings:
+    target_bundles:
+      - default
+field_type: entity_reference

@@ -1,0 +1,9 @@
+uuid: 1be4f679-8baf-47d9-84ec-5f4cc766bd24
+langcode: en
+status: true
+dependencies: {  }
+id: bestandskunde
+label: Bestandskunde
+weight: 6
+is_admin: null
+permissions: {  }

@@ -1,0 +1,14 @@
+uuid: 19dc515d-11a6-4d19-b214-ec03bdc40dd9
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.redaktion
+  module:
+    - user
+id: user_add_role_action.redaktion
+label: 'Add the Redaktion role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: redaktion

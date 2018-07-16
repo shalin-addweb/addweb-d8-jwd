@@ -1,0 +1,26 @@
+uuid: 618b4b9f-77ad-44bf-9469-b39b13073403
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_customer_address
+    - node.type.jwd_delivery_returning_customers
+  module:
+    - address
+id: node.jwd_delivery_returning_customers.field_customer_address
+field_name: field_customer_address
+entity_type: node
+bundle: jwd_delivery_returning_customers
+label: Adresse
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  available_countries:
+    IN: IN
+  langcode_override: ''
+  field_overrides: {  }
+  fields: {  }
+field_type: address

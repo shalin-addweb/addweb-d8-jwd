@@ -1,0 +1,28 @@
+uuid: 777ba65c-b84e-4c56-86dc-2d4665c379e0
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.jwd_gesobau_product_display.body
+    - node.type.jwd_gesobau_product_display
+  module:
+    - text
+    - user
+id: node.jwd_gesobau_product_display.teaser
+targetEntityType: node
+bundle: jwd_gesobau_product_display
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

@@ -1,0 +1,22 @@
+uuid: edcca379-298f-4b86-bfae-a9cc46affc58
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.jwd_product_display
+  module:
+    - text
+id: node.jwd_product_display.body
+field_name: body
+entity_type: node
+bundle: jwd_product_display
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+field_type: text_with_summary

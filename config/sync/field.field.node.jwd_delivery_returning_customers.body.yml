@@ -1,0 +1,22 @@
+uuid: 64f95d8b-1944-4ce1-a718-217da553e780
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.jwd_delivery_returning_customers
+  module:
+    - text
+id: node.jwd_delivery_returning_customers.body
+field_name: body
+entity_type: node
+bundle: jwd_delivery_returning_customers
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+field_type: text_with_summary

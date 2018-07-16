@@ -1,0 +1,14 @@
+uuid: bf9e4f6b-93be-4868-a4f5-4b3be61625cd
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.nichtauthentifizierter_benutzer
+  module:
+    - user
+id: user_remove_role_action.nichtauthentifizierter_benutzer
+label: 'Remove the Nichtauthentifizierter Benutzer role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: nichtauthentifizierter_benutzer

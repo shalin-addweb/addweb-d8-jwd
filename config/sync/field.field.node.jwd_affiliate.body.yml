@@ -1,0 +1,22 @@
+uuid: 26ad2479-2e01-45d8-bf7c-65174eb66093
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.jwd_affiliate
+  module:
+    - text
+id: node.jwd_affiliate.body
+field_name: body
+entity_type: node
+bundle: jwd_affiliate
+label: Beschreibung
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+field_type: text_with_summary

@@ -1,0 +1,21 @@
+uuid: 2cd78046-45ef-4ac8-9fef-07b0cafaf446
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_product
+    - options
+id: commerce_product.field_product_extra_fields
+field_name: field_product_extra_fields
+entity_type: commerce_product
+type: list_string
+settings:
+  allowed_values: {  }
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

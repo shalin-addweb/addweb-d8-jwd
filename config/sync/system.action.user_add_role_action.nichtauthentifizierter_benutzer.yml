@@ -1,0 +1,14 @@
+uuid: aeae6e84-c659-49ae-bea1-27f9ceb2c481
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.nichtauthentifizierter_benutzer
+  module:
+    - user
+id: user_add_role_action.nichtauthentifizierter_benutzer
+label: 'Add the Nichtauthentifizierter Benutzer role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: nichtauthentifizierter_benutzer

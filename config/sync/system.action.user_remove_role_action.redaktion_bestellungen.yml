@@ -1,0 +1,14 @@
+uuid: 918a99e3-98ce-4ffb-b0d3-46414036ff12
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.redaktion_bestellungen
+  module:
+    - user
+id: user_remove_role_action.redaktion_bestellungen
+label: 'Remove the Redaktion Bestellungen role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: redaktion_bestellungen

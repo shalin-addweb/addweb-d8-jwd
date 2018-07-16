@@ -1,0 +1,11 @@
+uuid: 7b807a30-b423-4036-97e6-337bf3289b44
+langcode: en
+status: true
+dependencies: {  }
+id: jwd_bmw_product
+label: 'BMW Produkt'
+description: ''
+variationType: default
+injectVariationFields: true
+traits: {  }
+locked: false

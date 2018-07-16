@@ -1,0 +1,45 @@
+uuid: bc6c79d0-e5c0-47c7-a35c-85278675c57e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.jwd_gallery.body
+    - field.field.node.jwd_gallery.field_gallery_images
+    - field.field.node.jwd_gallery.field_gallery_path
+    - node.type.jwd_gallery
+  module:
+    - image
+    - text
+    - user
+id: node.jwd_gallery.default
+targetEntityType: node
+bundle: jwd_gallery
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_gallery_images:
+    weight: 103
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_gallery_path:
+    weight: 102
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

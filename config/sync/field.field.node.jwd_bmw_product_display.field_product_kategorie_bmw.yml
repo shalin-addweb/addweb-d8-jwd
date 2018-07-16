@@ -1,0 +1,29 @@
+uuid: 6ccd29fd-6388-4805-8177-74013e2beaad
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_product_kategorie_bmw
+    - node.type.jwd_bmw_product_display
+    - taxonomy.vocabulary.tags
+id: node.jwd_bmw_product_display.field_product_kategorie_bmw
+field_name: field_product_kategorie_bmw
+entity_type: node
+bundle: jwd_bmw_product_display
+label: Kategorie
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      tags: tags
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

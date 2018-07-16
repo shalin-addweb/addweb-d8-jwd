@@ -1,0 +1,11 @@
+uuid: 2f358992-d5b6-40f7-83ba-5a0f366d5d7e
+langcode: en
+status: true
+dependencies: {  }
+id: simple_productfield
+label: 'Simple ProductField'
+description: 'Simple Product type'
+variationType: default
+injectVariationFields: true
+traits: {  }
+locked: false

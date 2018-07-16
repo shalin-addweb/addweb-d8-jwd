@@ -1,0 +1,19 @@
+uuid: 7bb41035-c769-4dc3-a7f6-a5fa12840c55
+langcode: en
+status: true
+dependencies:
+  module:
+    - address
+    - node
+id: node.field_customer_address
+field_name: field_customer_address
+entity_type: node
+type: address
+settings: {  }
+module: address
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

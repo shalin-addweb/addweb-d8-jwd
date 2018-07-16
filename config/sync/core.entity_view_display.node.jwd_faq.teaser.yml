@@ -1,0 +1,28 @@
+uuid: a78a16b0-1a8f-41d4-a839-e94bd3d419b0
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.jwd_faq.body
+    - node.type.jwd_faq
+  module:
+    - text
+    - user
+id: node.jwd_faq.teaser
+targetEntityType: node
+bundle: jwd_faq
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

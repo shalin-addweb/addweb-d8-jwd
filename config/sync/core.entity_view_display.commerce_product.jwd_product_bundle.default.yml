@@ -1,0 +1,55 @@
+uuid: a1031ae8-2016-4214-a378-d83d4fb4284d
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.jwd_product_bundle
+    - field.field.commerce_product.jwd_product_bundle.body
+    - field.field.commerce_product.jwd_product_bundle.field_commerce_price
+    - field.field.commerce_product.jwd_product_bundle.stores
+    - field.field.commerce_product.jwd_product_bundle.variations
+  module:
+    - commerce_price
+    - commerce_product
+    - text
+id: commerce_product.jwd_product_bundle.default
+targetEntityType: commerce_product
+bundle: jwd_product_bundle
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: -4
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_commerce_price:
+    weight: 11
+    label: above
+    settings:
+      strip_trailing_zeroes: false
+      currency_display: symbol
+    third_party_settings: {  }
+    type: commerce_price_default
+    region: content
+  title:
+    label: hidden
+    type: string
+    weight: -5
+    region: content
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  variations:
+    type: commerce_add_to_cart
+    weight: 10
+    label: above
+    settings:
+      combine: true
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  stores: true
+  uid: true

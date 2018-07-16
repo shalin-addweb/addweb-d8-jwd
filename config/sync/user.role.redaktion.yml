@@ -1,0 +1,9 @@
+uuid: b58d78db-52f5-4334-a7fd-5669244a76fe
+langcode: en
+status: true
+dependencies: {  }
+id: redaktion
+label: Redaktion
+weight: 3
+is_admin: null
+permissions: {  }

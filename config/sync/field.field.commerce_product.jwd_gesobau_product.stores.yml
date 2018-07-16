@@ -1,0 +1,21 @@
+uuid: c9558af0-8e35-4fa6-b5d8-0d9917899df4
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.jwd_gesobau_product
+    - field.storage.commerce_product.stores
+id: commerce_product.jwd_gesobau_product.stores
+field_name: stores
+entity_type: commerce_product
+bundle: jwd_gesobau_product
+label: Stores
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: null
+settings:
+  handler: 'default:commerce_store'
+  handler_settings: {  }
+field_type: entity_reference

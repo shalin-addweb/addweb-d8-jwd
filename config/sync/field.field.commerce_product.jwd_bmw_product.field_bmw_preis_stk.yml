@@ -1,0 +1,23 @@
+uuid: 381b7aab-6ba6-4520-8a58-7ec458ba1daa
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.jwd_bmw_product
+    - field.storage.commerce_product.field_bmw_preis_stk
+  module:
+    - commerce_price
+id: commerce_product.jwd_bmw_product.field_bmw_preis_stk
+field_name: field_bmw_preis_stk
+entity_type: commerce_product
+bundle: jwd_bmw_product
+label: 'Preis je Stück'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  available_currencies:
+    - INR
+field_type: commerce_price

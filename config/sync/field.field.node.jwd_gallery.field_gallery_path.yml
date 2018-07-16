@@ -1,0 +1,21 @@
+uuid: 1fbdf160-dc18-4b14-b7f5-17b42afbe788
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_gallery_path
+    - node.type.jwd_gallery
+  module:
+    - text
+id: node.jwd_gallery.field_gallery_path
+field_name: field_gallery_path
+entity_type: node
+bundle: jwd_gallery
+label: Pfad
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text

@@ -1,0 +1,14 @@
+uuid: 4bd775cc-b88d-421f-a895-94ef0ce29e68
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.devel
+  module:
+    - user
+id: user_remove_role_action.devel
+label: 'Remove the Devel role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: devel

@@ -1,0 +1,9 @@
+uuid: 93f33844-7478-4413-9eef-f3869b3f345f
+langcode: en
+status: true
+dependencies: {  }
+id: redaktion_hilfe
+label: 'Redaktion Hilfe'
+weight: 5
+is_admin: null
+permissions: {  }

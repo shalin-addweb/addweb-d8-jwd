@@ -1,0 +1,21 @@
+uuid: 6a609338-f322-42f5-ab09-9ba65d74fc1c
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.jwd_bmw_product
+    - field.storage.commerce_product.stores
+id: commerce_product.jwd_bmw_product.stores
+field_name: stores
+entity_type: commerce_product
+bundle: jwd_bmw_product
+label: Stores
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: null
+settings:
+  handler: 'default:commerce_store'
+  handler_settings: {  }
+field_type: entity_reference

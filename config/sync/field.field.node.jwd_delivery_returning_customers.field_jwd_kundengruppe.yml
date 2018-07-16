@@ -1,0 +1,28 @@
+uuid: f8c27c3e-f137-49c8-9242-40cec80e0e15
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_jwd_kundengruppe
+    - node.type.jwd_delivery_returning_customers
+id: node.jwd_delivery_returning_customers.field_jwd_kundengruppe
+field_name: field_jwd_kundengruppe
+entity_type: node
+bundle: jwd_delivery_returning_customers
+label: Kundengruppe
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:user'
+  handler_settings:
+    include_anonymous: true
+    filter:
+      type: _none
+    target_bundles: null
+    sort:
+      field: _none
+    auto_create: false
+field_type: entity_reference

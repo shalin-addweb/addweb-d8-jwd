@@ -1,0 +1,22 @@
+uuid: 54de9b90-5b02-47c5-8a42-3f83886719d0
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.jwd_bmw_product
+id: commerce_product.jwd_bmw_product.status
+field_name: status
+entity_type: commerce_product
+bundle: jwd_bmw_product
+label: Published
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

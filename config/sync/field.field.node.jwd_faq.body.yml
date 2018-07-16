@@ -1,0 +1,22 @@
+uuid: a2c7ac66-21ac-49d4-9241-60e8bc7ddc76
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.jwd_faq
+  module:
+    - text
+id: node.jwd_faq.body
+field_name: body
+entity_type: node
+bundle: jwd_faq
+label: Antwort
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+field_type: text_with_summary

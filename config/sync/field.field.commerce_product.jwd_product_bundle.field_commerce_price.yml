@@ -1,0 +1,23 @@
+uuid: 38ad659e-1718-4460-9c1b-1407bc4e5cf5
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.jwd_product_bundle
+    - field.storage.commerce_product.field_commerce_price
+  module:
+    - commerce_price
+id: commerce_product.jwd_product_bundle.field_commerce_price
+field_name: field_commerce_price
+entity_type: commerce_product
+bundle: jwd_product_bundle
+label: Preis
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  available_currencies:
+    - INR
+field_type: commerce_price

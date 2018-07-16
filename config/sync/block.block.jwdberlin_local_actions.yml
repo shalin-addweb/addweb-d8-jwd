@@ -1,0 +1,20 @@
+uuid: 974ae7e2-b321-481c-88a6-8abaa6f3107e
+langcode: en
+status: true
+dependencies:
+  theme:
+    - jwdberlin
+_core:
+  default_config_hash: 13GQpeITIJsp1kyPniXtWZfyFH87vb1xxJCHifL4UeE
+id: jwdberlin_local_actions
+theme: jwdberlin
+region: header
+weight: -2
+provider: null
+plugin: local_actions_block
+settings:
+  id: local_actions_block
+  label: 'Primary admin actions'
+  provider: core
+  label_display: '0'
+visibility: {  }

@@ -1,0 +1,14 @@
+uuid: 00516120-154f-418a-bb0d-d3da268245f5
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.redaktion_bestellungen
+  module:
+    - user
+id: user_add_role_action.redaktion_bestellungen
+label: 'Add the Redaktion Bestellungen role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: redaktion_bestellungen

@@ -1,0 +1,22 @@
+uuid: 0a152d6c-52bf-454b-ad6d-d513cc93e793
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.jwd_gesobau_product
+    - field.storage.commerce_product.body
+  module:
+    - text
+id: commerce_product.jwd_gesobau_product.body
+field_name: body
+entity_type: commerce_product
+bundle: jwd_gesobau_product
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: null
+settings:
+  display_summary: false
+field_type: text_with_summary

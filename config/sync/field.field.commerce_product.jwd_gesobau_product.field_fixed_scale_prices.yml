@@ -1,0 +1,23 @@
+uuid: 8693ef54-bc51-4fd5-b48e-67820ada4c88
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.jwd_gesobau_product
+    - field.storage.commerce_product.field_fixed_scale_prices
+id: commerce_product.jwd_gesobau_product.field_fixed_scale_prices
+field_name: field_fixed_scale_prices
+entity_type: commerce_product
+bundle: jwd_gesobau_product
+label: 'Feste Staffelpreise'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

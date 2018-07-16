@@ -1,0 +1,18 @@
+uuid: 7bf8e21d-9fbb-4162-a52d-f2c7976d0ca1
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+name: 'Frage und Antwort'
+type: jwd_faq
+description: ''
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: true

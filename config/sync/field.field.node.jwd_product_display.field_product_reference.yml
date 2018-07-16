@@ -1,0 +1,32 @@
+uuid: d356df22-82df-4d35-bb30-62b02c3af51b
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.business_product_type
+    - commerce_product.commerce_product_type.default
+    - commerce_product.commerce_product_type.simple_productfield
+    - field.storage.node.field_product_reference
+    - node.type.jwd_product_display
+id: node.jwd_product_display.field_product_reference
+field_name: field_product_reference
+entity_type: node
+bundle: jwd_product_display
+label: Produkt
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:commerce_product'
+  handler_settings:
+    target_bundles:
+      business_product_type: business_product_type
+      default: default
+      simple_productfield: simple_productfield
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: business_product_type
+field_type: entity_reference

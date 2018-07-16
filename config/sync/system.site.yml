@@ -1,0 +1,14 @@
+uuid: 5c457bd2-4570-43c3-8841-084dd8c5c5d4
+name: jwd-Berlin
+mail: shalin.addweb@gmail.com
+slogan: ''
+page:
+  403: ''
+  404: ''
+  front: /node
+admin_compact_mode: false
+weight_select_max: 100
+langcode: en
+default_langcode: en
+_core:
+  default_config_hash: yXadRE77Va-G6dxhd2kPYapAvbnSvTF6hO4oXiOEynI

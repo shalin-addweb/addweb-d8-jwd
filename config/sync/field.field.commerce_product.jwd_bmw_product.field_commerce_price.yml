@@ -1,0 +1,23 @@
+uuid: 717de00d-d5cd-430f-887e-27d6df40a9da
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.jwd_bmw_product
+    - field.storage.commerce_product.field_commerce_price
+  module:
+    - commerce_price
+id: commerce_product.jwd_bmw_product.field_commerce_price
+field_name: field_commerce_price
+entity_type: commerce_product
+bundle: jwd_bmw_product
+label: Price
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  available_currencies:
+    - INR
+field_type: commerce_price

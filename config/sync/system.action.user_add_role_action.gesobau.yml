@@ -1,0 +1,14 @@
+uuid: 5df376fa-9046-4a34-98ae-d259e4ea9a32
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.gesobau
+  module:
+    - user
+id: user_add_role_action.gesobau
+label: 'Add the Gesobau role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: gesobau

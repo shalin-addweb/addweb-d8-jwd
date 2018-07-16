@@ -1,0 +1,26 @@
+uuid: 84d123dd-8684-4336-af7d-98c6d79084ab
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.textblock.body
+    - node.type.textblock
+  module:
+    - text
+    - user
+id: node.textblock.default
+targetEntityType: node
+bundle: textblock
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

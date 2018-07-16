@@ -1,0 +1,28 @@
+uuid: f4449f22-14c6-40f7-bcb4-1a7d0ede312e
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.jwd_bmw_product_display.body
+    - node.type.jwd_bmw_product_display
+  module:
+    - text
+    - user
+id: node.jwd_bmw_product_display.teaser
+targetEntityType: node
+bundle: jwd_bmw_product_display
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

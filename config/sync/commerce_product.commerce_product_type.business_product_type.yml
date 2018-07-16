@@ -1,0 +1,11 @@
+uuid: 27040fdd-aa0f-4028-9762-295b701949d9
+langcode: en
+status: true
+dependencies: {  }
+id: business_product_type
+label: 'Business Product Type'
+description: 'Business product type'
+variationType: default
+injectVariationFields: true
+traits: {  }
+locked: false

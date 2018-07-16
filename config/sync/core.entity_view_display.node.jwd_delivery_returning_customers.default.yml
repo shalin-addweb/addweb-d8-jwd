@@ -1,0 +1,44 @@
+uuid: 0f656d60-4363-4a2b-8d56-46f682ebf1a3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.jwd_delivery_returning_customers.body
+    - field.field.node.jwd_delivery_returning_customers.field_customer_address
+    - field.field.node.jwd_delivery_returning_customers.field_jwd_kundengruppe
+    - node.type.jwd_delivery_returning_customers
+  module:
+    - address
+    - text
+    - user
+id: node.jwd_delivery_returning_customers.default
+targetEntityType: node
+bundle: jwd_delivery_returning_customers
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_customer_address:
+    weight: 103
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: address_default
+    region: content
+  field_jwd_kundengruppe:
+    weight: 102
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

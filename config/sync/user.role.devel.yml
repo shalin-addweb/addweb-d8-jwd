@@ -1,0 +1,9 @@
+uuid: ff9ad6bb-0bc7-4ecf-8bd1-5dba2120f62b
+langcode: en
+status: true
+dependencies: {  }
+id: devel
+label: Devel
+weight: 7
+is_admin: null
+permissions: {  }

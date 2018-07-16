@@ -1,0 +1,26 @@
+uuid: 902c7b45-3213-4e84-84e7-7d13db50a2e3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.jwd_faq.body
+    - node.type.jwd_faq
+  module:
+    - text
+    - user
+id: node.jwd_faq.default
+targetEntityType: node
+bundle: jwd_faq
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

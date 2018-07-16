@@ -1,0 +1,14 @@
+uuid: cd65960b-f59d-4ec5-9770-3ecbf7a31559
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.bestandskunde
+  module:
+    - user
+id: user_add_role_action.bestandskunde
+label: 'Add the Bestandskunde role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: bestandskunde

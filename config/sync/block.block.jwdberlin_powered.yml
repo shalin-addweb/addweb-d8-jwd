@@ -1,0 +1,22 @@
+uuid: a1906a81-7333-47de-812c-8e8e133c062f
+langcode: en
+status: false
+dependencies:
+  module:
+    - system
+  theme:
+    - jwdberlin
+_core:
+  default_config_hash: jQQUUWN2Uxr5qZtc9zcJKBCxpKY8orN1u2HPqYYRQDI
+id: jwdberlin_powered
+theme: jwdberlin
+region: footer
+weight: -5
+provider: null
+plugin: system_powered_by_block
+settings:
+  id: system_powered_by_block
+  label: 'Powered by Drupal'
+  provider: system
+  label_display: '0'
+visibility: {  }

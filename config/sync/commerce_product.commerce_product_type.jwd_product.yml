@@ -1,0 +1,11 @@
+uuid: 97048bff-6ace-4644-8d88-cac40e5e8a62
+langcode: en
+status: true
+dependencies: {  }
+id: jwd_product
+label: Produkt
+description: ''
+variationType: default
+injectVariationFields: true
+traits: {  }
+locked: false

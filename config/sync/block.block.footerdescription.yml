@@ -1,0 +1,25 @@
+uuid: e8822784-bc55-43cd-a54d-e113cde91da5
+langcode: en
+status: true
+dependencies:
+  content:
+    - 'block_content:basic:7352984d-9a0d-4758-bc67-e24521b70b79'
+  module:
+    - block_content
+  theme:
+    - jwdberlin
+id: footerdescription
+theme: jwdberlin
+region: footer
+weight: -8
+provider: null
+plugin: 'block_content:7352984d-9a0d-4758-bc67-e24521b70b79'
+settings:
+  id: 'block_content:7352984d-9a0d-4758-bc67-e24521b70b79'
+  label: 'Footer Description'
+  provider: block_content
+  label_display: '0'
+  status: true
+  info: ''
+  view_mode: full
+visibility: {  }

@@ -1,0 +1,9 @@
+uuid: 12a55605-64f0-4c66-ac1f-5e91efe56de2
+langcode: en
+status: true
+dependencies: {  }
+id: nichtauthentifizierter_benutzer
+label: 'Nichtauthentifizierter Benutzer'
+weight: 10
+is_admin: null
+permissions: {  }

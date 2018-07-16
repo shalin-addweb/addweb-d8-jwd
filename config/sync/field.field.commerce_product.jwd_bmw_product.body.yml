@@ -1,0 +1,22 @@
+uuid: 106e4fda-f68d-4dd3-a61c-5bc5ba056523
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.jwd_bmw_product
+    - field.storage.commerce_product.body
+  module:
+    - text
+id: commerce_product.jwd_bmw_product.body
+field_name: body
+entity_type: commerce_product
+bundle: jwd_bmw_product
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: null
+settings:
+  display_summary: false
+field_type: text_with_summary

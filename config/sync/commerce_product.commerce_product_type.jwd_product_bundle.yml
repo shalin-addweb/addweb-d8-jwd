@@ -1,0 +1,11 @@
+uuid: dbc4d798-5681-4cdd-bc70-1cdbf16dd1a2
+langcode: en
+status: true
+dependencies: {  }
+id: jwd_product_bundle
+label: Produktpaket
+description: ''
+variationType: default
+injectVariationFields: true
+traits: {  }
+locked: false

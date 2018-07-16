@@ -1,0 +1,21 @@
+uuid: deee4f2f-d34e-4f17-a317-9dac15344111
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_product_bundle_tease
+    - node.type.jwd_product_bundle_display
+  module:
+    - text
+id: node.jwd_product_bundle_display.field_product_bundle_tease
+field_name: field_product_bundle_tease
+entity_type: node
+bundle: jwd_product_bundle_display
+label: Kopftext
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

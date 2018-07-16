@@ -1,0 +1,55 @@
+uuid: 484f121b-3022-46a6-80b4-ca814d645753
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.jwd_bmw_product_display.body
+    - field.field.node.jwd_bmw_product_display.field_product_images
+    - field.field.node.jwd_bmw_product_display.field_product_kategorie_bmw
+    - field.field.node.jwd_bmw_product_display.field_product_reference
+    - node.type.jwd_bmw_product_display
+  module:
+    - image
+    - text
+    - user
+id: node.jwd_bmw_product_display.default
+targetEntityType: node
+bundle: jwd_bmw_product_display
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_product_images:
+    weight: 104
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_product_kategorie_bmw:
+    weight: 103
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_product_reference:
+    weight: 102
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

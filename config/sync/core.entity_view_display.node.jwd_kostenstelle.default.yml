@@ -1,0 +1,26 @@
+uuid: 5a45cf5c-bdf8-430a-a598-b18c46eb8583
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.jwd_kostenstelle.field_jwd_kundengruppe
+    - node.type.jwd_kostenstelle
+  module:
+    - user
+id: node.jwd_kostenstelle.default
+targetEntityType: node
+bundle: jwd_kostenstelle
+mode: default
+content:
+  field_jwd_kundengruppe:
+    weight: 102
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

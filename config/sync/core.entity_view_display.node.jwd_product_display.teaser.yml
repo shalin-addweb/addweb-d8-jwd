@@ -1,0 +1,28 @@
+uuid: 6de7ff49-5075-4712-9587-eb2eab54eaea
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.jwd_product_display.body
+    - node.type.jwd_product_display
+  module:
+    - text
+    - user
+id: node.jwd_product_display.teaser
+targetEntityType: node
+bundle: jwd_product_display
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }

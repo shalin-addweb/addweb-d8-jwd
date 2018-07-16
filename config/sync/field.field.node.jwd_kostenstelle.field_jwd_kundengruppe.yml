@@ -1,0 +1,28 @@
+uuid: b1afaa3b-b45f-4b12-9020-424c86e1319c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_jwd_kundengruppe
+    - node.type.jwd_kostenstelle
+id: node.jwd_kostenstelle.field_jwd_kundengruppe
+field_name: field_jwd_kundengruppe
+entity_type: node
+bundle: jwd_kostenstelle
+label: Kundengruppe
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:user'
+  handler_settings:
+    include_anonymous: true
+    filter:
+      type: _none
+    target_bundles: null
+    sort:
+      field: _none
+    auto_create: false
+field_type: entity_reference

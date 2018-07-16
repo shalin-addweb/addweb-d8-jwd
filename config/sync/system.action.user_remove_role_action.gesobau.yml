@@ -1,0 +1,14 @@
+uuid: 3e8681b9-630c-479b-9a9d-275384817cf6
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.gesobau
+  module:
+    - user
+id: user_remove_role_action.gesobau
+label: 'Remove the Gesobau role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: gesobau

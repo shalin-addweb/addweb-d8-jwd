@@ -1,0 +1,20 @@
+uuid: 336521ee-3a99-42fe-bd51-6566110aad07
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_product
+id: commerce_product.field_gb_auflagen_produkt
+field_name: field_gb_auflagen_produkt
+entity_type: commerce_product
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

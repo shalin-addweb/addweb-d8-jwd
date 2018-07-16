@@ -1,0 +1,14 @@
+uuid: af20f7ca-619e-402d-b878-b78463cb0eab
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.redaktion_hilfe
+  module:
+    - user
+id: user_remove_role_action.redaktion_hilfe
+label: 'Remove the Redaktion Hilfe role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: redaktion_hilfe

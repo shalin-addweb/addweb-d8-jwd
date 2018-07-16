@@ -1,0 +1,44 @@
+uuid: b731f557-7000-4da3-ba65-7e42255d75dd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.jwd_product_display.body
+    - field.field.node.jwd_product_display.field_product_category
+    - field.field.node.jwd_product_display.field_product_reference
+    - node.type.jwd_product_display
+  module:
+    - text
+    - user
+id: node.jwd_product_display.default
+targetEntityType: node
+bundle: jwd_product_display
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_product_category:
+    weight: 103
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_product_reference:
+    weight: 102
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden: {  }
